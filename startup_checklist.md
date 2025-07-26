@@ -7,25 +7,25 @@ A setup checklist to ensure Agent OS is properly installed and configured for yo
 ### 1. Install Agent OS Base
 - [ ] Run the **oneline curl command** for base installation:
   ```bash
-  curl -sSL https://raw.githubusercontent.com/example/agent-os/main/install.sh | bash
+  curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup.sh | bash
   ```
-  - Creates `~/agent-os/` folder with instructions and standards
-- [ ] *Alternative*: Manual installation by copying files from [GitHub repo](https://github.com/example/agent-os)
+  - Creates `~/.agent-os/` folder with instructions and standards
+- [ ] *Alternative*: Manual installation by copying files from [GitHub repo](https://github.com/carmandale/agent-os)
 
 ### 2. Customize Your Standards 🎯
 **Important**: These are starter templates - customization is crucial for spec-driven development!
 
-- [ ] **Edit Tech Stack**: `~/agent-os/standards/tech-stack.md`
+- [ ] **Edit Tech Stack**: `~/.agent-os/standards/tech-stack.md`
   - Define your common tech stack (language, framework, hosting, deployment)
   - Can be overridden per project
   
-- [ ] **Edit Code Style**: `~/agent-os/standards/code-style.md`
+- [ ] **Edit Code Style**: `~/.agent-os/standards/code-style.md`
   - Indentation preferences
   - Naming conventions
   - HTML markup structure (e.g., Tailwind CSS organization)
   - Code comment formatting
   
-- [ ] **Edit Best Practices**: `~/agent-os/standards/best-practices.md`
+- [ ] **Edit Best Practices**: `~/.agent-os/standards/best-practices.md`
   - Strategic development practices
   - Organizational opinions (simplicity, readability, clarity)
 
@@ -36,28 +36,28 @@ A setup checklist to ensure Agent OS is properly installed and configured for yo
 ### For Claude Code
 - [ ] Run the **oneline script for Claude Code installation**:
   ```bash
-  curl -sSL https://raw.githubusercontent.com/example/agent-os/main/setup-claude-code.sh | bash
+  curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup-claude-code.sh | bash
   ```
 - [ ] Verify installation:
   - `~/Claude/claude.md` - References centralized Agent OS standards
   - Custom slash commands in `~/Claude/`:
-    - `/analyze-product` → `~/agent-os/commands/analyze-product.md`
-    - `/create-spec` → `~/agent-os/commands/create-spec.md`
-    - `/execute-tasks` → `~/agent-os/commands/execute-tasks.md`
-    - `/plan-product` → `~/agent-os/commands/plan-product.md`
+    - `/analyze-product` → `~/.agent-os/commands/analyze-product.md`
+    - `/create-spec` → `~/.agent-os/commands/create-spec.md`
+    - `/execute-tasks` → `~/.agent-os/commands/execute-tasks.md`
+    - `/plan-product` → `~/.agent-os/commands/plan-product.md`
 
 ### For Cursor
 - [ ] **Navigate to your project folder** in terminal
 - [ ] Run the **oneline setup script for Cursor**:
   ```bash
-  curl -sSL https://raw.githubusercontent.com/example/agent-os/main/setup-cursor.sh | bash
+  curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup-cursor.sh | bash
   ```
 - [ ] Verify installation in your project:
   - `./cursor/rules/` folder created/updated with:
-    - `analyze-product` → References `~/agent-os/instructions/analyze-product.md`
-    - `create-spec` → References `~/agent-os/instructions/create-spec.md`
-    - `execute-tasks` → References `~/agent-os/instructions/execute-tasks.md`
-    - `plan-product` → References `~/agent-os/instructions/plan-product.md`
+    - `analyze-product` → References `~/.agent-os/instructions/analyze-product.md`
+    - `create-spec` → References `~/.agent-os/instructions/create-spec.md`
+    - `execute-tasks` → References `~/.agent-os/instructions/execute-tasks.md`
+    - `plan-product` → References `~/.agent-os/instructions/plan-product.md`
 
 ---
 
@@ -119,9 +119,9 @@ A setup checklist to ensure Agent OS is properly installed and configured for yo
 ### 6. Continuous Improvement
 - [ ] Note patterns where agent excels/struggles
 - [ ] Update standards files accordingly:
-  - `~/agent-os/standards/tech-stack.md`
-  - `~/agent-os/standards/code-style.md`
-  - `~/agent-os/standards/best-practices.md`
+  - `~/.agent-os/standards/tech-stack.md`
+  - `~/.agent-os/standards/code-style.md`
+  - `~/.agent-os/standards/best-practices.md`
 - [ ] Refine instructions as needed
 
 ---
@@ -130,7 +130,7 @@ A setup checklist to ensure Agent OS is properly installed and configured for yo
 
 ### System-Level (Home Directory)
 ```
-~/agent-os/
+~/.agent-os/
 ├── standards/
 │   ├── tech-stack.md     # Edit: Your tech preferences
 │   ├── code-style.md     # Edit: Your code formatting
@@ -159,6 +159,20 @@ your-project/
 
 ---
 
+## ✅ Sanity Check
+
+### Quick Verification
+Run this in any project to verify Agent OS is properly connected:
+```bash
+[ -d ".cursor/rules" ] && grep -q "~/.agent-os" .cursor/rules/* && echo "✅ Agent OS connected" || echo "❌ Agent OS not setup"
+```
+
+### Detailed Check
+Copy and run the `check-agent-os.sh` script for a comprehensive verification of:
+- Cursor rules setup
+- Home directory installation  
+- Your custom standards (GitHub workflow, tabs, Python/React)
+
 ## 🚀 Pro Tips
 
 1. **Invest time in standards** - Well-defined standards = better agent output
@@ -166,6 +180,7 @@ your-project/
 3. **Start with small features** - Build confidence in the workflow
 4. **Keep roadmap.md updated** - Helps agent suggest relevant next steps
 5. **Use decisions.md actively** - Document why, not just what
+6. **Run sanity check** - Verify setup works before starting any project
 
 ---
 
