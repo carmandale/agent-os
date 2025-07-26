@@ -1,7 +1,7 @@
 # Code Style Guide
 
-> Version: 2.0.0
-> Last Updated: 2025-01-22
+> Version: 1.1.0
+> Last Updated: 2025-07-26
 
 ## Context
 

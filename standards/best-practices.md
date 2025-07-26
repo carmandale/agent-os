@@ -1,7 +1,7 @@
 # Development Best Practices
 
-> Version: 1.0.0
-> Last updated: 2025-03-02
+> Version: 1.1.0
+> Last updated: 2025-07-26
 > Scope: Global development standards
 
 ## Context

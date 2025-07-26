@@ -2,7 +2,8 @@
 description: Task Execution Rules for Agent OS
 globs:
 alwaysApply: false
-version: 1.0
+version: 1.1.0
+lastUpdated: 2025-07-26
 encoding: UTF-8
 ---
 
