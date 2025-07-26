@@ -43,7 +43,9 @@ echo "========================"
 echo ""
 
 # Base URL for raw GitHub content
-BASE_URL="https://raw.githubusercontent.com/buildermethods/agent-os/main"
+# Updated to use carmandale/agent-os fork with custom GitHub Issues workflow,
+# tabs indentation, and Python/React tech stack preferences
+BASE_URL="https://raw.githubusercontent.com/carmandale/agent-os/main"
 
 # Create directories
 echo "📁 Creating directories..."
