@@ -46,9 +46,40 @@ encoding: UTF-8
 
 <process_flow>
 
-<step number="1" name="task_assignment">
+<step number="1" name="github_issue_verification">
 
-### Step 1: Task Assignment
+### Step 1: GitHub Issue Verification
+
+<step_metadata>
+  <requires>github issue before any work</requires>
+  <purpose>ensure work is tracked and traceable</purpose>
+</step_metadata>
+
+<issue_check>
+  <check>Does the spec folder name contain a GitHub issue number?</check>
+  <if_no_issue>
+    - ERROR: "Cannot proceed without GitHub issue. Please create an issue and update spec folder name."
+    - STOP: Execution until issue is created
+  </if_no_issue>
+  <if_has_issue>
+    - EXTRACT: Issue number from folder name
+    - STORE: Issue number for commit messages
+    - PROCEED: To task assignment
+  </if_has_issue>
+</issue_check>
+
+<instructions>
+  ACTION: Verify GitHub issue exists before any work
+  REQUIRE: Issue number in spec folder name
+  STOP: If no issue found
+  STORE: Issue number for later use
+</instructions>
+
+</step>
+
+<step number="2" name="task_assignment">
+
+### Step 2: Task Assignment
 
 <step_metadata>
   <inputs>
@@ -348,12 +379,19 @@ encoding: UTF-8
     - github push
     - pull request
   </creates>
+  <requires>issue number from step 1</requires>
 </step_metadata>
 
 <commit_process>
   <commit>
-    <message>descriptive summary of changes</message>
-    <format>conventional commits if applicable</format>
+    <message>descriptive summary of changes with issue reference</message>
+    <format>conventional commits with issue number</format>
+    <examples>
+      - feat: implement user authentication #123
+      - fix: resolve login validation bug #123
+      - test: add auth integration tests #123
+    </examples>
+    <requirement>every commit must reference the GitHub issue</requirement>
   </commit>
   <push>
     <target>spec branch</target>
@@ -361,7 +399,8 @@ encoding: UTF-8
   </push>
   <pull_request>
     <title>descriptive PR title</title>
-    <description>functionality recap</description>
+    <description>functionality recap with issue link</description>
+    <issue_link>must include "Fixes #123" or "Closes #123"</issue_link>
   </pull_request>
 </commit_process>
 
@@ -369,6 +408,8 @@ encoding: UTF-8
   ## Summary
 
   [BRIEF_DESCRIPTION_OF_CHANGES]
+
+  **Fixes #[ISSUE_NUMBER]**
 
   ## Changes Made
 
@@ -379,12 +420,18 @@ encoding: UTF-8
 
   - [TEST_COVERAGE]
   - All tests passing ✓
+
+  ## Issue Status
+
+  - [ ] Update issue with progress
+  - [ ] Close issue when PR is merged
 </pr_template>
 
 <instructions>
-  ACTION: Commit all changes with descriptive message
+  ACTION: Commit all changes with descriptive message and issue reference
+  REQUIRE: Issue number in every commit message
   PUSH: To GitHub on spec branch
-  CREATE: Pull request with detailed description
+  CREATE: Pull request with issue link and status tracking
 </instructions>
 
 </step>
@@ -443,6 +490,7 @@ encoding: UTF-8
 <step_metadata>
   <creates>summary message</creates>
   <format>structured with emojis</format>
+  <includes>issue and PR links</includes>
 </step_metadata>
 
 <summary_template>
@@ -465,6 +513,11 @@ encoding: UTF-8
   ## 📦 Pull Request
 
   View PR: [GITHUB_PR_URL]
+  
+  ## 🔗 Issue Tracking
+
+  - GitHub Issue: #[ISSUE_NUMBER] - [ISSUE_URL]
+  - **Remember to update and close the issue when PR is merged**
 </summary_template>
 
 <summary_sections>

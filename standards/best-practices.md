@@ -25,6 +25,15 @@ This file is part of the Agent OS standards system. These global best practices 
 - Extract repeated UI markup to reusable components
 - Create utility functions for common operations
 
+### GitHub Issue & PR Workflow (Required)
+**Every piece of work must follow this workflow - no exceptions:**
+
+1. **All work starts with a GitHub issue** - Create or reference an existing issue before any development
+2. **All commits reference the issue** - Use format: `feat: implement user auth #123` or `fix: resolve login bug #456`
+3. **All PRs link to issues** - Use keywords: `Fixes #123`, `Closes #123`, or `Relates to #123`
+4. **Issues and PRs must be updated and closed** - Keep them current and close when work is complete
+5. **Focused, frequent commits** - Commit specific, tangible accomplishments, not random work batches
+
 ## Dependencies
 
 ### Choose Libraries Wisely

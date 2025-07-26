@@ -221,20 +221,51 @@ encoding: UTF-8
 
 </step>
 
-<step number="5" name="spec_folder_creation">
+<step number="5" name="github_issue_requirement">
 
-### Step 5: Spec Folder Creation
+### Step 5: GitHub Issue Requirement
+
+<step_metadata>
+  <requires>github issue before proceeding</requires>
+  <purpose>ensure work is tracked and traceable</purpose>
+</step_metadata>
+
+<issue_requirement>
+  <check>Does user have a GitHub issue for this spec?</check>
+  <if_no_issue>
+    - REQUEST: "Please create a GitHub issue for this spec before proceeding"
+    - WAIT: For issue creation and number
+    - STORE: Issue number for use in folder naming
+  </if_no_issue>
+  <if_has_issue>
+    - REQUEST: "Please provide the GitHub issue number for this spec"
+    - STORE: Issue number for use in folder naming
+  </if_has_issue>
+</issue_requirement>
+
+<instructions>
+  ACTION: Ensure GitHub issue exists and get issue number
+  REQUIRE: Issue number before proceeding
+  STORE: Issue number for next step
+</instructions>
+
+</step>
+
+<step number="6" name="spec_folder_creation">
+
+### Step 6: Spec Folder Creation
 
 <step_metadata>
   <creates>
-    - directory: .agent-os/specs/YYYY-MM-DD-spec-name/
+    - directory: .agent-os/specs/YYYY-MM-DD-spec-name-#123/
   </creates>
-  <uses>date from step 4</uses>
+  <uses>date from step 4, issue number from step 5</uses>
 </step_metadata>
 
 <folder_naming>
-  <format>YYYY-MM-DD-spec-name</format>
+  <format>YYYY-MM-DD-spec-name-#123</format>
   <date>use stored date from step 4</date>
+  <issue_number>use stored issue number from step 5</issue_number>
   <name_constraints>
     - max_words: 5
     - style: kebab-case
@@ -243,28 +274,29 @@ encoding: UTF-8
 </folder_naming>
 
 <example_names>
-  - 2025-03-15-password-reset-flow
-  - 2025-03-16-user-profile-dashboard
-  - 2025-03-17-api-rate-limiting
+  - 2025-03-15-password-reset-flow-#123
+  - 2025-03-16-user-profile-dashboard-#456
+  - 2025-03-17-api-rate-limiting-#789
 </example_names>
 
 <instructions>
-  ACTION: Create spec folder using stored date
-  FORMAT: Use kebab-case for spec name
+  ACTION: Create spec folder using stored date and issue number
+  FORMAT: Use kebab-case for spec name with issue number suffix
   LIMIT: Maximum 5 words in name
   VERIFY: Folder created successfully
 </instructions>
 
 </step>
 
-<step number="6" name="create_spec_md">
+<step number="7" name="create_spec_md">
 
-### Step 6: Create spec.md
+### Step 7: Create spec.md
 
 <step_metadata>
   <creates>
-    - file: .agent-os/specs/YYYY-MM-DD-spec-name/spec.md
+    - file: .agent-os/specs/YYYY-MM-DD-spec-name-#123/spec.md
   </creates>
+  <uses>issue number from step 5</uses>
 </step_metadata>
 
 <file_template>
@@ -273,6 +305,7 @@ encoding: UTF-8
 
     > Spec: [SPEC_NAME]
     > Created: [CURRENT_DATE]
+    > GitHub Issue: #[ISSUE_NUMBER]
     > Status: Planning
   </header>
   <required_sections>

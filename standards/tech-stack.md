@@ -1,84 +1,58 @@
 # Tech Stack
 
-> Version: 1.0.0
-> Last Updated: 2025-08-31
+> Version: 2.0.0
+> Last Updated: 2025-01-22
 
 ## Context
 
 This file is part of the Agent OS standards system. These global tech stack defaults are referenced by all product codebases when initializing new projects. Individual projects may override these choices in their `.agent-os/product/tech-stack.md` file.
 
-## Core Technologies
+## Web Development Stack
 
-### Application Framework
-- **Framework:** Ruby on Rails
-- **Version:** 8.0+
-- **Language:** Ruby 3.2+
+#### Backend
+- **Language:** Python 3.11+
+- **Framework:** FastAPI or Django
+- **ORM:** SQLAlchemy (FastAPI) or Django ORM
+- **API:** RESTful or GraphQL
 
-### Database
-- **Primary:** PostgreSQL
-- **Version:** 17+
-- **ORM:** Active Record
-
-## Frontend Stack
-
-### JavaScript Framework
-- **Framework:** React
-- **Version:** Latest stable
+#### Frontend
+- **Framework:** React 18+
+- **Language:** TypeScript
 - **Build Tool:** Vite
+- **State Management:** Zustand or Context API
+- **Forms:** React Hook Form
 
-### Import Strategy
-- **Strategy:** Node.js modules
-- **Package Manager:** npm
-- **Node Version:** 22 LTS
+#### Styling
+- **CSS Framework:** Tailwind CSS v4
+- **CSS-in-JS:** None (prefer Tailwind)
+- **Component Library:** shadcn/ui
+- **Animations:** Framer Motion
 
-### CSS Framework
-- **Framework:** TailwindCSS
-- **Version:** 4.0+
-- **PostCSS:** Yes
+#### Database
+- **Primary:** PostgreSQL 15+
+- **Cache:** Redis
+- **Vector DB:** Pinecone or pgvector (for AI features)
 
-### UI Components
-- **Library:** Instrumental Components
-- **Version:** Latest
-- **Installation:** Via development gems group
+## Common Infrastructure
 
-## Assets & Media
+### Version Control
+- **Platform:** GitHub
+- **Branch Strategy:** GitHub Flow
+- **PR Reviews:** Required
 
-### Fonts
-- **Provider:** Google Fonts
-- **Loading Strategy:** Self-hosted for performance
-
-### Icons
-- **Library:** Lucide
-- **Implementation:** React components
-
-## Infrastructure
-
-### Application Hosting
-- **Platform:** Digital Ocean
-- **Service:** App Platform / Droplets
-- **Region:** Primary region based on user base
-
-### Database Hosting
-- **Provider:** Digital Ocean
-- **Service:** Managed PostgreSQL
-- **Backups:** Daily automated
-
-### Asset Storage
-- **Provider:** Amazon S3
-- **CDN:** CloudFront
-- **Access:** Private with signed URLs
-
-## Deployment
-
-### CI/CD Pipeline
+### CI/CD
 - **Platform:** GitHub Actions
-- **Trigger:** Push to main/staging branches
-- **Tests:** Run before deployment
+- **Deployment:** Vercel or Railway
 
-### Environments
-- **Production:** main branch
-- **Staging:** staging branch
-- **Review Apps:** PR-based (optional)
+### Monitoring
+- **Error Tracking:** Sentry
+- **Analytics:** PostHog or Mixpanel
+- **Performance:** Web Vitals
+
+### AI/ML Services
+- **LLM:** OpenAI API or Anthropic
+- **Embeddings:** OpenAI or Cohere
+- **Image Generation:** Stable Diffusion or DALL-E
 
 ---
 

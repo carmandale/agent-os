@@ -1,7 +1,7 @@
 # Code Style Guide
 
-> Version: 1.0.0
-> Last Updated: 2025-04-24
+> Version: 2.0.0
+> Last Updated: 2025-01-22
 
 ## Context
 
@@ -10,79 +10,142 @@ This file is part of the Agent OS standards system. These global code style rule
 ## General Formatting
 
 ### Indentation
-- Use 2 spaces for indentation (never tabs)
+- Use tabs for indentation (not spaces)
+- Configure editors to display tabs as 4 spaces visually
 - Maintain consistent indentation throughout files
-- Align nested structures for readability
+
+## Python Style
 
 ### Naming Conventions
-- **Methods and Variables**: Use snake_case (e.g., `user_profile`, `calculate_total`)
-- **Classes and Modules**: Use PascalCase (e.g., `UserProfile`, `PaymentProcessor`)
-- **Constants**: Use UPPER_SNAKE_CASE (e.g., `MAX_RETRY_COUNT`)
+- **Functions and Variables**: snake_case (e.g., `user_profile`, `calculate_total`)
+- **Classes**: PascalCase (e.g., `UserProfile`, `PaymentProcessor`)
+- **Constants**: UPPER_SNAKE_CASE (e.g., `MAX_RETRY_COUNT`)
+- **Private methods**: Leading underscore (e.g., `_internal_helper`)
 
-### String Formatting
-- Use single quotes for strings: `'Hello World'`
-- Use double quotes only when interpolation is needed
-- Use template literals for multi-line strings or complex interpolation
-
-## HTML/Template Formatting
-
-### Structure Rules
-- Use 2 spaces for indentation
-- Place nested elements on new lines with proper indentation
-- Content between tags should be on its own line when multi-line
-
-### Attribute Formatting
-- Place each HTML attribute on its own line
-- Align attributes vertically
-- Keep the closing `>` on the same line as the last attribute
-
-### Example HTML Structure
-
-```html
-<div class="container">
-  <header class="flex flex-col space-y-2
-                 md:flex-row md:space-y-0 md:space-x-4">
-    <h1 class="text-primary dark:text-primary-300">
-      Page Title
-    </h1>
-    <nav class="flex flex-col space-y-2
-                md:flex-row md:space-y-0 md:space-x-4">
-      <a href="/"
-         class="btn-ghost">
-        Home
-      </a>
-      <a href="/about"
-         class="btn-ghost">
-        About
-      </a>
-    </nav>
-  </header>
-</div>
+### Type Hints
+```python
+def process_user(user_id: int, settings: dict[str, Any]) -> Optional[User]:
+	"""Process user with given settings."""
+	return user
 ```
 
-## Tailwind CSS preferences
+### String Formatting
+- Use f-strings for formatting: `f"Hello {name}"`
+- Use double quotes consistently: `"Hello World"`
+- Triple quotes for docstrings and multi-line strings
 
-### Multi-line CSS classes in markup
+### Modern Python Patterns
+- Use pathlib over os.path: `Path("data") / "file.txt"`
+- Context managers for resources: `with open("file.txt") as f:`
+- List/dict comprehensions when readable
+- Type hints for function signatures
+- Dataclasses or Pydantic for data models
 
-- We use a unique multi-line formatting style when writing Tailwind CSS classes in HTML markup and ERB tags, where the classes for each responsive size are written on their own dedicated line.
-- The top-most line should be the smallest size (no responsive prefix). Each line below it should be the next responsive size up.
-- Each line of CSS classes should be aligned vertically.
-- focus and hover classes should be on their own additional dedicated lines.
-- We implement one additional responsive breakpoint size called 'xs' which represents 400px.
-- If there are any custom CSS classes being used, those should be included at the start of the first line.
+## JavaScript/TypeScript Style
 
-**Example of multi-line Tailwind CSS classes:**
+### Naming Conventions
+- **Functions and Variables**: camelCase (e.g., `userProfile`, `calculateTotal`)
+- **Classes and Types**: PascalCase (e.g., `UserProfile`, `ApiResponse`)
+- **Constants**: UPPER_SNAKE_CASE (e.g., `MAX_RETRY_COUNT`)
+- **React Components**: PascalCase (e.g., `UserDashboard`)
 
-<div class="custom-cta bg-gray-50 dark:bg-gray-900 p-4 rounded cursor-pointer w-full
-            hover:bg-gray-100 dark:hover:bg-gray-800
-            xs:p-6
-            sm:p-8 sm:font-medium
-            md:p-10 md:text-lg
-            lg:p-12 lg:text-xl lg:font-semibold lg:2-3/5
-            xl:p-14 xl:text-2xl
-            2xl:p-16 2xl:text-3xl 2xl:font-bold 2xl:w-3/4">
-  I'm a call-to-action!
+### Modern ES6+ Patterns
+```javascript
+// Arrow functions
+const processUser = (userId) => {
+	// function body
+}
+
+// Destructuring
+const { name, email } = user
+const [first, ...rest] = items
+
+// Optional chaining and nullish coalescing
+const city = user?.address?.city ?? 'Unknown'
+
+// Async/await over promises
+const fetchData = async () => {
+	const response = await api.get('/users')
+	return response.data
+}
+```
+
+## React Best Practices
+
+### Component Structure
+```typescript
+// Functional components with TypeScript
+interface UserCardProps {
+	user: User
+	onSelect?: (id: string) => void
+}
+
+export const UserCard: React.FC<UserCardProps> = ({ user, onSelect }) => {
+	const [isExpanded, setIsExpanded] = useState(false)
+	
+	return (
+		<div className="rounded-lg bg-white p-4 shadow-sm">
+			{/* Component content */}
+		</div>
+	)
+}
+```
+
+### Hooks Patterns
+- Custom hooks start with "use": `useAuth`, `useDebounce`
+- Keep hooks at the top of components
+- Extract complex logic to custom hooks
+- Prefer `useReducer` for complex state
+
+## CSS/Tailwind Conventions
+
+### Tailwind CSS v4
+- Use the new `@import 'tailwindcss'` syntax
+- Define custom properties in CSS for theming
+- Use semantic color names: `slate`, `emerald`, `red`
+- Prefer utility classes over custom CSS
+
+### Class Organization
+```jsx
+// Keep classes concise and readable
+<div className="rounded-lg bg-slate-900/50 p-6 backdrop-blur-sm">
+	<h2 className="mb-4 text-lg font-medium text-slate-300">
+		Title
+	</h2>
 </div>
+
+// Group related utilities
+<button className="rounded-md bg-primary px-4 py-2 text-white hover:bg-primary/90 active:scale-95">
+	Click me
+</button>
+```
+
+### Dark Mode
+- Use class-based dark mode: `dark:bg-slate-800`
+- Define CSS custom properties for light/dark themes
+- Keep color contrasts accessible
+
+### Common Patterns
+- Spacing: `space-y-4`, `gap-4`, `p-4`
+- Borders: `border border-slate-700/50`
+- Backgrounds: `bg-slate-900/50 backdrop-blur-sm`
+- Animations: `transition-colors`, `hover:`, `active:`
+- Responsive: `lg:grid-cols-4`, `md:flex-row`
+
+### CSS Custom Properties
+```css
+:root {
+	--background: oklch(0.985 0 0);
+	--foreground: oklch(0.145 0 0);
+	--primary: oklch(0.488 0.243 264.376);
+}
+
+.dark {
+	--background: oklch(0.145 0 0);
+	--foreground: oklch(0.985 0 0);
+	--primary: oklch(0.646 0.222 41.116);
+}
+```
 
 ## Code Comments
 
