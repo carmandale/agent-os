@@ -64,7 +64,7 @@ EOF
 }
 
 # Process each command file
-for cmd in plan-product create-spec execute-tasks analyze-product; do
+for cmd in plan-product create-spec execute-tasks analyze-product hygiene-check; do
     process_command_file "$cmd"
 done
 
@@ -80,7 +80,8 @@ echo "Use Agent OS commands in Cursor with @ prefix:"
 echo "  @plan-product    - Initiate Agent OS in a new product's codebase"
 echo "  @analyze-product - Initiate Agent OS in an existing product's codebase"
 echo "  @create-spec     - Initiate a new feature (or simply ask 'what's next?')"
-echo "  @execute-tasks    - Build and ship code"
+echo "  @execute-tasks   - Build and ship code"
+echo "  @hygiene-check   - Check workspace cleanliness and tool configuration"
 echo ""
 echo "Learn more at https://buildermethods.com/agent-os"
 echo ""
