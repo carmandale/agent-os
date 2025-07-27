@@ -47,6 +47,65 @@ encoding: UTF-8
 
 <process_flow>
 
+<step number="0" name="workspace_hygiene_check">
+
+### Step 0: Workspace Hygiene Check
+
+<step_metadata>
+  <purpose>ensure clean workspace before starting any work</purpose>
+  <blocks>execution if workspace is dirty</blocks>
+</step_metadata>
+
+<hygiene_checklist>
+  <git_status>
+    <check>git status --porcelain</check>
+    <requirement>empty output (clean working directory)</requirement>
+  </git_status>
+  <open_prs>
+    <check>any PRs ready for merge?</check>
+    <action>prompt user to merge first</action>
+  </open_prs>
+  <open_issues>
+    <check>any completed issues need closing?</check>
+    <action>prompt user to close first</action>
+  </open_issues>
+  <current_branch>
+    <check>appropriate for new work</check>
+    <action>suggest switching to main if needed</action>
+  </current_branch>
+</hygiene_checklist>
+
+<hygiene_prompt>
+  🧹 **Workspace Hygiene Check**
+  
+  Before starting work, let me verify our workspace is clean:
+  
+  - Git status: [CLEAN/DIRTY]
+  - Open PRs: [NONE/READY_FOR_MERGE]
+  - Open issues: [NONE/NEED_CLOSING]
+  - Current branch: [APPROPRIATE/NEEDS_SWITCH]
+  
+  [IF_NOT_CLEAN]
+  ⚠️ **Workspace needs cleanup before proceeding:**
+  
+  1. [SPECIFIC_ACTIONS_NEEDED]
+  2. [SPECIFIC_ACTIONS_NEEDED]
+  
+  Please clean up the workspace first, then restart this command.
+  
+  [IF_CLEAN]
+  ✅ **Workspace is clean and ready for work!**
+</hygiene_prompt>
+
+<instructions>
+  ACTION: Check all hygiene criteria before proceeding
+  BLOCK: If any criteria fail, stop execution
+  GUIDE: Provide specific cleanup actions needed
+  PROCEED: Only when workspace is completely clean
+</instructions>
+
+</step>
+
 <step number="1" name="github_issue_verification">
 
 ### Step 1: GitHub Issue Verification
@@ -541,6 +600,129 @@ encoding: UTF-8
 
 </step>
 
+<step number="13" name="pr_and_issue_cleanup">
+
+### Step 13: PR and Issue Cleanup
+
+<step_metadata>
+  <purpose>encourage proper cleanup of PRs and issues</purpose>
+  <requires>user approval before executing</requires>
+</step_metadata>
+
+<cleanup_assessment>
+  <check_pr_status>
+    <verify>PR is mergeable</verify>
+    <verify>all checks passing</verify>
+    <verify>no conflicts</verify>
+  </check_pr_status>
+  <identify_linked_issues>
+    <extract>issue numbers from PR description</extract>
+    <verify>issues are ready to close</verify>
+  </identify_linked_issues>
+</cleanup_assessment>
+
+<cleanup_proposal>
+  ## Cleanup Time! 🧹
+
+  Your PR is ready and all tests are passing. Following our best practices:
+
+  **I recommend merging and cleaning up now to keep the workspace tidy:**
+  - ✅ Merge PR #[PR_NUMBER]: [PR_TITLE]
+  - ✅ Auto-close linked issue #[ISSUE_NUMBER]
+  - ✅ Delete feature branch: [BRANCH_NAME]
+  - ✅ Return to main branch
+  - ✅ Pull latest changes
+  - ✅ Verify clean workspace state
+
+  **May I proceed with this cleanup? (yes/no)**
+
+  ⚠️ *Skipping cleanup now means you'll need to handle it manually before starting new work.*
+</cleanup_proposal>
+
+<user_responses>
+  <if_yes>
+    PROCEED: Execute all cleanup actions
+    CONTINUE: To Step 14 (Workspace Reset)
+  </if_yes>
+  <if_no>
+    SKIP: Cleanup actions
+    WARN: About manual cleanup requirement
+    END: With reminder message
+  </if_no>
+</user_responses>
+
+<instructions>
+  ACTION: Assess PR and issue status
+  PROPOSE: Complete cleanup with specific actions
+  REQUEST: User approval before proceeding
+  ENCOURAGE: Following best practices
+</instructions>
+
+</step>
+
+<step number="14" name="workspace_reset">
+
+### Step 14: Workspace Reset
+
+<step_metadata>
+  <executes>only if user approved Step 13</executes>
+  <ensures>clean workspace for next work</ensures>
+</step_metadata>
+
+<cleanup_execution>
+  <merge_pr>
+    <command>gh pr merge [PR_NUMBER] --merge --delete-branch</command>
+    <verify>merge successful</verify>
+  </merge_pr>
+  <close_issues>
+    <auto_close>linked issues via "Fixes #123" in PR</auto_close>
+    <verify>issues properly closed</verify>
+  </close_issues>
+  <branch_cleanup>
+    <switch>git checkout main</switch>
+    <pull>git pull origin main</pull>
+    <verify>up to date with remote</verify>
+  </branch_cleanup>
+  <final_verification>
+    <git_status>must be clean</git_status>
+    <no_open_prs>from this work</no_open_prs>
+    <issues_closed>related to this work</issues_closed>
+  </final_verification>
+</cleanup_execution>
+
+<completion_messages>
+  <if_success>
+    ✅ **Cleanup Complete!**
+    
+    - PR merged successfully
+    - Issues closed automatically  
+    - Feature branch deleted
+    - Workspace is clean and ready for next work!
+    
+    🚀 **Ready to start your next feature!**
+  </if_success>
+  <if_skipped>
+    ⚠️ **Cleanup Skipped**
+    
+    Remember to complete these manually before starting new work:
+    - Merge PR #[PR_NUMBER]
+    - Close issue #[ISSUE_NUMBER] 
+    - Clean up feature branch
+    - Return to main branch
+    
+    💡 **Next time, let me handle the cleanup for you!**
+  </if_skipped>
+</completion_messages>
+
+<instructions>
+  ACTION: Execute approved cleanup systematically
+  VERIFY: Each step completes successfully
+  CONFIRM: Final workspace is completely clean
+  MESSAGE: Clear status and next steps
+</instructions>
+
+</step>
+
 </process_flow>
 
 ## Development Standards
@@ -585,6 +767,7 @@ encoding: UTF-8
 
 <final_checklist>
   <verify>
+    - [ ] Workspace hygiene verified (Step 0)
     - [ ] Task implementation complete
     - [ ] All tests passing
     - [ ] tasks.md updated
@@ -592,5 +775,7 @@ encoding: UTF-8
     - [ ] Pull request created
     - [ ] Roadmap checked/updated
     - [ ] Summary provided to user
+    - [ ] Cleanup proposed and executed (Steps 13-14)
+    - [ ] Workspace reset to clean state
   </verify>
 </final_checklist>

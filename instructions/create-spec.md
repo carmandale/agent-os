@@ -49,6 +49,65 @@ encoding: UTF-8
 
 <process_flow>
 
+<step number="0" name="workspace_hygiene_check">
+
+### Step 0: Workspace Hygiene Check
+
+<step_metadata>
+  <purpose>ensure clean workspace before starting spec creation</purpose>
+  <blocks>execution if workspace is dirty</blocks>
+</step_metadata>
+
+<hygiene_checklist>
+  <git_status>
+    <check>git status --porcelain</check>
+    <requirement>empty output (clean working directory)</requirement>
+  </git_status>
+  <open_prs>
+    <check>any PRs ready for merge?</check>
+    <action>prompt user to merge first</action>
+  </open_prs>
+  <open_issues>
+    <check>any completed issues need closing?</check>
+    <action>prompt user to close first</action>
+  </open_issues>
+  <previous_specs>
+    <check>any specs with incomplete tasks?</check>
+    <action>prompt user to complete or abandon</action>
+  </previous_specs>
+</hygiene_checklist>
+
+<hygiene_prompt>
+  🧹 **Workspace Hygiene Check**
+  
+  Before creating a new spec, let me verify our workspace is clean:
+  
+  - Git status: [CLEAN/DIRTY]
+  - Open PRs: [NONE/READY_FOR_MERGE]
+  - Open issues: [NONE/NEED_CLOSING]
+  - Previous specs: [COMPLETE/HAVE_INCOMPLETE_TASKS]
+  
+  [IF_NOT_CLEAN]
+  ⚠️ **Workspace needs cleanup before creating new specs:**
+  
+  1. [SPECIFIC_ACTIONS_NEEDED]
+  2. [SPECIFIC_ACTIONS_NEEDED]
+  
+  Please clean up the workspace first, then restart spec creation.
+  
+  [IF_CLEAN]
+  ✅ **Workspace is clean and ready for new spec creation!**
+</hygiene_prompt>
+
+<instructions>
+  ACTION: Check all hygiene criteria before spec creation
+  BLOCK: If any criteria fail, stop execution
+  GUIDE: Provide specific cleanup actions needed
+  PROCEED: Only when workspace is completely clean
+</instructions>
+
+</step>
+
 <step number="1" name="spec_initiation">
 
 ### Step 1: Spec Initiation
