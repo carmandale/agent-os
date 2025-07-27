@@ -11,6 +11,7 @@ This file is part of the Agent OS standards system. These global tech stack defa
 
 #### Backend
 - **Language:** Python 3.11+
+- **Package Manager:** uv (modern, fast replacement for pip)
 - **Framework:** FastAPI or Django
 - **ORM:** SQLAlchemy (FastAPI) or Django ORM
 - **API:** RESTful or GraphQL
@@ -53,6 +54,48 @@ This file is part of the Agent OS standards system. These global tech stack defa
 - **LLM:** OpenAI API or Anthropic
 - **Embeddings:** OpenAI or Cohere
 - **Image Generation:** Stable Diffusion or DALL-E
+
+## Development Environment
+
+### Port Configuration
+- **Frontend Dev Server:** 3000 (default), 3001, 3002... for multiple projects
+- **Backend API Server:** 8000 (default), 8001, 8002... for multiple projects
+- **Port Assignment Pattern:** Project A → UI 3000 + API 8000, Project B → UI 3001 + API 8001
+
+#### Environment Files Setup
+```bash
+# Frontend (.env.local)
+PORT=3000
+VITE_API_URL=http://localhost:8000
+
+# Backend (.env)
+API_PORT=8000
+```
+
+### Python Environment (uv)
+```bash
+# Create virtual environment
+uv venv
+
+# Activate environment
+source .venv/bin/activate  # macOS/Linux
+# .venv\Scripts\activate    # Windows
+
+# Install dependencies
+uv pip install -r requirements.txt
+
+# Add new dependency
+uv add fastapi uvicorn
+
+# Create requirements.txt
+uv pip freeze > requirements.txt
+```
+
+### Common Tools
+- **IDE:** VS Code with Agent OS extensions
+- **Version Control:** Git with conventional commits
+- **Testing:** Playwright (web UI), pytest (Python), Vitest (React)
+- **Linting:** ESLint + Prettier (JS/TS), ruff (Python)
 
 ---
 

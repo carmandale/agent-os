@@ -182,9 +182,29 @@ encoding: UTF-8
   </roadmap_adjustment>
   <tech_stack_verification>
     - Verify detected versions are correct
-    - Add any missing infrastructure details
+    - Add any missing infrastructure details  
     - Document actual deployment setup
+    - Configure development server ports
   </tech_stack_verification>
+  
+  <port_configuration_prompt>
+    ## Development Port Configuration
+    
+    I've analyzed your project. Let's set up development server ports:
+    
+    **Detected Services:**
+    [LIST_DETECTED_FRONTEND_AND_BACKEND]
+    
+    **Recommended Ports:**
+    - Frontend dev server: 3000 (or 3001, 3002... if you have multiple projects)
+    - Backend API server: 8000 (or 8001, 8002... if you have multiple projects)
+    
+    What ports should this project use? (Enter for defaults: 3000 frontend, 8000 backend)
+    
+    **Note**: This will create/update environment files:
+    - Frontend: `.env.local` with PORT and API_URL
+    - Backend: `.env` with API_PORT
+  </port_configuration_prompt>
   <decisions_documentation>
     - Add historical decisions that shaped current architecture
     - Document why certain technologies were chosen

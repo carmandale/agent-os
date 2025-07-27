@@ -279,7 +279,31 @@ encoding: UTF-8
   - asset_hosting: string
   - deployment_solution: string
   - code_repository_url: string
+  - frontend_port: number (default: 3000)
+  - backend_port: number (default: 8000)
 </required_items>
+
+<port_configuration>
+  <port_prompt>
+    ## Development Port Configuration
+    
+    This project will need development server ports. Please specify:
+    
+    1. **Frontend dev server port** (default: 3000)
+    2. **Backend API server port** (default: 8000)
+    
+    **Port Pattern**: For multiple projects use incremental ports:
+    - Project A: Frontend 3000, Backend 8000  
+    - Project B: Frontend 3001, Backend 8001
+    - Project C: Frontend 3002, Backend 8002
+    
+    What ports should this project use? (Enter for defaults)
+  </port_prompt>
+  <default_behavior>
+    <if_empty_response>use defaults (3000, 8000)</if_empty_response>
+    <if_partial_response>use provided + defaults for missing</if_partial_response>
+  </default_behavior>
+</port_configuration>
 
 <data_resolution>
   <for_each item="required_items">
