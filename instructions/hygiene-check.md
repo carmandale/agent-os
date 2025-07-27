@@ -157,6 +157,11 @@ encoding: UTF-8
     <check>grep -r "- \[ \]" .agent-os/specs/*/tasks.md</check>
     <assessment>uncompleted tasks</assessment>
   </incomplete_tasks>
+  <task_inconsistencies>
+    <check>detect main tasks with all subtasks complete</check>
+    <pattern>main task "[ ]" followed by all subtasks "[x]"</pattern>
+    <assessment>potential task status errors</assessment>
+  </task_inconsistencies>
   <recent_specs>
     <check>most recent spec activity</check>
     <assessment>specs modified in last 7 days</assessment>
@@ -175,6 +180,11 @@ encoding: UTF-8
   📝 **Incomplete Tasks Found:**
   [LIST_BY_SPEC_WITH_TASK_COUNTS]
   **Recommendation**: Review and complete or archive stale specs.
+  
+  [IF_TASK_INCONSISTENCIES]
+  ⚠️ **Task Status Inconsistencies Found:**
+  [LIST_OF_INCONSISTENT_TASKS]
+  **Recommendation**: Main tasks should be checked if all subtasks are complete.
   
   [IF_OLD_SPECS]
   📅 **Stale Specs** (>30 days old with incomplete tasks):
@@ -323,7 +333,8 @@ encoding: UTF-8
     <no_completed_issues_open>1 point</no_completed_issues_open>
   </github_status>
   <agent_os_specs>
-    <no_stale_specs>1 point</no_stale_specs>
+    <no_stale_specs>0.5 points</no_stale_specs>
+    <consistent_task_status>0.5 points</consistent_task_status>
     <organized_task_status>1 point</organized_task_status>
   </agent_os_specs>
   <development_tools>

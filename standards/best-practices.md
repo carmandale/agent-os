@@ -1,6 +1,6 @@
 # Development Best Practices
 
-> Version: 1.1.0
+> Version: 1.2.0
 > Last updated: 2025-07-26
 > Scope: Global development standards
 
@@ -33,6 +33,15 @@ This file is part of the Agent OS standards system. These global best practices 
 3. **All PRs link to issues** - Use keywords: `Fixes #123`, `Closes #123`, or `Relates to #123`
 4. **Issues and PRs must be updated and closed** - Keep them current and close when work is complete
 5. **Focused, frequent commits** - Commit specific, tangible accomplishments, not random work batches
+
+### Task Status Management (Critical)
+**Maintain accurate task status to prevent development loops:**
+
+1. **Mark main tasks complete when all subtasks are done** - If all subtasks show `[x]`, the main task should too
+2. **Update tasks.md immediately after implementation** - Don't leave completed work unmarked
+3. **Verify task status before starting new work** - Check that task lists reflect actual codebase state
+4. **Flag inconsistencies during code review** - Inconsistent task status indicates process breakdown
+5. **Use codebase reality checks** - Verify implementation exists before planning to build it
 
 ## Dependencies
 

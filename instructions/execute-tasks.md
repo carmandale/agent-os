@@ -2,7 +2,7 @@
 description: Task Execution Rules for Agent OS
 globs:
 alwaysApply: false
-version: 1.1.0
+version: 1.2.0
 lastUpdated: 2025-07-26
 encoding: UTF-8
 ---
@@ -133,6 +133,105 @@ encoding: UTF-8
   REQUIRE: Issue number in spec folder name
   STOP: If no issue found
   STORE: Issue number for later use
+</instructions>
+
+</step>
+
+<step number="1.5" name="codebase_reality_check">
+
+### Step 1.5: Codebase Reality Check
+
+<step_metadata>
+  <purpose>verify tasks match actual codebase state</purpose>
+  <prevents>implementing already-completed features</prevents>
+  <blocks>execution if major discrepancies found</blocks>
+</step_metadata>
+
+<reality_check_process>
+  <task_validation>
+    <check>scan tasks.md for inconsistent states</check>
+    <flag>main tasks unchecked with all subtasks checked</flag>
+    <flag>tasks claiming "not implemented" for existing code</flag>
+  </task_validation>
+  <implementation_detection>
+    <check>scan codebase for files mentioned in tasks</check>
+    <verify>if implementation files already exist</verify>
+    <assess>implementation completeness vs task claims</assess>
+  </implementation_detection>
+  <git_history_check>
+    <check>git log --oneline --since="1 week ago" .</check>
+    <assess>recent commits related to current tasks</assess>
+  </git_history_check>
+</reality_check_process>
+
+<inconsistency_detection>
+  <red_flags>
+    <main_task_unchecked_with_all_subtasks_done>
+      ERROR: Task inconsistency detected
+      - Main task: "[ ] Feature X" 
+      - Subtasks: All marked "[x]"
+      - ACTION: Flag for user review before proceeding
+    </main_task_unchecked_with_all_subtasks_done>
+    <implementation_already_exists>
+      ERROR: Implementation mismatch detected
+      - Task claims: "Not implemented"
+      - Codebase shows: [FILE_PATH] with [LINE_COUNT] lines
+      - ACTION: Verify task accuracy before proceeding
+    </implementation_already_exists>
+    <recent_commits_contradict_tasks>
+      WARNING: Recent commits suggest different progress
+      - Tasks show: [TASK_STATUS]
+      - Git history shows: [RECENT_COMMIT_SUMMARY]
+      - ACTION: Reconcile before proceeding
+    </recent_commits_contradict_tasks>
+  </red_flags>
+</inconsistency_detection>
+
+<reality_check_prompt>
+  🔍 **Codebase Reality Check**
+  
+  Before executing tasks, let me verify the current state matches the task list:
+  
+  **Task Consistency**: [PASS ✅ / ISSUES_FOUND ⚠️]
+  **Implementation Status**: [MATCHES_TASKS ✅ / DISCREPANCIES_FOUND ⚠️]
+  **Recent Git Activity**: [CONSISTENT ✅ / CONFLICTING ⚠️]
+  
+  [IF_ISSUES_FOUND]
+  ⚠️ **Discrepancies Detected:**
+  
+  1. [SPECIFIC_ISSUE_1]
+  2. [SPECIFIC_ISSUE_2]
+  
+  **This suggests the task list may not reflect the current codebase state.**
+  
+  **Recommended actions:**
+  - Review and update task status to match actual implementation
+  - Mark completed features as "[x]" in tasks.md
+  - Verify which tasks actually need work
+  
+  Should I proceed with task reconciliation? (yes/no)
+  
+  [IF_CLEAN]
+  ✅ **Reality check passed - tasks align with codebase state**
+</reality_check_prompt>
+
+<blocking_criteria>
+  <critical_inconsistencies>
+    <block_if>major implementation already exists but task shows "not started"</block_if>
+    <block_if>all subtasks complete but main task unchecked</block_if>
+    <block_if>tasks reference non-existent files or outdated structure</block_if>
+  </critical_inconsistencies>
+  <user_approval_required>
+    <scenario>when discrepancies detected</scenario>
+    <options>["reconcile_tasks", "proceed_anyway", "abort_execution"]</options>
+  </user_approval_required>
+</blocking_criteria>
+
+<instructions>
+  ACTION: Perform comprehensive reality check before task execution
+  DETECT: Task inconsistencies and implementation mismatches
+  BLOCK: Execution on critical discrepancies requiring user input
+  RECONCILE: Task status with actual codebase state when needed
 </instructions>
 
 </step>
