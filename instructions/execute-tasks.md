@@ -336,6 +336,7 @@ encoding: UTF-8
 <step_metadata>
   <follows>approved implementation plan</follows>
   <adheres_to>all spec standards</adheres_to>
+  <includes>optional linting during development</includes>
 </step_metadata>
 
 <execution_standards>
@@ -355,11 +356,27 @@ encoding: UTF-8
   4. Repeat for each feature
 </tdd_workflow>
 
+<linting_during_development>
+  <condition>if linting tools detected</condition>
+  <check_for>
+    - ESLint config (JavaScript/TypeScript)
+    - Prettier config
+    - TypeScript compiler (tsconfig.json)
+    - Ruff config (Python)
+  </check_for>
+  <optional_run>
+    - Run linting to catch issues early
+    - Fix obvious formatting issues
+    - Report but don't block on linting errors (save blocking for Step 8)
+  </optional_run>
+</linting_during_development>
+
 <instructions>
   ACTION: Execute development plan systematically
   FOLLOW: All coding standards and specifications
   IMPLEMENT: TDD approach throughout
   MAINTAIN: Code quality at every step
+  OPTIONAL: Run linting if configs detected (don't block)
 </instructions>
 
 </step>
@@ -397,34 +414,95 @@ encoding: UTF-8
 
 </step>
 
-<step number="8" name="test_suite_verification">
+<step number="8" name="quality_assurance_verification">
 
-### Step 8: Run All Tests
+### Step 8: Quality Assurance Verification
 
 <step_metadata>
-  <runs>entire test suite</runs>
-  <ensures>no regressions</ensures>
+  <runs>comprehensive quality checks</runs>
+  <ensures>no regressions or quality issues</ensures>
+  <blocks>execution if any checks fail</blocks>
 </step_metadata>
 
-<test_execution>
-  <order>
-    1. Verify new tests pass
-    2. Run entire test suite
-    3. Fix any failures
-  </order>
-  <requirement>100% pass rate</requirement>
-</test_execution>
+<quality_checks>
+  <linting_and_typing>
+    <required>true</required>
+    <javascript_typescript>
+      <check>ESLint (if config exists)</check>
+      <check>Prettier (if config exists)</check>
+      <check>TypeScript compiler (if tsconfig.json exists)</check>
+      <requirement>zero errors, zero warnings</requirement>
+    </javascript_typescript>
+    <python>
+      <check>Ruff linting (if config exists)</check>
+      <check>Type checking with mypy (if configured)</check>
+      <requirement>zero errors, zero warnings</requirement>
+    </python>
+    <failure_action>STOP - fix all linting/typing issues before proceeding</failure_action>
+  </linting_and_typing>
+  
+  <test_execution>
+    <order>
+      1. Verify new tests pass
+      2. Run entire test suite  
+      3. Run web UI tests (if web project)
+    </order>
+    <requirement>100% pass rate - NO EXCEPTIONS</requirement>
+    <failure_action>STOP - all tests MUST pass before proceeding</failure_action>
+  </test_execution>
+  
+  <web_ui_testing>
+    <detection>
+      <check>package.json contains React, Next.js, Vue, or Angular</check>
+      <check>project has frontend components</check>
+    </detection>
+    <if_web_project>
+      <playwright_check>
+        <check>Does project have Playwright config?</check>
+        <if_exists>run Playwright tests automatically</if_exists>
+        <if_missing>prompt user about adding Playwright tests</if_missing>
+      </playwright_check>
+      <user_prompt>
+        🎭 **Web UI Testing Detected**
+        
+        This appears to be a web frontend project. For comprehensive testing:
+        
+        **Playwright tests**: [FOUND/NOT_FOUND]
+        
+        [IF_NOT_FOUND]
+        Should I help you set up Playwright tests for this UI work? 
+        This ensures your frontend changes work correctly in browsers.
+        
+        Options:
+        1. **yes** - Set up Playwright tests now
+        2. **skip** - Continue without UI tests (not recommended)  
+        3. **later** - Remind me to add Playwright tests in summary
+        
+        [IF_FOUND]  
+        Running existing Playwright tests...
+      </user_prompt>
+    </if_web_project>
+  </web_ui_testing>
+</quality_checks>
 
 <failure_handling>
-  <action>troubleshoot and fix</action>
-  <priority>before proceeding</priority>
+  <critical_blocking>
+    - Any test failures
+    - Any linting errors
+    - Any TypeScript errors
+    - Any Playwright test failures (if running)
+  </critical_blocking>
+  <action>troubleshoot and fix immediately</action>
+  <priority>MUST be resolved before proceeding to commits</priority>
+  <no_exceptions>Never proceed with failing quality checks</no_exceptions>
 </failure_handling>
 
 <instructions>
-  ACTION: Run complete test suite
-  VERIFY: All tests pass including new ones
-  FIX: Any test failures before continuing
-  BLOCK: Do not proceed with failing tests
+  ACTION: Run all quality checks systematically
+  REQUIRE: Perfect pass rate on all enabled checks
+  BLOCK: Absolutely no proceeding with any failures
+  DETECT: Web projects and offer Playwright setup
+  FIX: All issues before moving to git workflow
 </instructions>
 
 </step>
@@ -570,6 +648,22 @@ encoding: UTF-8
   1. [STEP_1_TO_TEST]
   2. [STEP_2_TO_TEST]
 
+  ## 🎭 UI Testing Status
+
+  [ONLY_IF_WEB_PROJECT]
+  - **Playwright tests**: [PASSING/NOT_CONFIGURED/REMINDER_NEEDED]
+  - **Browser testing**: [MANUAL_STEPS_IF_NO_PLAYWRIGHT]
+  
+  [IF_PLAYWRIGHT_REMINDER_NEEDED]
+  💡 **Reminder**: Consider adding Playwright tests for more reliable UI testing
+
+  ## ✅ Quality Checks
+
+  - **Linting**: [PASSED/NOT_APPLICABLE] 
+  - **TypeScript**: [PASSED/NOT_APPLICABLE]
+  - **Unit Tests**: [X/Y passed]
+  - **Playwright Tests**: [PASSED/NOT_APPLICABLE]
+
   ## 📦 Pull Request
 
   View PR: [GITHUB_PR_URL]
@@ -583,11 +677,14 @@ encoding: UTF-8
 <summary_sections>
   <required>
     - functionality recap
+    - quality checks status
     - pull request info
   </required>
   <conditional>
     - issues encountered (if any)
     - testing instructions (if testable in browser)
+    - UI testing status (if web project)
+    - Playwright reminder (if not configured)
   </conditional>
 </summary_sections>
 
@@ -754,10 +851,13 @@ encoding: UTF-8
     - mark with ⚠️ emoji
     - include in summary
   </blocking_issues>
-  <test_failures>
+  <quality_failures>
     - fix before proceeding
     - never commit broken tests
-  </test_failures>
+    - never commit linting errors
+    - never commit TypeScript errors
+    - never commit failing Playwright tests
+  </quality_failures>
   <technical_roadblocks>
     - attempt 3 approaches
     - document if unresolved
@@ -769,7 +869,11 @@ encoding: UTF-8
   <verify>
     - [ ] Workspace hygiene verified (Step 0)
     - [ ] Task implementation complete
-    - [ ] All tests passing
+    - [ ] All quality checks passed (Step 8):
+      - [ ] Linting: zero errors/warnings
+      - [ ] TypeScript: zero errors (if applicable)
+      - [ ] Unit tests: 100% passing
+      - [ ] Playwright tests: passed (if web project)
     - [ ] tasks.md updated
     - [ ] Code committed and pushed
     - [ ] Pull request created
