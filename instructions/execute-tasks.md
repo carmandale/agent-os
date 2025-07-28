@@ -169,7 +169,7 @@ encoding: UTF-8
       <purpose>port configuration and API URLs</purpose>
     </environment_files>
     <startup_script>
-      <file>./dev.sh</file>
+      <file>./start.sh</file>
       <purpose>how to start development servers</purpose>
     </startup_script>
   </required_files_check>
@@ -182,7 +182,7 @@ encoding: UTF-8
   
   **Tech Stack**: [PACKAGE_MANAGERS_FROM_TECH_STACK]
   **Ports**: Frontend [FRONTEND_PORT], Backend [BACKEND_PORT]
-  **Startup**: [STARTUP_METHOD_FROM_DEV_SH_OR_TECH_STACK]
+  **Startup**: [STARTUP_METHOD_FROM_START_SH_OR_TECH_STACK]
   **Project Type**: [PROJECT_STRUCTURE_FROM_TECH_STACK]
   **Testing**: [E2E_TOOL_FROM_TECH_STACK]
   
@@ -209,7 +209,7 @@ encoding: UTF-8
       <backend>verify .env has correct API_PORT</backend>
     </env_files_check>
     <startup_scripts_check>
-      <verify>dev.sh uses ports from tech-stack.md</verify>
+      <verify>start.sh reads ports from .env files</verify>
     </startup_scripts_check>
   </port_consistency_check>
   
@@ -235,7 +235,7 @@ encoding: UTF-8
     CONTINUE: But flag for creation
   </if_env_files_missing>
   <if_startup_script_missing>
-    WARNING: "Startup script missing. Will create dev.sh during implementation."
+    WARNING: "Startup script missing. Will create start.sh during implementation."
     CONTINUE: But flag for creation
   </if_startup_script_missing>
 </missing_files_handling>
@@ -826,7 +826,7 @@ encoding: UTF-8
         <if_playwright_fails>
           <requirement>MANUAL browser testing required</requirement>
           <steps>
-            1. Start development servers (./dev.sh)
+            1. Start development servers (./start.sh)
             2. Navigate to feature in browser
             3. Test all user interactions
             4. Verify functionality works as expected
