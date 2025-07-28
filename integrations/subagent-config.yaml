@@ -1,0 +1,170 @@
+# Agent OS Subagent Integration Configuration
+# Version: 1.0.0
+# Last Updated: 2025-01-28
+
+# Global subagent integration settings
+enabled: true
+fallback_mode: graceful  # graceful, strict, disabled
+
+# Philosophy: Security is always opt-in, quality enhancements are automatic when helpful
+enhancement_philosophy: security_opt_in_quality_automatic
+
+# Suggestion behavior (only for security agents) 
+suggestions:
+  enabled: true
+  dismissible: true
+  default_response: "no"
+  respect_choice: true
+  educational_only: true
+  applies_to: ["security_threat_analyst"]  # Only security agents require suggestions
+
+# Workflow Enhancement Settings (Security Opt-In, Others Automatic)
+workflows:
+  plan_product:
+    enabled: true
+    agents:
+      prd_writer:
+        enabled: true
+        auto_invoke: true  # Automatic for professional PRDs
+        trigger: "after user context gathering"
+        purpose: "enhance mission.md with professional PRD elements"
+      deep_research_specialist:
+        enabled: true
+        auto_invoke: false  # Manual trigger for market research
+        trigger: "complex competitive markets or positioning needs"
+        purpose: "market research and competitive analysis"
+        suggestion_text: "Market research available for competitive analysis and positioning insights"
+      
+  create_spec:
+    enabled: true
+    agents:
+      systems_architect:
+        enabled: true
+        auto_invoke: true  # Automatic for complex features
+        trigger: "complex system architecture or scalability needs"
+        purpose: "validate technical approach and system design"
+      qa_test_engineer:
+        enabled: true
+        auto_invoke: true  # Automatic comprehensive testing
+        trigger: "always"
+        purpose: "generate comprehensive test strategy"
+      prd_writer:
+        enabled: true
+        auto_invoke: true  # Automatic for professional user stories
+        trigger: "complex user story requirements"
+        purpose: "enhance spec with detailed user stories"
+      security_threat_analyst:
+        enabled: true
+        auto_invoke: false  # NEVER AUTOMATIC - always opt-in only
+        suggestion_trigger: "user authentication, payments, sensitive data, or production deployment"
+        purpose: "security analysis and threat modeling"
+        suggestion_text: "Security analysis available when ready for production security considerations"
+
+  execute_tasks:
+    enabled: true
+    agents:
+      senior_software_engineer:
+        enabled: true
+        auto_invoke: true  # Automatic for complex implementations
+        trigger: "complex implementation or architectural decisions"
+        purpose: "architectural implementation with mentorship"
+      qa_test_engineer:
+        enabled: true
+        auto_invoke: true  # Automatic comprehensive test implementation
+        trigger: "test creation steps"
+        purpose: "comprehensive test implementation"
+      code_refactoring_expert:
+        enabled: true
+        auto_invoke: true  # Automatic code quality improvements
+        trigger: "code quality issues detected"
+        purpose: "code quality improvement and technical debt reduction"
+      security_threat_analyst:
+        enabled: true
+        auto_invoke: false  # NEVER AUTOMATIC - always opt-in only
+        suggestion_trigger: "security validation needs for production systems"
+        purpose: "security review and validation"
+        suggestion_text: "Security validation available when implementing production security measures"
+      performance_optimizer:
+        enabled: true
+        auto_invoke: true  # Automatic performance optimization
+        trigger: "performance concerns detected"
+        purpose: "performance analysis and optimization"
+
+# Multi-Agent Orchestration (Opt-In Only)
+orchestration:
+  enabled: true
+  auto_invoke: false  # Never automatic
+  use_product_manager_orchestrator: true
+  suggestion_trigger: "user explicitly requests coordination of multiple specialists"
+  
+  # Available orchestration patterns (suggested, never imposed)
+  available_patterns:
+    authentication_system:
+      description: "User authentication and security features"
+      suggested_agents: ["systems-architect", "security-threat-analyst", "senior-software-engineer", "qa-test-engineer"]
+      suggestion_text: "Multi-agent coordination available for comprehensive authentication system design"
+    
+    payment_system:
+      description: "Payment processing and financial features"
+      suggested_agents: ["systems-architect", "security-threat-analyst", "backend-reliability-engineer", "qa-test-engineer"]
+      suggestion_text: "Specialist coordination available for payment system architecture and security"
+    
+    user_interface:
+      description: "Frontend and user experience features"
+      suggested_agents: ["frontend-ux-specialist", "systems-architect", "qa-test-engineer", "performance-optimizer"]
+      suggestion_text: "UX and performance specialists available for comprehensive interface design"
+
+# Agent Detection and Availability
+agent_detection:
+  check_on_startup: true
+  cache_results: true
+  required_agents: []  # empty means all agents are optional
+  recommended_agents:
+    - "senior-software-engineer"
+    - "qa-test-engineer"
+    - "prd-writer"
+    - "systems-architect"
+
+# User Preferences (Respecting Developer Choice)
+user_preferences:
+  prompt_before_invoking: true   # Always ask, never assume
+  show_agent_reasoning: true     # Show why agents are suggested (educational)
+  parallel_execution: false      # Opt-in only, avoid overwhelming
+  save_agent_outputs: true       # Save outputs for review
+  respect_dismissal: true        # Don't re-suggest dismissed agents in same session
+  educational_mode: true         # Focus on learning, not enforcement
+
+# Quality Pipeline Configuration (Automatic except Security)
+quality_pipeline:
+  enabled: true  # Enabled by default for quality improvements
+  stages:
+    - name: "code_quality"
+      agent: "code-refactoring-expert"
+      trigger: "code changes detected"
+      blocking: false
+      auto_invoke: true
+    - name: "security_review"
+      agent: "security-threat-analyst"
+      trigger: "user explicitly requests security review"
+      blocking: false
+      auto_invoke: false  # NEVER AUTOMATIC - always opt-in
+      suggestion_text: "Security review available when ready for production security validation"
+    - name: "performance_check"
+      agent: "performance-optimizer"
+      trigger: "performance-critical changes detected"
+      blocking: false
+      auto_invoke: true
+
+# Reporting and Analytics
+reporting:
+  enabled: true
+  track_agent_usage: true
+  track_success_rates: true
+  generate_workflow_reports: true
+  report_format: "markdown"  # markdown, json, yaml
+
+# Backward Compatibility
+backward_compatibility:
+  maintain_original_workflows: true
+  allow_subagent_bypass: true
+  preserve_file_formats: true

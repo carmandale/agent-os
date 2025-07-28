@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(chmod:*)",
+      "Bash(cp:*)",
+      "Bash(./setup-claude-code-local.sh:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": []
+  }
+}
