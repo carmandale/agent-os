@@ -16,10 +16,10 @@ if [ ! -d "$HOME/.agent-os/instructions" ] || [ ! -d "$HOME/.agent-os/standards"
     echo "Please install the Agent OS base installation first:"
     echo ""
     echo "Option 1 - Automatic installation:"
-    echo "  curl -sSL https://raw.githubusercontent.com/buildermethods/agent-os/main/setup.sh | bash"
+    echo "  curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup.sh | bash"
     echo ""
     echo "Option 2 - Manual installation:"
-    echo "  Follow instructions at https://buildermethods.com/agent-os"
+    echo "  Follow instructions at https://github.com/carmandale/agent-os"
     echo ""
     exit 1
 fi
@@ -29,7 +29,7 @@ echo "📁 Creating .cursor/rules directory..."
 mkdir -p .cursor/rules
 
 # Base URL for raw GitHub content
-BASE_URL="https://raw.githubusercontent.com/buildermethods/agent-os/main"
+BASE_URL="https://raw.githubusercontent.com/carmandale/agent-os/main"
 
 echo ""
 echo "📥 Downloading and setting up Cursor command files..."
@@ -83,5 +83,5 @@ echo "  @create-spec     - Initiate a new feature (or simply ask 'what's next?')
 echo "  @execute-tasks   - Build and ship code"
 echo "  @hygiene-check   - Check workspace cleanliness and tool configuration"
 echo ""
-echo "Learn more at https://buildermethods.com/agent-os"
+echo "Learn more at https://github.com/carmandale/agent-os"
 echo ""

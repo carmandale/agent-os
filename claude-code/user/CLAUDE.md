@@ -42,4 +42,4 @@ You can invoke Agent OS commands directly:
 
 ---
 
-*Using Agent OS for structured AI-assisted development. Learn more at [buildermethods.com/agent-os](https://buildermethods.com/agent-os)*
+*Using Agent OS for structured AI-assisted development. Learn more at [github.com/carmandale/agent-os](https://github.com/carmandale/agent-os)*

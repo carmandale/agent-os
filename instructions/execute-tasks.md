@@ -137,6 +137,119 @@ encoding: UTF-8
 
 </step>
 
+<step number="1.2" name="project_memory_refresh">
+
+### Step 1.2: Project Memory Refresh
+
+<step_metadata>
+  <purpose>prevent claude code amnesia about project configuration</purpose>
+  <priority>critical</priority>
+  <blocks>execution if project context cannot be loaded</blocks>
+</step_metadata>
+
+<memory_refresh_process>
+  <required_files_check>
+    <tech_stack>
+      <file>@.agent-os/product/tech-stack.md</file>
+      <purpose>package managers, ports, startup commands</purpose>
+      <critical_sections>
+        - Package Managers section
+        - Development Environment section  
+        - Startup Commands section
+        - Environment Files section
+      </critical_sections>
+    </tech_stack>
+    <mission>
+      <file>@.agent-os/product/mission.md</file>
+      <purpose>project goals and context</purpose>
+    </mission>
+    <environment_files>
+      <frontend_env>.env.local</frontend_env>
+      <backend_env>.env</backend_env>
+      <purpose>port configuration and API URLs</purpose>
+    </environment_files>
+    <startup_script>
+      <file>./dev.sh</file>
+      <purpose>how to start development servers</purpose>
+    </startup_script>
+  </required_files_check>
+</memory_refresh_process>
+
+<memory_refresh_prompt>
+  🧠 **Project Memory Refresh**
+  
+  Before proceeding with any work, I'm refreshing my memory about this project:
+  
+  **Tech Stack**: [PACKAGE_MANAGERS_FROM_TECH_STACK]
+  **Ports**: Frontend [FRONTEND_PORT], Backend [BACKEND_PORT]
+  **Startup**: [STARTUP_METHOD_FROM_DEV_SH_OR_TECH_STACK]
+  **Project Type**: [PROJECT_STRUCTURE_FROM_TECH_STACK]
+  **Testing**: [E2E_TOOL_FROM_TECH_STACK]
+  
+  ✅ **Memory refreshed - I will maintain consistency with these settings**
+</memory_refresh_prompt>
+
+<amnesia_prevention_checks>
+  <package_manager_verification>
+    <python_check>
+      <if_tech_stack_says_uv>NEVER use pip or create new venv</if_tech_stack_says_uv>
+      <if_tech_stack_says_pip>NEVER use uv</if_tech_stack_says_pip>
+      <always_check>requirements.txt vs pyproject.toml</always_check>
+    </python_check>
+    <javascript_check>
+      <if_yarn_lock_exists>ALWAYS use yarn</if_yarn_lock_exists>
+      <if_package_lock_exists>ALWAYS use npm</if_package_lock_exists>
+      <never_mix>package managers within same project</never_mix>
+    </javascript_check>
+  </package_manager_verification>
+  
+  <port_consistency_check>
+    <env_files_check>
+      <frontend>verify .env.local has correct PORT</frontend>
+      <backend>verify .env has correct API_PORT</backend>
+    </env_files_check>
+    <startup_scripts_check>
+      <verify>dev.sh uses ports from tech-stack.md</verify>
+    </startup_scripts_check>
+  </port_consistency_check>
+  
+  <project_structure_awareness>
+    <monorepo_check>
+      <if_monorepo>expect frontend/ and backend/ directories</if_monorepo>
+      <if_separate>expect different repo structure</if_separate>
+    </monorepo_check>
+    <testing_awareness>
+      <if_playwright_configured>expect playwright.config.js</if_playwright_configured>
+      <if_no_e2e>remember to suggest Playwright setup</if_no_e2e>
+    </testing_awareness>
+  </project_structure_awareness>
+</amnesia_prevention_checks>
+
+<missing_files_handling>
+  <if_tech_stack_missing>
+    ERROR: "Cannot proceed without tech-stack.md. Run /plan-product first."
+    STOP: Execution until project is properly initialized
+  </if_tech_stack_missing>
+  <if_env_files_missing>
+    WARNING: "Environment files missing. Will create them during implementation."
+    CONTINUE: But flag for creation
+  </if_env_files_missing>
+  <if_startup_script_missing>
+    WARNING: "Startup script missing. Will create dev.sh during implementation."
+    CONTINUE: But flag for creation
+  </if_startup_script_missing>
+</missing_files_handling>
+
+<instructions>
+  ACTION: Read and internalize all project context files
+  VERIFY: Package managers, ports, and startup commands
+  PREVENT: Amnesia about fundamental project decisions
+  BLOCK: Work if critical project context is missing
+  MAINTAIN: Absolute consistency with documented choices
+</instructions>
+
+</step>
+
 <step number="1.5" name="codebase_reality_check">
 
 ### Step 1.5: Codebase Reality Check
@@ -496,19 +609,40 @@ encoding: UTF-8
     - [ ] Task description
     ⚠️ Blocking issue: [DESCRIPTION]
   </blocked>
+  <implemented_not_validated>
+    - [ ] Task description
+    🔍 Awaiting validation: [DESCRIPTION]
+  </implemented_not_validated>
 </update_format>
+
+<completion_requirements>
+  <never_mark_complete_without>
+    - Frontend work: Browser validation complete
+    - Backend work: API testing complete
+    - Both: Functionality proven working
+    - All: Step 8.5 validation passed
+  </never_mark_complete_without>
+  
+  <validation_pending_status>
+    <when>implementation done but validation not performed</when>
+    <status>🔍 Awaiting validation</status>
+    <action>proceed to Step 8.5 for validation</action>
+  </validation_pending_status>
+</completion_requirements>
 
 <blocking_criteria>
   <attempts>maximum 3 different approaches</attempts>
   <action>document blocking issue</action>
   <emoji>⚠️</emoji>
+  <validation_required>NEVER mark [x] without validation proof</validation_required>
 </blocking_criteria>
 
 <instructions>
-  ACTION: Update tasks.md after each task completion
-  MARK: [x] for completed items immediately
+  ACTION: Update tasks.md with accurate implementation status
+  MARK: [x] ONLY after Step 8.5 validation proves functionality
+  INTERMEDIATE: Use 🔍 Awaiting validation for implemented but unvalidated work
   DOCUMENT: Blocking issues with ⚠️ emoji
-  LIMIT: 3 attempts before marking as blocked
+  PREVENT: False completion claims without proof
 </instructions>
 
 </step>
@@ -554,32 +688,42 @@ encoding: UTF-8
     <detection>
       <check>package.json contains React, Next.js, Vue, or Angular</check>
       <check>project has frontend components</check>
+      <check>tech-stack.md mentions frontend framework</check>
     </detection>
     <if_web_project>
       <playwright_check>
         <check>Does project have Playwright config?</check>
         <if_exists>run Playwright tests automatically</if_exists>
-        <if_missing>prompt user about adding Playwright tests</if_missing>
+        <if_missing>MANDATORY setup required for web projects</if_missing>
       </playwright_check>
       <user_prompt>
-        🎭 **Web UI Testing Detected**
+        🎭 **Web UI Testing Required**
         
-        This appears to be a web frontend project. For comprehensive testing:
+        ⚠️ **This is a web frontend project - Playwright E2E testing is MANDATORY**
         
         **Playwright tests**: [FOUND/NOT_FOUND]
         
         [IF_NOT_FOUND]
-        Should I help you set up Playwright tests for this UI work? 
-        This ensures your frontend changes work correctly in browsers.
+        🚨 **Missing Critical Testing**: Web projects MUST have end-to-end testing to prevent UI regressions.
         
-        Options:
-        1. **yes** - Set up Playwright tests now
-        2. **skip** - Continue without UI tests (not recommended)  
-        3. **later** - Remind me to add Playwright tests in summary
+        **I will set up Playwright tests now** - this is required for quality assurance.
+        
+        Playwright setup includes:
+        - Install @playwright/test
+        - Create playwright.config.js  
+        - Create tests/ directory with basic tests
+        - Update package.json scripts
         
         [IF_FOUND]  
-        Running existing Playwright tests...
+        ✅ Running existing Playwright tests...
       </user_prompt>
+      <mandatory_setup>
+        <if_no_playwright>
+          <action>automatically set up Playwright</action>
+          <no_skip_option>true</no_skip_option>
+          <reasoning>web projects without E2E testing are incomplete</reasoning>
+        </if_no_playwright>
+      </mandatory_setup>
     </if_web_project>
   </web_ui_testing>
 </quality_checks>
@@ -602,6 +746,203 @@ encoding: UTF-8
   BLOCK: Absolutely no proceeding with any failures
   DETECT: Web projects and offer Playwright setup
   FIX: All issues before moving to git workflow
+</instructions>
+
+</step>
+
+<step number="8.5" name="mandatory_functionality_validation">
+
+### Step 8.5: Mandatory Functionality Validation
+
+<step_metadata>
+  <purpose>BLOCK completion until functionality is proven working</purpose>
+  <priority>CRITICAL - NO EXCEPTIONS</priority>
+  <blocks>git workflow until validation complete</blocks>
+</step_metadata>
+
+<validation_requirements>
+  <frontend_work>
+    <if_frontend_changes>
+      <mandatory_browser_testing>true</mandatory_browser_testing>
+      <playwright_execution>REQUIRED</playwright_execution>
+      <manual_verification>REQUIRED if no Playwright</manual_verification>
+    </if_frontend_changes>
+    <validation_criteria>
+      <visual_confirmation>see feature working in browser</visual_confirmation>
+      <user_flow_testing>complete user workflows</user_flow_testing>
+      <responsive_testing>test on different screen sizes</responsive_testing>
+      <error_scenarios>test error conditions</error_scenarios>
+    </validation_criteria>
+  </frontend_work>
+  
+  <backend_work>
+    <if_backend_changes>
+      <api_testing>REQUIRED</api_testing>
+      <endpoint_verification>REQUIRED</endpoint_verification>
+      <integration_testing>REQUIRED</integration_testing>
+    </if_backend_changes>
+    <validation_criteria>
+      <api_responses>verify correct responses</api_responses>
+      <error_handling>test error scenarios</error_handling>
+      <database_operations>verify data persistence</database_operations>
+      <authentication>test auth flows if applicable</authentication>
+    </validation_criteria>
+  </backend_work>
+</validation_requirements>
+
+<validation_workflow>
+  <step_1_detect_work_type>
+    <frontend_indicators>
+      - React/Vue/Angular components modified
+      - CSS/styling changes
+      - UI/UX features added
+      - Frontend routes added
+    </frontend_indicators>
+    <backend_indicators>
+      - API endpoints modified
+      - Database models changed
+      - Business logic updated
+      - Authentication changes
+    </backend_indicators>
+  </step_1_detect_work_type>
+  
+  <step_2_mandatory_testing>
+    <if_frontend_work>
+      <playwright_validation>
+        <requirement>MUST execute Playwright tests that cover new functionality</requirement>
+        <if_no_playwright_tests>
+          <action>CREATE Playwright tests for new functionality</action>
+          <no_skip_allowed>true</no_skip_allowed>
+        </if_no_playwright_tests>
+        <test_requirements>
+          - Navigate to feature in browser
+          - Test user interactions (clicks, form inputs, etc.)
+          - Verify visual elements appear correctly
+          - Test responsive behavior
+          - Validate error states
+        </test_requirements>
+      </playwright_validation>
+      <manual_browser_verification>
+        <if_playwright_fails>
+          <requirement>MANUAL browser testing required</requirement>
+          <steps>
+            1. Start development servers (./dev.sh)
+            2. Navigate to feature in browser
+            3. Test all user interactions
+            4. Verify functionality works as expected
+            5. Document any issues found
+          </steps>
+        </if_playwright_fails>
+      </manual_browser_verification>
+    </if_frontend_work>
+    
+    <if_backend_work>
+      <api_validation>
+        <requirement>MUST test API endpoints directly</requirement>
+        <test_methods>
+          - curl commands to test endpoints
+          - Postman/REST client testing
+          - Backend unit tests covering new logic
+          - Integration tests if applicable
+        </test_methods>
+        <validation_steps>
+          1. Start backend server
+          2. Test all modified endpoints
+          3. Verify responses match specifications
+          4. Test error scenarios
+          5. Validate database changes
+        </validation_steps>
+      </api_validation>
+    </if_backend_work>
+  </step_2_mandatory_testing>
+  
+  <step_3_validation_proof>
+    <evidence_required>
+      <frontend>
+        - Screenshots of working feature
+        - Playwright test results showing PASS
+        - Confirmation of user flow completion
+      </frontend>
+      <backend>
+        - API response examples
+        - Test output showing successful validation
+        - Database verification if applicable
+      </backend>
+    </evidence_required>
+  </step_3_validation_proof>
+</validation_workflow>
+
+<blocking_criteria>
+  <absolute_requirements>
+    <no_green_checkmarks>until validation proven</no_green_checkmarks>
+    <no_task_completion>until functionality verified</no_task_completion>
+    <no_git_commits>until validation complete</no_git_commits>
+    <no_pr_creation>until all features tested</no_pr_creation>
+  </absolute_requirements>
+  
+  <failure_scenarios>
+    <feature_broken>
+      <action>FIX immediately - do not proceed</action>
+      <status>mark task as blocked with ⚠️ emoji</status>
+    </feature_broken>
+    <partial_functionality>
+      <action>COMPLETE implementation before validation</action>
+      <status>return to development step</status>
+    </partial_functionality>
+    <validation_impossible>
+      <action>CREATE minimal validation test</action>
+      <requirement>at least basic functionality check</requirement>
+    </validation_impossible>
+  </failure_scenarios>
+</blocking_criteria>
+
+<validation_checklist>
+  <frontend_validation>
+    - [ ] Development servers started successfully
+    - [ ] Feature accessible in browser at correct URL
+    - [ ] All user interactions work as expected
+    - [ ] Visual design matches requirements
+    - [ ] Responsive behavior verified
+    - [ ] Error states tested and working
+    - [ ] Playwright tests pass (or created and passing)
+    - [ ] No console errors in browser
+  </frontend_validation>
+  
+  <backend_validation>
+    - [ ] Backend server started successfully
+    - [ ] All modified endpoints respond correctly
+    - [ ] Request/response formats match specifications
+    - [ ] Authentication working if applicable
+    - [ ] Database operations successful
+    - [ ] Error handling working correctly
+    - [ ] Integration with frontend verified
+    - [ ] API tests pass
+  </backend_validation>
+</validation_checklist>
+
+<completion_requirements>
+  <frontend_complete_only_when>
+    ✅ User can successfully complete the intended workflow in browser
+    ✅ Playwright tests confirm functionality (or manual testing documented)
+    ✅ No blocking bugs or errors
+    ✅ Feature works as specified in requirements
+  </frontend_complete_only_when>
+  
+  <backend_complete_only_when>
+    ✅ API endpoints return correct responses
+    ✅ Database operations work correctly
+    ✅ Error handling functions properly
+    ✅ Integration with frontend confirmed
+  </backend_complete_only_when>
+</completion_requirements>
+
+<instructions>
+  ACTION: Identify work type and execute mandatory validation
+  REQUIRE: Proof of working functionality before any completion
+  BLOCK: All progress until validation succeeds
+  TEST: Every user-facing change in browser/API client
+  VERIFY: Complete workflows, not just individual functions
+  DOCUMENT: Validation evidence in task updates
 </instructions>
 
 </step>
@@ -796,73 +1137,269 @@ encoding: UTF-8
 
 </step>
 
-<step number="13" name="pr_and_issue_cleanup">
+<step number="13" name="autonomous_preparation_for_merge">
 
-### Step 13: PR and Issue Cleanup
+### Step 13: Autonomous Preparation for Merge
 
 <step_metadata>
-  <purpose>encourage proper cleanup of PRs and issues</purpose>
-  <requires>user approval before executing</requires>
+  <purpose>Complete ALL validation work autonomously before requesting merge approval</purpose>
+  <priority>CRITICAL - no shortcuts allowed</priority>
+  <execution>fully autonomous until READY TO MERGE</execution>
+  <human_approval>required only for final merge decision</human_approval>
 </step_metadata>
 
-<cleanup_assessment>
-  <check_pr_status>
-    <verify>PR is mergeable</verify>
-    <verify>all checks passing</verify>
-    <verify>no conflicts</verify>
-  </check_pr_status>
-  <identify_linked_issues>
-    <extract>issue numbers from PR description</extract>
-    <verify>issues are ready to close</verify>
-  </identify_linked_issues>
-</cleanup_assessment>
+<autonomous_workflow>
+  <phase_1_deep_subagent_analysis>
+    <mandatory_subagent_usage>
+      <senior_software_engineer_subagent>
+        <purpose>COMPREHENSIVE code review, architecture analysis, and implementation validation</purpose>
+        <requirement>MANDATORY - cannot proceed without full subagent analysis</requirement>
+        <deep_analysis_tasks>
+          - Line-by-line code review of ALL changes
+          - Architecture pattern validation and recommendations
+          - Cross-reference implementation against task requirements
+          - Identify security vulnerabilities and performance issues
+          - Validate error handling and edge case coverage
+          - Assess code maintainability and scalability
+          - Compare actual implementation to spec requirements
+          - Flag any discrepancies between tasks.md and actual code
+        </deep_analysis_tasks>
+        <recursive_validation>
+          - Re-analyze after any fixes or changes
+          - Verify fixes don't introduce new issues
+          - Confirm all recommendations are addressed
+        </recursive_validation>
+      </senior_software_engineer_subagent>
+      
+      <qa_test_engineer_subagent>
+        <purpose>EXHAUSTIVE testing strategy analysis and validation</purpose>
+        <requirement>MANDATORY - must validate all testing approaches</requirement>
+        <comprehensive_testing_analysis>
+          - Analyze test coverage gaps and missing scenarios
+          - Validate test quality and effectiveness
+          - Design additional tests for edge cases and error conditions
+          - Review Playwright test completeness for user workflows
+          - Assess integration test coverage
+          - Validate mocking strategies and test isolation
+          - Compare test coverage to feature requirements
+          - Identify untested code paths and business logic
+        </comprehensive_testing_analysis>
+        <test_execution_validation>
+          - Verify all tests actually pass (not just reported as passing)
+          - Analyze test output for hidden failures or warnings
+          - Validate test reliability and consistency
+        </test_execution_validation>
+      </qa_test_engineer_subagent>
+      
+      <code_refactoring_expert_subagent>
+        <purpose>DEEP code quality analysis and improvement recommendations</purpose>
+        <requirement>MANDATORY - must analyze code quality thoroughly</requirement>
+        <quality_analysis_tasks>
+          - Identify code smells and technical debt
+          - Suggest refactoring opportunities for better maintainability
+          - Analyze code complexity and readability
+          - Validate naming conventions and code organization
+          - Check for duplicate code and missing abstractions
+          - Assess adherence to SOLID principles
+          - Review error handling patterns
+        </quality_analysis_tasks>
+      </code_refactoring_expert_subagent>
+      
+      <task_comparison_subagent>
+        <purpose>METICULOUS comparison of implementation against task requirements</purpose>
+        <requirement>MANDATORY - validate every task claim against actual code</requirement>
+        <comparison_analysis>
+          - Read tasks.md line by line
+          - Verify each claimed completion against actual codebase
+          - Identify tasks marked complete but not actually implemented
+          - Find implemented features not reflected in task status
+          - Validate that all acceptance criteria are met
+          - Cross-check spec requirements against implementation
+          - Flag any missing functionality or incomplete features
+        </comparison_analysis>
+        <recursive_verification>
+          - Re-check after any implementation changes
+          - Validate task status updates are accurate
+          - Ensure no false completion claims
+        </recursive_verification>
+      </task_comparison_subagent>
+    </mandatory_subagent_usage>
+  </phase_1_deep_subagent_analysis>
 
-<cleanup_proposal>
-  ## Cleanup Time! 🧹
+  <phase_2_comprehensive_testing>
+    <mandatory_test_execution>
+      <unit_tests>
+        <requirement>100% pass rate - NO EXCEPTIONS</requirement>
+        <action>fix immediately if any failures</action>
+      </unit_tests>
+      <integration_tests>
+        <requirement>all integration points validated</requirement>
+        <action>test API endpoints, database operations</action>
+      </integration_tests>
+      <playwright_tests>
+        <requirement>MANDATORY for all frontend work</requirement>
+        <action>create tests if missing, ensure all pass</action>
+        <validation>must see feature working in browser</validation>
+      </playwright_tests>
+      <linting_and_typing>
+        <requirement>zero errors, zero warnings</requirement>
+        <action>fix all issues immediately</action>
+      </linting_and_typing>
+    </mandatory_test_execution>
+  </phase_2_comprehensive_testing>
 
-  Your PR is ready and all tests are passing. Following our best practices:
+  <phase_3_functionality_validation>
+    <end_to_end_validation>
+      <frontend_workflow>
+        <requirement>complete user workflows tested</requirement>
+        <validation>manual verification in browser if needed</validation>
+        <evidence>screenshots or test results required</evidence>
+      </frontend_workflow>
+      <backend_validation>
+        <requirement>API endpoints tested with real requests</requirement>
+        <validation>curl commands or API client testing</validation>
+        <evidence>response examples documented</evidence>
+      </backend_validation>
+      <integration_validation>
+        <requirement>frontend-backend communication verified</requirement>
+        <validation>full stack workflows tested</validation>
+      </integration_validation>
+    </end_to_end_validation>
+  </phase_3_functionality_validation>
 
-  **I recommend merging and cleaning up now to keep the workspace tidy:**
-  - ✅ Merge PR #[PR_NUMBER]: [PR_TITLE]
-  - ✅ Auto-close linked issue #[ISSUE_NUMBER]
-  - ✅ Delete feature branch: [BRANCH_NAME]
-  - ✅ Return to main branch
-  - ✅ Pull latest changes
-  - ✅ Verify clean workspace state
+  <phase_4_pr_optimization>
+    <pr_quality_check>
+      <description>clear, detailed PR description</description>
+      <linked_issues>proper "Fixes #123" linking</linked_issues>
+      <commit_messages>conventional commit format</commit_messages>
+      <branch_status>no merge conflicts, up to date</branch_status>
+    </pr_quality_check>
+    <github_checks>
+      <ci_cd>all GitHub Actions passing</ci_cd>
+      <security>no security alerts</security>
+      <dependencies>no vulnerable dependencies</dependencies>
+    </github_checks>
+  </phase_4_pr_optimization>
+</autonomous_workflow>
 
-  **May I proceed with this cleanup? (yes/no)**
+<ready_to_merge_validation>
+  <comprehensive_checklist>
+    <code_quality>
+      - [ ] Subagent code review completed ✅
+      - [ ] Architecture validated ✅
+      - [ ] Coding standards enforced ✅
+      - [ ] No code smells or issues ✅
+    </code_quality>
+    <testing_complete>
+      - [ ] Subagent testing review completed ✅
+      - [ ] Unit tests: 100% passing ✅
+      - [ ] Integration tests: 100% passing ✅
+      - [ ] Playwright tests: created and passing ✅
+      - [ ] Linting: zero errors/warnings ✅
+      - [ ] TypeScript: zero errors ✅
+    </testing_complete>
+    <functionality_proven>
+      - [ ] Frontend: browser validation completed ✅
+      - [ ] Backend: API testing completed ✅
+      - [ ] End-to-end workflows verified ✅
+      - [ ] Evidence documented ✅
+    </functionality_proven>
+    <pr_ready>
+      - [ ] PR description complete ✅
+      - [ ] Issues properly linked ✅
+      - [ ] No merge conflicts ✅
+      - [ ] All GitHub checks passing ✅
+    </pr_ready>
+  </comprehensive_checklist>
+</ready_to_merge_validation>
 
-  ⚠️ *Skipping cleanup now means you'll need to handle it manually before starting new work.*
-</cleanup_proposal>
+<blocking_stop_message>
+  <when_all_validation_complete>
+    <display_message>
+🚨🛑 WORKFLOW COMPLETE - MERGE APPROVAL REQUIRED 🛑🚨
 
-<user_responses>
-  <if_yes>
-    PROCEED: Execute all cleanup actions
-    CONTINUE: To Step 14 (Workspace Reset)
-  </if_yes>
-  <if_no>
-    SKIP: Cleanup actions
-    WARN: About manual cleanup requirement
-    END: With reminder message
-  </if_no>
-</user_responses>
+╔══════════════════════════════════════════════════════════════╗
+║                     READY TO MERGE                          ║
+║                                                              ║
+║  ✅ Code implemented and validated                          ║
+║  ✅ Subagent expert review completed                        ║
+║  ✅ All tests passing (unit, integration, Playwright)       ║
+║  ✅ Browser validation successful                           ║
+║  ✅ API endpoints tested and working                        ║
+║  ✅ PR optimized and conflict-free                          ║
+║  ✅ GitHub checks passing                                    ║
+║  ✅ Issues properly linked                                   ║
+║                                                              ║
+║  🛑 BLOCKING: Cannot proceed without merge approval         ║
+║                                                              ║
+║  PR #[PR_NUMBER]: [PR_TITLE]                               ║
+║  Fixes: #[ISSUE_NUMBER]                                     ║
+║                                                              ║
+║  Type "merge" to complete workflow and merge PR            ║
+║  Type "review" to see detailed validation results          ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+    </display_message>
+    <wait_for_approval>true</wait_for_approval>
+    <valid_responses>["merge", "review"]</valid_responses>
+  </when_all_validation_complete>
+</blocking_stop_message>
+
+<approval_responses>
+  <if_user_types_merge>
+    <action>proceed to Step 14 (Execute Merge)</action>
+    <message>🚀 Merge approved! Executing final merge and cleanup...</message>
+  </if_user_types_merge>
+  <if_user_types_review>
+    <action>display detailed validation results</action>
+    <return>to blocking stop message</return>
+  </if_user_types_review>
+  <if_user_says_anything_else>
+    <message>🛑 Merge approval required. Type "merge" to proceed or "review" to see validation details.</message>
+    <wait>continue waiting for valid response</wait>
+  </if_user_says_anything_else>
+</approval_responses>
+
+<error_handling>
+  <validation_failures>
+    <action>FIX immediately and retry validation</action>
+    <no_shortcuts>cannot reach STOP message until all validation passes</no_shortcuts>
+  </validation_failures>
+  <subagent_not_used>
+    <action>MANDATORY deep subagent usage - cannot proceed without ALL four subagents</action>
+    <required_subagents>
+      - senior-software-engineer (code review & architecture)
+      - qa-test-engineer (testing strategy & validation)  
+      - code-refactoring-expert (quality analysis)
+      - general-purpose (task comparison & verification)
+    </required_subagents>
+    <message>🔴 Must use ALL required subagents for comprehensive validation - no shortcuts allowed</message>
+    <enforcement>block progress until all subagent analyses complete</enforcement>
+  </subagent_not_used>
+  <tests_failing>
+    <action>FIX all test failures before proceeding</action>
+    <message>🔴 All tests must pass before reaching READY TO MERGE state</message>
+  </tests_failing>
+</error_handling>
 
 <instructions>
-  ACTION: Assess PR and issue status
-  PROPOSE: Complete cleanup with specific actions
-  REQUEST: User approval before proceeding
-  ENCOURAGE: Following best practices
+  ACTION: Execute complete autonomous workflow with no shortcuts
+  REQUIRE: Use subagents for expert review and testing validation
+  VALIDATE: Every aspect of code quality and functionality
+  BLOCK: At READY TO MERGE until user approval
+  ENSURE: No false "complete" claims - everything must be actually validated
 </instructions>
 
 </step>
 
-<step number="14" name="workspace_reset">
+<step number="14" name="execute_approved_merge">
 
-### Step 14: Workspace Reset
+### Step 14: Execute Approved Merge
 
 <step_metadata>
-  <executes>only if user approved Step 13</executes>
-  <ensures>clean workspace for next work</ensures>
+  <executes>only after user types "merge" in Step 13</executes>
+  <purpose>execute the actual merge and complete workflow</purpose>
+  <priority>FINAL - completes entire Agent OS workflow</priority>
 </step_metadata>
 
 <cleanup_execution>
@@ -887,34 +1424,31 @@ encoding: UTF-8
 </cleanup_execution>
 
 <completion_messages>
-  <if_success>
-    ✅ **Cleanup Complete!**
-    
-    - PR merged successfully
-    - Issues closed automatically  
-    - Feature branch deleted
-    - Workspace is clean and ready for next work!
-    
-    🚀 **Ready to start your next feature!**
-  </if_success>
-  <if_skipped>
-    ⚠️ **Cleanup Skipped**
-    
-    Remember to complete these manually before starting new work:
-    - Merge PR #[PR_NUMBER]
-    - Close issue #[ISSUE_NUMBER] 
-    - Clean up feature branch
-    - Return to main branch
-    
-    💡 **Next time, let me handle the cleanup for you!**
-  </if_skipped>
+  <success_message>
+🎉 **AGENT OS WORKFLOW COMPLETE!** 🎉
+
+✅ **Merge Successful:**
+- PR #[PR_NUMBER] merged to main
+- Issue #[ISSUE_NUMBER] automatically closed
+- Feature branch [BRANCH_NAME] deleted
+- Workspace cleaned and reset
+
+✅ **Quality Assurance Completed:**
+- Subagent expert review ✅
+- Comprehensive testing ✅
+- Browser/API validation ✅
+- All checks passing ✅
+
+🚀 **Ready for next feature!**
+The workspace is clean and ready for your next Agent OS workflow.
+  </success_message>
 </completion_messages>
 
 <instructions>
-  ACTION: Execute approved cleanup systematically
-  VERIFY: Each step completes successfully
-  CONFIRM: Final workspace is completely clean
-  MESSAGE: Clear status and next steps
+  ACTION: Execute approved merge and complete Agent OS workflow
+  VERIFY: Merge successful and workspace clean
+  CONFIRM: All issues closed and branches cleaned up
+  CELEBRATE: Successful completion of full validation workflow
 </instructions>
 
 </step>
@@ -967,13 +1501,18 @@ encoding: UTF-8
 <final_checklist>
   <verify>
     - [ ] Workspace hygiene verified (Step 0)
+    - [ ] Project memory refreshed (Step 1.2)
     - [ ] Task implementation complete
     - [ ] All quality checks passed (Step 8):
       - [ ] Linting: zero errors/warnings
       - [ ] TypeScript: zero errors (if applicable)
       - [ ] Unit tests: 100% passing
       - [ ] Playwright tests: passed (if web project)
-    - [ ] tasks.md updated
+    - [ ] MANDATORY functionality validation completed (Step 8.5):
+      - [ ] Frontend work: Browser validation completed
+      - [ ] Backend work: API testing completed
+      - [ ] Evidence of working functionality documented
+    - [ ] tasks.md updated with validation proof
     - [ ] Code committed and pushed
     - [ ] Pull request created
     - [ ] Roadmap checked/updated

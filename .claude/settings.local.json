@@ -5,7 +5,10 @@
       "Bash(chmod:*)",
       "Bash(cp:*)",
       "Bash(./setup-claude-code-local.sh:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(./integrations/setup-subagent-integration.sh:*)",
+      "Bash(ls:*)"
     ],
     "deny": []
   }

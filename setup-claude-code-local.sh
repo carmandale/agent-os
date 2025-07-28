@@ -31,7 +31,7 @@ if [ ! -d "$HOME/.agent-os/instructions" ] || [ ! -d "$HOME/.agent-os/standards"
     echo "  ./setup.sh"
     echo ""
     echo "Option 2 - Automatic installation:"
-    echo "  curl -sSL https://raw.githubusercontent.com/buildermethods/agent-os/main/setup.sh | bash"
+    echo "  curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup.sh | bash"
     echo ""
     exit 1
 fi
@@ -233,5 +233,5 @@ else
     echo ""
 fi
 
-echo "Learn more at https://buildermethods.com/agent-os"
+echo "Learn more at https://github.com/carmandale/agent-os"
 echo ""
