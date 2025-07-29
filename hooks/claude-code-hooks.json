@@ -1,0 +1,43 @@
+{
+  "name": "Agent OS Hooks",
+  "version": "1.0.0",
+  "description": "Agent OS Claude Code hooks for workflow enforcement and context injection",
+  "author": "Agent OS Team",
+  "hooks": {
+    "stop": {
+      "script": "~/.agent-os/hooks/stop-hook.sh",
+      "description": "Prevents workflow abandonment by detecting completion patterns and enforcing workflow continuation",
+      "enabled": true,
+      "priority": 1
+    },
+    "postToolUse": {
+      "script": "~/.agent-os/hooks/post-tool-use-hook.sh", 
+      "description": "Auto-commits Agent OS documentation changes after tool use to maintain consistency",
+      "enabled": true,
+      "priority": 1
+    },
+    "userPromptSubmit": {
+      "script": "~/.agent-os/hooks/user-prompt-submit-hook.sh",
+      "description": "Injects contextual project information to improve AI assistance accuracy",
+      "enabled": true,
+      "priority": 1
+    }
+  },
+  "settings": {
+    "logLevel": "info",
+    "logDirectory": "~/.agent-os/logs",
+    "autoCommitDocumentation": true,
+    "contextInjection": true,
+    "workflowEnforcement": true
+  },
+  "compatibility": {
+    "claudeCodeVersion": ">=1.0.0",
+    "agentOsVersion": ">=1.0.0"
+  },
+  "documentation": {
+    "installation": "Run ~/.agent-os/hooks/install-hooks.sh to install these hooks",
+    "uninstallation": "Run ~/.agent-os/hooks/uninstall-hooks.sh to remove these hooks",
+    "troubleshooting": "Check ~/.agent-os/logs/ for hook execution logs",
+    "repository": "https://github.com/carmandale/agent-os"
+  }
+}

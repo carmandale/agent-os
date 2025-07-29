@@ -34,6 +34,3 @@ node_modules/
 # Temporary files
 *.tmp
 *.temp
-
-# Work in progress
-hooks/
