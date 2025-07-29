@@ -347,6 +347,70 @@ encoding: UTF-8
 
 </step>
 
+<step number="1.3" name="subagent_availability_check">
+
+### Step 1.3: Subagent Availability Check
+
+<step_metadata>
+  <purpose>detect available subagents for enhanced workflow</purpose>
+  <priority>high</priority>
+  <automatic>true - no user interaction needed</automatic>
+</step_metadata>
+
+<subagent_detection>
+  <check_for_integration>
+    <config_file>~/.agent-os/subagent-config.yaml</config_file>
+    <enhance_command>~/.claude/commands/enhance.md</enhance_command>
+    <if_both_exist>subagents are integrated and available</if_both_exist>
+  </check_for_integration>
+  
+  <available_subagents>
+    <detect_in>~/.claude/agents/</detect_in>
+    <key_agents>
+      - senior-software-engineer (code review & architecture)
+      - qa-test-engineer (testing strategies) 
+      - code-refactoring-expert (code quality)
+      - security-threat-analyst (security review)
+      - performance-optimizer (performance validation)
+    </key_agents>
+  </available_subagents>
+</subagent_detection>
+
+<subagent_status_message>
+  🤖 **Subagent Integration Status**
+  
+  [IF_INTEGRATED]
+  ✅ Subagent integration detected - enhanced workflows enabled
+  Available specialists:
+  - Senior Software Engineer: [AVAILABLE/NOT FOUND]
+  - QA Test Engineer: [AVAILABLE/NOT FOUND]
+  - Code Refactoring Expert: [AVAILABLE/NOT FOUND]
+  - Security Analyst: [AVAILABLE/NOT FOUND]
+  - Performance Optimizer: [AVAILABLE/NOT FOUND]
+  
+  These specialists will automatically assist at key workflow points.
+  
+  [IF_NOT_INTEGRATED]
+  ℹ️ Subagent integration not detected - using standard workflow
+  To enable enhanced workflows with automatic code review and validation:
+  curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/integrations/setup-subagent-integration.sh | bash
+</subagent_status_message>
+
+<global_flag>
+  <set_variable>SUBAGENTS_AVAILABLE = true/false</set_variable>
+  <use_throughout>entire workflow execution</use_throughout>
+</global_flag>
+
+<instructions>
+  ACTION: Check for subagent integration automatically
+  DETECT: Which subagents are available
+  SET: Global flag for workflow enhancement
+  INFORM: User about enhanced capabilities if available
+  CONTINUE: With or without subagents (graceful degradation)
+</instructions>
+
+</step>
+
 <step number="1.5" name="codebase_reality_check">
 
 ### Step 1.5: Codebase Reality Check
@@ -665,6 +729,38 @@ encoding: UTF-8
   4. Repeat for each feature
 </tdd_workflow>
 
+<automatic_subagent_assistance>
+  <if_subagents_available>
+    <during_complex_implementation>
+      <trigger>complex architectural decisions or patterns detected</trigger>
+      <action>AUTOMATICALLY invoke senior-software-engineer subagent</action>
+      <purpose>
+        - Architectural guidance in real-time
+        - Best practice recommendations
+        - Pattern validation
+        - Performance considerations
+      </purpose>
+      <user_experience>seamless - appears as enhanced assistance</user_experience>
+    </during_complex_implementation>
+    
+    <during_test_creation>
+      <trigger>writing test files or test strategies</trigger>
+      <action>AUTOMATICALLY invoke qa-test-engineer subagent</action>
+      <purpose>
+        - Comprehensive test case suggestions
+        - Edge case identification
+        - Test coverage analysis
+        - Mock strategy recommendations
+      </purpose>
+    </during_test_creation>
+  </if_subagents_available>
+  
+  <graceful_degradation>
+    <if_no_subagents>proceed with standard workflow</if_no_subagents>
+    <no_interruption>development continues smoothly either way</no_interruption>
+  </graceful_degradation>
+</automatic_subagent_assistance>
+
 <linting_during_development>
   <condition>if linting tools detected</condition>
   <check_for>
@@ -824,6 +920,56 @@ encoding: UTF-8
     </if_web_project>
   </web_ui_testing>
 </quality_checks>
+
+<automatic_subagent_quality_review>
+  <if_subagents_available>
+    <code_quality_review>
+      <trigger>after linting passes</trigger>
+      <action>AUTOMATICALLY invoke code-refactoring-expert subagent</action>
+      <purpose>
+        - Deep code quality analysis beyond linting
+        - Identify subtle code smells
+        - Suggest architectural improvements
+        - Validate SOLID principles adherence
+      </purpose>
+      <integration>results appear inline with quality checks</integration>
+    </code_quality_review>
+    
+    <security_review>
+      <trigger>if code handles user input, auth, or sensitive data</trigger>
+      <action>AUTOMATICALLY invoke security-threat-analyst subagent</action>
+      <purpose>
+        - Security vulnerability scanning
+        - Input validation review
+        - Authentication/authorization checks
+        - Data exposure risks
+      </purpose>
+      <mandatory_for>
+        - Authentication implementations
+        - Payment processing
+        - User data handling
+        - API endpoints
+      </mandatory_for>
+    </security_review>
+    
+    <performance_review>
+      <trigger>if performance-critical code detected</trigger>
+      <action>AUTOMATICALLY invoke performance-optimizer subagent</action>
+      <purpose>
+        - Algorithm efficiency analysis
+        - Database query optimization
+        - Frontend bundle size review
+        - Memory usage patterns
+      </purpose>
+    </performance_review>
+  </if_subagents_available>
+  
+  <seamless_integration>
+    <presentation>subagent feedback appears as part of quality report</presentation>
+    <no_extra_steps>user doesn't need to invoke anything</no_extra_steps>
+    <automatic>based on code patterns and context</automatic>
+  </seamless_integration>
+</automatic_subagent_quality_review>
 
 <failure_handling>
   <critical_blocking>

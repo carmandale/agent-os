@@ -171,7 +171,7 @@ function aos() {
 				
 				# Check if subagents are already configured
 				local skip_subagent_prompt=false
-				if [ -f "$HOME/.agent-os/subagent-config.yaml" ] && [ -f "$HOME/.claude/commands/enhance.md" ]; then
+				if [ -f "$HOME/.agent-os/subagent-config.yaml" ]; then
 					print_status "info" "Subagent integration already configured - will skip prompt"
 					skip_subagent_prompt=true
 				fi
@@ -307,18 +307,13 @@ function aos() {
 					print_status "success" "Claude commands installed: $cmd_count files"
 					
 					# Check for subagent integration
-					# Check multiple indicators: enhance.md exists and contains subagent references
-					if [ -f "$HOME/.claude/commands/enhance.md" ]; then
-						if grep -q "subagent" "$HOME/.claude/commands/enhance.md" 2>/dev/null; then
-							print_status "success" "Subagent integration: Installed ✓"
-						else
-							# enhance.md exists but doesn't have subagent content
-							print_status "warning" "Subagent integration: Outdated (update recommended)"
-							echo "   Update with: curl -sSL $AGENT_OS_RAW_URL/integrations/setup-subagent-integration.sh | bash"
-						fi
+					# Check for subagent config file as primary indicator
+					if [ -f "$HOME/.agent-os/subagent-config.yaml" ]; then
+						print_status "success" "Subagent integration: Active ✓ (automatic enhancement)"
 					else
 						print_status "warning" "Subagent integration: Not installed (HIGHLY RECOMMENDED)"
-						echo "   Install with: curl -sSL $AGENT_OS_RAW_URL/integrations/setup-subagent-integration.sh | bash"
+						echo "   Install for automatic code review, testing strategies, and quality analysis:"
+						echo "   curl -sSL $AGENT_OS_RAW_URL/integrations/setup-subagent-integration.sh | bash"
 					fi
 				else
 					print_status "warning" "Claude commands not installed"

@@ -36,7 +36,7 @@ echo ""
 echo "📥 Downloading Claude Code command files to ~/.claude/commands/"
 
 # Commands
-for cmd in plan-product create-spec execute-tasks analyze-product hygiene-check enhance; do
+for cmd in plan-product create-spec execute-tasks analyze-product hygiene-check; do
     if [ -f "$HOME/.claude/commands/${cmd}.md" ]; then
         echo "  ⚠️  ~/.claude/commands/${cmd}.md already exists - skipping"
     else
@@ -65,16 +65,19 @@ echo "   ~/.claude/CLAUDE.md        - Claude Code configuration"
 echo ""
 
 # Ask about subagent integration
-echo "🤖 Enhanced Workflows Available"
-echo "==============================="
+echo "🤖 Automatic Workflow Enhancement Available"
+echo "=========================================="
 echo ""
-echo "Agent OS can integrate with your existing Claude Code subagents for:"
-echo "• Professional PRDs and architecture review (automatic)"
-echo "• Comprehensive testing strategies (automatic)"
-echo "• Security analysis when you want it (opt-in only)"
-echo "• Code quality improvements (automatic)"
+echo "Agent OS can automatically integrate with your Claude Code subagents for:"
+echo "• Real-time code review during development"
+echo "• Comprehensive testing strategies when writing tests"
+echo "• Security analysis for auth and data handling"
+echo "• Performance optimization for critical paths"
+echo "• Code quality improvements beyond linting"
 echo ""
-echo "Would you like to install the subagent integration? (y/n)"
+echo "All enhancements are automatic - no extra commands needed!"
+echo ""
+echo "Install automatic subagent integration? (y/n)"
 read -r response
 
 if [[ "$response" == "y" ]]; then
@@ -113,9 +116,6 @@ echo "  /create-spec (or simply ask 'what's next?')"
 echo ""
 echo "Build and ship code with:"
 echo "  /execute-tasks"
-echo ""
-echo "Add professional enhancements when ready:"
-echo "  /enhance --security --architecture"
 echo ""
 echo "Check workspace cleanliness and tool configuration with:"
 echo "  /hygiene-check"
