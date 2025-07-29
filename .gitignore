@@ -10,6 +10,8 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+.cursor/rules/
+.claude/settings.local.json
 *.swp
 *.swo
 
