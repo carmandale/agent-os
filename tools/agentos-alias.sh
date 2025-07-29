@@ -327,6 +327,21 @@ function aos() {
 				if [ -d "$HOME/.claude/commands" ]; then
 					local cmd_count=$(ls ~/.claude/commands/ 2>/dev/null | wc -l | tr -d ' ')
 					print_status "success" "Claude commands installed: $cmd_count files"
+					
+					# Check for subagent integration
+					# Check multiple indicators: enhance.md exists and contains subagent references
+					if [ -f "$HOME/.claude/commands/enhance.md" ]; then
+						if grep -q "subagent" "$HOME/.claude/commands/enhance.md" 2>/dev/null; then
+							print_status "success" "Subagent integration: Installed ✓"
+						else
+							# enhance.md exists but doesn't have subagent content
+							print_status "warning" "Subagent integration: Outdated (update recommended)"
+							echo "   Update with: curl -sSL $AGENT_OS_RAW_URL/integrations/setup-subagent-integration.sh | bash"
+						fi
+					else
+						print_status "warning" "Subagent integration: Not installed (HIGHLY RECOMMENDED)"
+						echo "   Install with: curl -sSL $AGENT_OS_RAW_URL/integrations/setup-subagent-integration.sh | bash"
+					fi
 				else
 					print_status "warning" "Claude commands not installed"
 				fi
