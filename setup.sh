@@ -178,5 +178,8 @@ echo "     curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/
 echo ""
 echo "   - Using something else? See instructions at https://github.com/carmandale/agent-os"
 echo ""
+echo "💡 Pro tip: Install the 'aos' quick init alias for easier Agent OS management:"
+echo "   curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/tools/install-aos-alias.sh | bash"
+echo ""
 echo "Learn more at https://github.com/carmandale/agent-os"
 echo ""

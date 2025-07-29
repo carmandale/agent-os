@@ -13,7 +13,13 @@
       "Bash(gh auth:*)",
       "Bash(gh repo view:*)",
       "Bash(gh issue create:*)",
-      "Bash(gh api:*)"
+      "Bash(gh api:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh issue list:*)",
+      "Bash(./test-aos-alias.sh:*)",
+      "Bash(source:*)",
+      "Bash(aos help:*)",
+      "Bash(aos check:*)"
     ],
     "deny": []
   }
