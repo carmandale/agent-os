@@ -34,6 +34,27 @@ You can invoke Agent OS commands directly:
 - `/execute-task` - Build and ship code
 - `/analyze-product` - Add Agent OS to existing code
 
+### ⚠️ CRITICAL: Slash Command Enforcement
+
+**MANDATORY BEHAVIOR**: When ANY message starts with a forward slash (`/`), you MUST:
+
+1. **IMMEDIATELY STOP** all other processing
+2. **RECOGNIZE** this as an Agent OS command that requires executing the corresponding instruction file
+3. **EXECUTE** the full workflow from the instruction file WITHOUT shortcuts or casual responses
+4. **DO NOT** provide explanations like "I'll help you analyze..." - just execute the command
+5. **VERIFY** completion by summarizing what was done according to the instruction file
+
+**Command Mappings** (MANDATORY):
+- `/plan-product` → Execute @~/.agent-os/instructions/plan-product.md COMPLETELY
+- `/create-spec` → Execute @~/.agent-os/instructions/create-spec.md COMPLETELY  
+- `/execute-task` → Execute @~/.agent-os/instructions/execute-tasks.md COMPLETELY
+- `/analyze-product` → Execute @~/.agent-os/instructions/analyze-product.md COMPLETELY
+
+**FAILURE TO COMPLY**: If you catch yourself NOT executing a slash command properly:
+- STOP immediately
+- State: "I apologize, I need to properly execute the [command] workflow"
+- START OVER with the correct instruction file
+
 ## Important Notes
 
 - These are YOUR standards - customize them to match your preferences

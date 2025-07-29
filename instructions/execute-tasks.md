@@ -76,9 +76,9 @@ encoding: UTF-8
 </hygiene_checklist>
 
 <hygiene_prompt>
-  🧹 **Workspace Hygiene Check**
+  🧹 **Workspace Status Check**
   
-  Before starting work, let me verify our workspace is clean:
+  Let me check the current workspace state:
   
   - Git status: [CLEAN/DIRTY]
   - Open PRs: [NONE/READY_FOR_MERGE]
@@ -86,22 +86,95 @@ encoding: UTF-8
   - Current branch: [APPROPRIATE/NEEDS_SWITCH]
   
   [IF_NOT_CLEAN]
-  ⚠️ **Workspace needs cleanup before proceeding:**
+  📋 **Workspace contains uncommitted changes:**
   
-  1. [SPECIFIC_ACTIONS_NEEDED]
-  2. [SPECIFIC_ACTIONS_NEEDED]
+  I found modified and untracked files that appear to be from development work:
+  [LIST_FILES_WITH_BRIEF_DESCRIPTIONS]
   
-  Please clean up the workspace first, then restart this command.
+  These look like they may be from previous work sessions (possibly mine).
+  
+  **Would you like me to:**
+  
+  1. **🤖 Engage my subagents to evaluate and clean up autonomously** (recommended)
+     - I'll use code review and QA agents to assess what should be committed
+     - Determine what should be discarded or added to .gitignore
+     - Create appropriate commits with proper messages
+     - Clean the workspace completely
+  
+  2. **🔍 Show you a detailed analysis first**
+     - I'll analyze each file and recommend specific actions
+     - You can then approve the cleanup plan
+  
+  3. **⏭️ Let you handle the cleanup manually**
+     - You'll clean up the workspace yourself
+     - Then restart this command when ready
+  
+  4. **⚠️ Skip cleanup and proceed anyway** (not recommended)
+     - Continue with a dirty workspace
+     - May cause issues with new work
+  
+  **Please choose an option (1-4):**
   
   [IF_CLEAN]
   ✅ **Workspace is clean and ready for work!**
 </hygiene_prompt>
 
+<autonomous_cleanup_flow>
+  <user_choice_handling>
+    <option_1_autonomous>
+      <trigger>User selects option 1</trigger>
+      <actions>
+        1. ENGAGE senior-software-engineer agent to analyze all modified files
+        2. ENGAGE qa-test-engineer agent to verify test status
+        3. ENGAGE code-refactoring-expert agent to identify cleanup needs
+        4. CREATE cleanup plan based on agent recommendations
+        5. EXECUTE cleanup plan:
+           - Stage and commit completed features with proper messages
+           - Add test/temporary files to .gitignore
+           - Remove or stash incomplete work
+           - Verify all tests pass
+        6. VERIFY workspace is clean
+        7. CONTINUE with task execution
+      </actions>
+    </option_1_autonomous>
+    
+    <option_2_analysis>
+      <trigger>User selects option 2</trigger>
+      <actions>
+        1. USE subagents to analyze each file
+        2. PRESENT detailed cleanup plan with recommendations
+        3. WAIT for user approval
+        4. EXECUTE approved cleanup actions
+        5. VERIFY workspace is clean
+      </actions>
+    </option_2_analysis>
+    
+    <option_3_manual>
+      <trigger>User selects option 3</trigger>
+      <actions>
+        1. PAUSE execution
+        2. PROVIDE helpful reminders about common cleanup tasks
+        3. WAIT for user to complete cleanup
+        4. User must restart command when ready
+      </actions>
+    </option_3_manual>
+    
+    <option_4_skip>
+      <trigger>User selects option 4</trigger>
+      <actions>
+        1. LOG warning about proceeding with dirty workspace
+        2. CONTINUE with task execution (with risks)
+      </actions>
+    </option_4_skip>
+  </user_choice_handling>
+</autonomous_cleanup_flow>
+
 <instructions>
   ACTION: Check all hygiene criteria before proceeding
-  BLOCK: If any criteria fail, stop execution
-  GUIDE: Provide specific cleanup actions needed
-  PROCEED: Only when workspace is completely clean
+  PROACTIVE: Offer autonomous cleanup for dirty workspaces
+  RECOGNIZE: Modified files are likely from previous Claude Code work
+  EMPOWER: Use subagents to handle cleanup intelligently
+  PROCEED: Only after workspace hygiene is resolved
 </instructions>
 
 </step>
@@ -139,52 +212,76 @@ encoding: UTF-8
 
 <step number="1.2" name="project_memory_refresh">
 
-### Step 1.2: Project Memory Refresh
+### Step 1.2: MANDATORY Project Memory Refresh (BLOCKING)
 
 <step_metadata>
   <purpose>prevent claude code amnesia about project configuration</purpose>
   <priority>critical</priority>
-  <blocks>execution if project context cannot be loaded</blocks>
+  <blocking>true - CANNOT proceed without completion</blocking>
+  <enforcement>MUST complete before ANY code changes</enforcement>
 </step_metadata>
 
-<memory_refresh_process>
-  <required_files_check>
-    <tech_stack>
-      <file>@.agent-os/product/tech-stack.md</file>
-      <purpose>package managers, ports, startup commands</purpose>
-      <critical_sections>
-        - Package Managers section
-        - Development Environment section  
-        - Startup Commands section
-        - Environment Files section
-      </critical_sections>
-    </tech_stack>
-    <mission>
-      <file>@.agent-os/product/mission.md</file>
-      <purpose>project goals and context</purpose>
-    </mission>
-    <environment_files>
-      <frontend_env>.env.local</frontend_env>
-      <backend_env>.env</backend_env>
-      <purpose>port configuration and API URLs</purpose>
-    </environment_files>
-    <startup_script>
-      <file>./start.sh</file>
-      <purpose>how to start development servers</purpose>
-    </startup_script>
-  </required_files_check>
-</memory_refresh_process>
+<mandatory_reads>
+  <tech_stack_file>
+    <path>@.agent-os/product/tech-stack.md</path>
+    <required>ABSOLUTELY MANDATORY</required>
+    <extract>
+      - Python package manager (uv, pip, poetry, pipenv)
+      - JavaScript package manager (npm, yarn, pnpm, bun)
+      - Frontend port number
+      - Backend port number
+      - Startup commands
+      - E2E testing tool
+      - Project structure
+    </extract>
+  </tech_stack_file>
+  <environment_files>
+    <check_existence>
+      - .env (backend configuration)
+      - .env.local (frontend configuration)
+    </check_existence>
+    <extract_if_exists>
+      - PORT values
+      - API_PORT values
+      - API URLs
+    </extract_if_exists>
+  </environment_files>
+  <startup_script>
+    <path>./start.sh</path>
+    <extract_if_exists>startup procedure</extract_if_exists>
+  </startup_script>
+</mandatory_reads>
 
-<memory_refresh_prompt>
-  🧠 **Project Memory Refresh**
-  
-  Before proceeding with any work, I'm refreshing my memory about this project:
-  
-  **Tech Stack**: [PACKAGE_MANAGERS_FROM_TECH_STACK]
-  **Ports**: Frontend [FRONTEND_PORT], Backend [BACKEND_PORT]
-  **Startup**: [STARTUP_METHOD_FROM_START_SH_OR_TECH_STACK]
-  **Project Type**: [PROJECT_STRUCTURE_FROM_TECH_STACK]
-  **Testing**: [E2E_TOOL_FROM_TECH_STACK]
+<blocking_verification>
+  <requirement>
+    BEFORE proceeding to ANY next step, Claude MUST output:
+    
+    ✅ **PROJECT CONFIGURATION CONFIRMED:**
+    - **Python Package Manager:** [ACTUAL_VALUE] (NOT pip if uv specified)
+    - **JavaScript Package Manager:** [ACTUAL_VALUE] (NOT npm if yarn specified)
+    - **Frontend Port:** [ACTUAL_VALUE]
+    - **Backend Port:** [ACTUAL_VALUE]
+    - **Startup Command:** [ACTUAL_VALUE or "./start.sh"]
+    - **E2E Testing:** [ACTUAL_VALUE]
+    - **Project Structure:** [ACTUAL_VALUE]
+    
+    If ANY value shows "[NOT_FOUND]" or is incorrect, STOP and request help.
+  </requirement>
+  <enforcement>
+    DO NOT PROCEED without displaying this verification block
+    DO NOT USE DEFAULTS - read actual values from files
+    DO NOT GUESS - if unsure, STOP and ask
+  </enforcement>
+</blocking_verification>
+
+<amnesia_prevention>
+  Throughout the ENTIRE session, when executing ANY command:
+  - ALWAYS use the package manager from tech-stack.md
+  - NEVER default to pip if uv is specified
+  - NEVER default to npm if yarn is specified  
+  - ALWAYS use the ports from configuration files
+  - ALWAYS refer back to this verification when unsure
+</amnesia_prevention>
   
   ✅ **Memory refreshed - I will maintain consistency with these settings**
 </memory_refresh_prompt>

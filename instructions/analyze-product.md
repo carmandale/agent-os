@@ -46,6 +46,45 @@ encoding: UTF-8
 
 <process_flow>
 
+<step number="0" name="mandatory_execution_acknowledgment">
+
+### Step 0: Mandatory Execution Acknowledgment
+
+<step_metadata>
+  <purpose>ensure this workflow is being executed properly</purpose>
+  <blocking>true - prevents casual responses</blocking>
+</step_metadata>
+
+<execution_verification>
+  <requirement>
+    Claude MUST immediately output:
+    
+    🔍 **EXECUTING /analyze-product WORKFLOW**
+    
+    I'm now executing the complete Agent OS analyze-product workflow to:
+    1. Analyze your existing codebase thoroughly
+    2. Gather product context through questions
+    3. Install Agent OS with accurate documentation
+    4. Set up all required configuration files
+    
+    This is NOT a casual code review - this is the full Agent OS installation process.
+  </requirement>
+  <enforcement>
+    If Claude catches itself doing casual file listing or exploration instead:
+    - STOP immediately
+    - State: "I need to properly execute the analyze-product workflow"
+    - START this instruction file from the beginning
+  </enforcement>
+</execution_verification>
+
+<instructions>
+  ACTION: Output the execution acknowledgment FIRST
+  PREVENT: Casual "let me look at your files" responses
+  ENSURE: Full workflow execution
+</instructions>
+
+</step>
+
 <step number="1" name="analyze_existing_codebase">
 
 ### Step 1: Analyze Existing Codebase

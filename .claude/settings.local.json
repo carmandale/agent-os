@@ -9,7 +9,11 @@
       "Bash(git commit:*)",
       "Bash(./integrations/setup-subagent-integration.sh:*)",
       "Bash(ls:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(gh auth:*)",
+      "Bash(gh repo view:*)",
+      "Bash(gh issue create:*)",
+      "Bash(gh api:*)"
     ],
     "deny": []
   }
