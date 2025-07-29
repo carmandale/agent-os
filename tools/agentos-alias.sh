@@ -169,13 +169,31 @@ function aos() {
 			"both")
 				print_status "info" "Setting up both Claude Code and Cursor integrations..."
 				
-				# For "both" projects, run Claude Code setup normally (it will handle subagents itself)
-				print_status "info" "Setting up Claude Code (with subagent prompt)..."
-				if curl -sSL "$AGENT_OS_RAW_URL/setup-claude-code.sh" | bash; then
-					print_status "success" "Claude Code setup complete"
+				# Check if subagents are already configured
+				local skip_subagent_prompt=false
+				if [ -f "$HOME/.agent-os/subagent-config.yaml" ] && [ -f "$HOME/.claude/commands/enhance.md" ]; then
+					print_status "info" "Subagent integration already configured - will skip prompt"
+					skip_subagent_prompt=true
+				fi
+				
+				# For "both" projects, run Claude Code setup
+				print_status "info" "Setting up Claude Code..."
+				if [ "$skip_subagent_prompt" = true ]; then
+					# If subagents already configured, bypass the prompt
+					if curl -sSL "$AGENT_OS_RAW_URL/setup-claude-code.sh" | bash -s -- < /dev/null; then
+						print_status "success" "Claude Code setup complete (subagents already configured)"
+					else
+						print_status "error" "Claude Code setup failed"
+						return 1
+					fi
 				else
-					print_status "error" "Claude Code setup failed"
-					return 1
+					# Let it run normally with subagent prompt
+					if curl -sSL "$AGENT_OS_RAW_URL/setup-claude-code.sh" | bash; then
+						print_status "success" "Claude Code setup complete"
+					else
+						print_status "error" "Claude Code setup failed"
+						return 1
+					fi
 				fi
 				
 				# Setup Cursor
