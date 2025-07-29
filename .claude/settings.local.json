@@ -19,7 +19,12 @@
       "Bash(./test-aos-alias.sh:*)",
       "Bash(source:*)",
       "Bash(aos help:*)",
-      "Bash(aos check:*)"
+      "Bash(aos check:*)",
+      "Bash(./tools/install-aos-alias.sh:*)",
+      "Bash(grep:*)",
+      "Bash(/Users/dalecarman/Groove Jones Dropbox/Dale Carman/Projects/dev/agent-os/test-aos.sh)",
+      "Bash(./test-aos.sh:*)",
+      "Bash(rm:*)"
     ],
     "deny": []
   }
