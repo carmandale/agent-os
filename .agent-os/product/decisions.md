@@ -135,3 +135,52 @@ GitHub dominance in professional development makes it a safe standardization cho
 - GitHub dependency limits some users
 - Requires additional setup for GitHub CLI
 - More overhead for simple changes
+
+## 2025-07-29: Claude Code Hooks for Workflow Enforcement
+
+**ID:** DEC-004
+**Status:** Accepted
+**Category:** Technical
+**Stakeholders:** Product Owner, Development Team, Agent OS Users
+**Related Spec:** @.agent-os/specs/2025-07-29-claude-code-hooks-#37/
+
+### Decision
+
+Implement Claude Code hooks system to solve the critical workflow abandonment problem by enforcing workflow completion, auto-committing documentation changes, and injecting contextual information automatically.
+
+### Context
+
+User feedback and GitHub issues (#36, #37) revealed that users frequently abandon Agent OS workflows after receiving quality check summaries, leaving work in incomplete states (unmerged PRs, unclosed issues, dirty workspaces). This undermines Agent OS's core mission of providing reliable, structured AI-assisted development.
+
+### Alternatives Considered
+
+1. **Manual Process Improvements**
+   - Pros: No technical implementation required, immediate deployment
+   - Cons: Relies on user discipline, doesn't solve fundamental abandonment issue
+
+2. **CLI Command Integration**
+   - Pros: Works with any AI tool, consistent with current architecture
+   - Cons: Requires manual invocation, doesn't prevent abandonment in real-time
+
+3. **Claude Code Extension Development**
+   - Pros: Deep integration possibilities, enhanced user experience
+   - Cons: Dependency on Anthropic roadmap, requires extension expertise
+
+### Rationale
+
+Claude Code hooks provide the perfect balance of automation and user control. They operate transparently during normal AI interactions while enforcing Agent OS workflow integrity. The three-hook approach (stop, postToolUse, userPromptSubmit) addresses all identified abandonment patterns while maintaining Agent OS's shell script architecture.
+
+### Consequences
+
+**Positive:**
+- Eliminates workflow abandonment problem through automatic enforcement
+- Improves AI assistance quality through contextual information injection
+- Maintains documentation consistency with automatic commits
+- Preserves Agent OS's tool-agnostic philosophy while providing deep Claude Code integration
+- Enhances user experience without requiring manual intervention
+
+**Negative:**
+- Creates Claude Code-specific functionality that may not be available in other tools
+- Adds complexity to Agent OS architecture and installation process  
+- Requires users to understand and configure hook system
+- Potential performance impact on Claude Code interactions
