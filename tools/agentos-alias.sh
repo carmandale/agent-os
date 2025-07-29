@@ -169,26 +169,12 @@ function aos() {
 			"both")
 				print_status "info" "Setting up both Claude Code and Cursor integrations..."
 				
-				# For "both" projects, handle subagent integration separately to avoid input conflicts
-				# First, set up Claude Code without the interactive prompt
-				print_status "info" "Setting up Claude Code..."
-				
-				# Download and execute setup-claude-code.sh locally to bypass subagent prompt
-				local temp_script="/tmp/setup-claude-code-temp-$$.sh"
-				if curl -s -o "$temp_script" "$AGENT_OS_RAW_URL/setup-claude-code.sh"; then
-					# Modify the script to skip the subagent prompt
-					sed -i.bak '/^echo "Would you like to install the subagent integration?"/,/^fi$/d' "$temp_script"
-					
-					if bash "$temp_script"; then
-						print_status "success" "Claude Code setup complete"
-					else
-						print_status "error" "Claude Code setup failed"
-						rm -f "$temp_script" "$temp_script.bak"
-						return 1
-					fi
-					rm -f "$temp_script" "$temp_script.bak"
+				# For "both" projects, run Claude Code setup normally (it will handle subagents itself)
+				print_status "info" "Setting up Claude Code (with subagent prompt)..."
+				if curl -sSL "$AGENT_OS_RAW_URL/setup-claude-code.sh" | bash; then
+					print_status "success" "Claude Code setup complete"
 				else
-					print_status "error" "Failed to download Claude Code setup script"
+					print_status "error" "Claude Code setup failed"
 					return 1
 				fi
 				
@@ -199,32 +185,6 @@ function aos() {
 				else
 					print_status "error" "Cursor setup failed"
 					return 1
-				fi
-				
-				# Now handle subagent integration
-				echo ""
-				echo -e "${YELLOW}🤖 Subagent Integration${NC}"
-				echo "Agent OS can integrate with Claude Code's specialized subagents for:"
-				echo "  • Deep code review and validation"
-				echo "  • Autonomous workspace cleanup"
-				echo "  • Comprehensive testing strategies"
-				echo "  • Architecture and security analysis"
-				echo ""
-				echo "This is HIGHLY RECOMMENDED for the best Agent OS experience."
-				echo -n "Install subagent integration? (Y/n): "
-				read -r subagent_response
-				
-				# Default to yes if just pressing enter
-				if [[ "${subagent_response:-y}" =~ ^[Yy] ]]; then
-					print_status "info" "Installing subagent integration..."
-					if curl -sSL "$AGENT_OS_RAW_URL/integrations/setup-subagent-integration.sh" | bash; then
-						print_status "success" "Subagent integration installed"
-					else
-						print_status "warning" "Subagent integration failed - you can install it later"
-					fi
-				else
-					print_status "info" "Subagent integration skipped - install later with:"
-					echo "  curl -sSL $AGENT_OS_RAW_URL/integrations/setup-subagent-integration.sh | bash"
 				fi
 				
 				echo -e "\n${GREEN}Available commands:${NC}"
