@@ -9,16 +9,29 @@ echo "🚀 Agent OS Alias Installer"
 echo "==========================="
 echo ""
 
+# Detect user's default shell
+USER_SHELL=$(basename "$SHELL")
+
 # Detect shell configuration file
-if [ -n "$ZSH_VERSION" ]; then
+if [[ "$USER_SHELL" == "zsh" ]]; then
 	SHELL_CONFIG="$HOME/.zshrc"
 	SHELL_NAME="zsh"
-elif [ -n "$BASH_VERSION" ]; then
+elif [[ "$USER_SHELL" == "bash" ]]; then
 	SHELL_CONFIG="$HOME/.bashrc"
 	SHELL_NAME="bash"
 else
-	echo "⚠️  Unsupported shell. Please add the alias manually."
-	exit 1
+	# Fallback to checking for config files
+	if [ -f "$HOME/.zshrc" ]; then
+		SHELL_CONFIG="$HOME/.zshrc"
+		SHELL_NAME="zsh"
+	elif [ -f "$HOME/.bashrc" ]; then
+		SHELL_CONFIG="$HOME/.bashrc"
+		SHELL_NAME="bash"
+	else
+		echo "⚠️  Could not detect shell configuration. Please specify manually."
+		echo "Common options: ~/.zshrc (macOS) or ~/.bashrc (Linux)"
+		exit 1
+	fi
 fi
 
 echo "Detected shell: $SHELL_NAME"
