@@ -51,6 +51,8 @@ BASE_URL="https://raw.githubusercontent.com/carmandale/agent-os/main"
 echo "📁 Creating directories..."
 mkdir -p "$HOME/.agent-os/standards"
 mkdir -p "$HOME/.agent-os/instructions"
+mkdir -p "$HOME/.agent-os/scripts"
+mkdir -p "$HOME/.agent-os/workflow-modules"
 
 # Download standards files
 echo ""
@@ -144,12 +146,53 @@ else
     fi
 fi
 
+# Download script files
+echo ""
+echo "📥 Downloading script files to ~/.agent-os/scripts/"
+
+# workspace-hygiene-check.sh
+curl -s -o "$HOME/.agent-os/scripts/workspace-hygiene-check.sh" "${BASE_URL}/scripts/workspace-hygiene-check.sh"
+chmod +x "$HOME/.agent-os/scripts/workspace-hygiene-check.sh"
+echo "  ✓ ~/.agent-os/scripts/workspace-hygiene-check.sh"
+
+# project-context-loader.sh
+curl -s -o "$HOME/.agent-os/scripts/project-context-loader.sh" "${BASE_URL}/scripts/project-context-loader.sh"
+chmod +x "$HOME/.agent-os/scripts/project-context-loader.sh"
+echo "  ✓ ~/.agent-os/scripts/project-context-loader.sh"
+
+# task-validator.sh
+curl -s -o "$HOME/.agent-os/scripts/task-validator.sh" "${BASE_URL}/scripts/task-validator.sh"
+chmod +x "$HOME/.agent-os/scripts/task-validator.sh"
+echo "  ✓ ~/.agent-os/scripts/task-validator.sh"
+
+# Download workflow modules
+echo ""
+echo "📥 Downloading workflow modules to ~/.agent-os/workflow-modules/"
+
+# step-1-hygiene-and-setup.md
+curl -s -o "$HOME/.agent-os/workflow-modules/step-1-hygiene-and-setup.md" "${BASE_URL}/workflow-modules/step-1-hygiene-and-setup.md"
+echo "  ✓ ~/.agent-os/workflow-modules/step-1-hygiene-and-setup.md"
+
+# step-2-planning-and-execution.md
+curl -s -o "$HOME/.agent-os/workflow-modules/step-2-planning-and-execution.md" "${BASE_URL}/workflow-modules/step-2-planning-and-execution.md"
+echo "  ✓ ~/.agent-os/workflow-modules/step-2-planning-and-execution.md"
+
+# step-3-quality-assurance.md
+curl -s -o "$HOME/.agent-os/workflow-modules/step-3-quality-assurance.md" "${BASE_URL}/workflow-modules/step-3-quality-assurance.md"
+echo "  ✓ ~/.agent-os/workflow-modules/step-3-quality-assurance.md"
+
+# step-4-git-integration.md
+curl -s -o "$HOME/.agent-os/workflow-modules/step-4-git-integration.md" "${BASE_URL}/workflow-modules/step-4-git-integration.md"
+echo "  ✓ ~/.agent-os/workflow-modules/step-4-git-integration.md"
+
 echo ""
 echo "✅ Agent OS base installation complete!"
 echo ""
 echo "📍 Files installed to:"
-echo "   ~/.agent-os/standards/     - Your development standards"
-echo "   ~/.agent-os/instructions/  - Agent OS instructions"
+echo "   ~/.agent-os/standards/        - Your development standards"
+echo "   ~/.agent-os/instructions/     - Agent OS instructions"
+echo "   ~/.agent-os/scripts/          - Dynamic workflow scripts"
+echo "   ~/.agent-os/workflow-modules/ - Modular workflow components"
 echo ""
 if [ "$OVERWRITE_INSTRUCTIONS" = false ] && [ "$OVERWRITE_STANDARDS" = false ]; then
     echo "💡 Note: Existing files were skipped to preserve your customizations"
