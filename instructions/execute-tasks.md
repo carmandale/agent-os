@@ -347,70 +347,6 @@ encoding: UTF-8
 
 </step>
 
-<step number="1.3" name="subagent_availability_check">
-
-### Step 1.3: Subagent Availability Check
-
-<step_metadata>
-  <purpose>detect available subagents for enhanced workflow</purpose>
-  <priority>high</priority>
-  <automatic>true - no user interaction needed</automatic>
-</step_metadata>
-
-<subagent_detection>
-  <check_for_integration>
-    <config_file>~/.agent-os/subagent-config.yaml</config_file>
-    <enhance_command>~/.claude/commands/enhance.md</enhance_command>
-    <if_both_exist>subagents are integrated and available</if_both_exist>
-  </check_for_integration>
-  
-  <available_subagents>
-    <detect_in>~/.claude/agents/</detect_in>
-    <key_agents>
-      - senior-software-engineer (code review & architecture)
-      - qa-test-engineer (testing strategies) 
-      - code-refactoring-expert (code quality)
-      - security-threat-analyst (security review)
-      - performance-optimizer (performance validation)
-    </key_agents>
-  </available_subagents>
-</subagent_detection>
-
-<subagent_status_message>
-  🤖 **Subagent Integration Status**
-  
-  [IF_INTEGRATED]
-  ✅ Subagent integration detected - enhanced workflows enabled
-  Available specialists:
-  - Senior Software Engineer: [AVAILABLE/NOT FOUND]
-  - QA Test Engineer: [AVAILABLE/NOT FOUND]
-  - Code Refactoring Expert: [AVAILABLE/NOT FOUND]
-  - Security Analyst: [AVAILABLE/NOT FOUND]
-  - Performance Optimizer: [AVAILABLE/NOT FOUND]
-  
-  These specialists will automatically assist at key workflow points.
-  
-  [IF_NOT_INTEGRATED]
-  ℹ️ Subagent integration not detected - using standard workflow
-  To enable enhanced workflows with automatic code review and validation:
-  curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/integrations/setup-subagent-integration.sh | bash
-</subagent_status_message>
-
-<global_flag>
-  <set_variable>SUBAGENTS_AVAILABLE = true/false</set_variable>
-  <use_throughout>entire workflow execution</use_throughout>
-</global_flag>
-
-<instructions>
-  ACTION: Check for subagent integration automatically
-  DETECT: Which subagents are available
-  SET: Global flag for workflow enhancement
-  INFORM: User about enhanced capabilities if available
-  CONTINUE: With or without subagents (graceful degradation)
-</instructions>
-
-</step>
-
 <step number="1.5" name="codebase_reality_check">
 
 ### Step 1.5: Codebase Reality Check
@@ -729,38 +665,6 @@ encoding: UTF-8
   4. Repeat for each feature
 </tdd_workflow>
 
-<automatic_subagent_assistance>
-  <if_subagents_available>
-    <during_complex_implementation>
-      <trigger>complex architectural decisions or patterns detected</trigger>
-      <action>AUTOMATICALLY invoke senior-software-engineer subagent</action>
-      <purpose>
-        - Architectural guidance in real-time
-        - Best practice recommendations
-        - Pattern validation
-        - Performance considerations
-      </purpose>
-      <user_experience>seamless - appears as enhanced assistance</user_experience>
-    </during_complex_implementation>
-    
-    <during_test_creation>
-      <trigger>writing test files or test strategies</trigger>
-      <action>AUTOMATICALLY invoke qa-test-engineer subagent</action>
-      <purpose>
-        - Comprehensive test case suggestions
-        - Edge case identification
-        - Test coverage analysis
-        - Mock strategy recommendations
-      </purpose>
-    </during_test_creation>
-  </if_subagents_available>
-  
-  <graceful_degradation>
-    <if_no_subagents>proceed with standard workflow</if_no_subagents>
-    <no_interruption>development continues smoothly either way</no_interruption>
-  </graceful_degradation>
-</automatic_subagent_assistance>
-
 <linting_during_development>
   <condition>if linting tools detected</condition>
   <check_for>
@@ -921,56 +825,6 @@ encoding: UTF-8
   </web_ui_testing>
 </quality_checks>
 
-<automatic_subagent_quality_review>
-  <if_subagents_available>
-    <code_quality_review>
-      <trigger>after linting passes</trigger>
-      <action>AUTOMATICALLY invoke code-refactoring-expert subagent</action>
-      <purpose>
-        - Deep code quality analysis beyond linting
-        - Identify subtle code smells
-        - Suggest architectural improvements
-        - Validate SOLID principles adherence
-      </purpose>
-      <integration>results appear inline with quality checks</integration>
-    </code_quality_review>
-    
-    <security_review>
-      <trigger>if code handles user input, auth, or sensitive data</trigger>
-      <action>AUTOMATICALLY invoke security-threat-analyst subagent</action>
-      <purpose>
-        - Security vulnerability scanning
-        - Input validation review
-        - Authentication/authorization checks
-        - Data exposure risks
-      </purpose>
-      <mandatory_for>
-        - Authentication implementations
-        - Payment processing
-        - User data handling
-        - API endpoints
-      </mandatory_for>
-    </security_review>
-    
-    <performance_review>
-      <trigger>if performance-critical code detected</trigger>
-      <action>AUTOMATICALLY invoke performance-optimizer subagent</action>
-      <purpose>
-        - Algorithm efficiency analysis
-        - Database query optimization
-        - Frontend bundle size review
-        - Memory usage patterns
-      </purpose>
-    </performance_review>
-  </if_subagents_available>
-  
-  <seamless_integration>
-    <presentation>subagent feedback appears as part of quality report</presentation>
-    <no_extra_steps>user doesn't need to invoke anything</no_extra_steps>
-    <automatic>based on code patterns and context</automatic>
-  </seamless_integration>
-</automatic_subagent_quality_review>
-
 <failure_handling>
   <critical_blocking>
     - Any test failures
@@ -983,12 +837,74 @@ encoding: UTF-8
   <no_exceptions>Never proceed with failing quality checks</no_exceptions>
 </failure_handling>
 
+<workflow_completion_enforcement>
+  <critical_completion_checkpoint>
+    ⚠️ **WORKFLOW COMPLETION MANDATORY**
+    
+    Quality checks have passed, but the work is NOT complete until ALL remaining steps are executed:
+    
+    **REQUIRED COMPLETION STEPS:**
+    - [ ] Step 9: Git workflow (commit, push, PR creation)
+    - [ ] Step 10: Roadmap progress check
+    - [ ] Step 11: Completion notification  
+    - [ ] Step 12: Completion summary
+    - [ ] Step 13: PR and issue cleanup
+    - [ ] Step 14: Workspace reset to main branch
+    
+    **CRITICAL DEFINITION OF "COMPLETE":**
+    
+    ❌ **NOT Complete** (Technical-only completion):
+    - Code works and tests pass
+    - Features function correctly  
+    - Quality checks pass
+    
+    ✅ **ACTUALLY Complete** (Full integration):
+    - Code works, tests pass, AND
+    - Changes committed with proper message referencing issue
+    - PR created and ready for review/merge
+    - Issues updated and closed when appropriate
+    - Branch cleaned up and back on main
+    - Workspace ready for next developer to use
+    
+    **ENFORCEMENT**: Cannot mark ANY tasks as complete or provide "ready for next phase" 
+    summaries until Steps 9-14 are fully executed. Work that exists only in feature 
+    branches is NOT finished work.
+  </critical_completion_checkpoint>
+  
+  <abandonment_prevention>
+    <if_attempting_early_completion>
+      <block_message>
+        🚨 **WORKFLOW ABANDONMENT DETECTED**
+        
+        Attempting to mark work complete after Step 8 without proceeding through 
+        the full git integration workflow.
+        
+        This creates "zombie work" - technically functional but not integrated 
+        for team use. Professional development requires COMPLETE workflows.
+        
+        **REQUIRED ACTION**: Continue to Step 9 (Git Workflow)
+      </block_message>
+    </if_attempting_early_completion>
+    
+    <step_dependency_chain>
+      <step_8_completion>requires proceeding to step_9</step_8_completion>
+      <step_9_completion>requires proceeding to step_10</step_9_completion>
+      <step_10_completion>requires proceeding to step_11</step_10_completion>
+      <step_11_completion>requires proceeding to step_12</step_11_completion>
+      <step_12_completion>requires proceeding to step_13</step_12_completion>
+      <step_13_completion>requires proceeding to step_14</step_13_completion>
+      <step_14_completion>workflow complete, ready for next work</step_14_completion>
+    </step_dependency_chain>
+  </abandonment_prevention>
+</workflow_completion_enforcement>
+
 <instructions>
   ACTION: Run all quality checks systematically
   REQUIRE: Perfect pass rate on all enabled checks
   BLOCK: Absolutely no proceeding with any failures
   DETECT: Web projects and offer Playwright setup
   FIX: All issues before moving to git workflow
+  ENFORCE: Must proceed to Step 9 when quality checks pass - NO EXCEPTIONS
 </instructions>
 
 </step>
@@ -1315,15 +1231,29 @@ encoding: UTF-8
 </step_metadata>
 
 <summary_template>
-  ## ✅ What's been done
+  ## 🎉 WORK FULLY INTEGRATED AND COMPLETE
+
+  **Status**: All development work finished and ready for team use
+  **Integration State**: Code committed, PR ready, workspace clean
+
+  ## ✅ What's been implemented
 
   1. **[FEATURE_1]** - [ONE_SENTENCE_DESCRIPTION]
   2. **[FEATURE_2]** - [ONE_SENTENCE_DESCRIPTION]
 
-  ## ⚠️ Issues encountered
+  ## ✅ Quality Checks
 
-  [ONLY_IF_APPLICABLE]
-  - **[ISSUE_1]** - [DESCRIPTION_AND_REASON]
+  - **Linting**: [PASSED/NOT_APPLICABLE] 
+  - **TypeScript**: [PASSED/NOT_APPLICABLE]
+  - **Unit Tests**: [X/Y passed]
+  - **Playwright Tests**: [PASSED/NOT_APPLICABLE]
+
+  ## 📦 Integration Status
+
+  - **Pull Request**: [GITHUB_PR_URL] - [READY_FOR_MERGE/MERGED]
+  - **Branch Status**: [ON_MAIN/CLEANED_UP]
+  - **Issue Tracking**: #[ISSUE_NUMBER] - [UPDATED/CLOSED]
+  - **Workspace**: Clean and ready for next work
 
   ## 👀 Ready to test in browser
 
@@ -1340,21 +1270,23 @@ encoding: UTF-8
   [IF_PLAYWRIGHT_REMINDER_NEEDED]
   💡 **Reminder**: Consider adding Playwright tests for more reliable UI testing
 
-  ## ✅ Quality Checks
+  ## ⚠️ Issues encountered
 
-  - **Linting**: [PASSED/NOT_APPLICABLE] 
-  - **TypeScript**: [PASSED/NOT_APPLICABLE]
-  - **Unit Tests**: [X/Y passed]
-  - **Playwright Tests**: [PASSED/NOT_APPLICABLE]
+  [ONLY_IF_APPLICABLE]
+  - **[ISSUE_1]** - [DESCRIPTION_AND_REASON]
 
-  ## 📦 Pull Request
+  ---
 
-  View PR: [GITHUB_PR_URL]
-  
-  ## 🔗 Issue Tracking
+  ## 🚀 NEXT STEPS
 
-  - GitHub Issue: #[ISSUE_NUMBER] - [ISSUE_URL]
-  - **Remember to update and close the issue when PR is merged**
+  ✅ **This work is completely finished and integrated**
+  - All code changes are committed and pushed
+  - Pull request is ready for review/merged
+  - Related issues are updated/closed
+  - Workspace is clean and on main branch
+  - Team can immediately build upon this work
+
+  **Ready for**: New feature development, next phase work, or additional tasks
 </summary_template>
 
 <summary_sections>
@@ -1742,10 +1674,22 @@ The workspace is clean and ready for your next Agent OS workflow.
 </error_protocols>
 
 <final_checklist>
+  <critical_workflow_completion>
+    🚨 **MANDATORY FULL WORKFLOW COMPLETION** 🚨
+    
+    Work is NOT complete until ALL steps are verified. No "technical completion" 
+    shortcuts allowed - must achieve FULL INTEGRATION COMPLETION.
+  </critical_workflow_completion>
+  
   <verify>
+    **FOUNDATION STEPS:**
     - [ ] Workspace hygiene verified (Step 0)
     - [ ] Project memory refreshed (Step 1.2)
-    - [ ] Task implementation complete
+    - [ ] Codebase reality check passed (Step 1.5)
+    - [ ] Subagent integration detected and active (Step 1.3)
+    
+    **IMPLEMENTATION STEPS:**
+    - [ ] Task implementation complete with subagent assistance
     - [ ] All quality checks passed (Step 8):
       - [ ] Linting: zero errors/warnings
       - [ ] TypeScript: zero errors (if applicable)
@@ -1755,12 +1699,27 @@ The workspace is clean and ready for your next Agent OS workflow.
       - [ ] Frontend work: Browser validation completed
       - [ ] Backend work: API testing completed
       - [ ] Evidence of working functionality documented
-    - [ ] tasks.md updated with validation proof
-    - [ ] Code committed and pushed
-    - [ ] Pull request created
-    - [ ] Roadmap checked/updated
-    - [ ] Summary provided to user
-    - [ ] Cleanup proposed and executed (Steps 13-14)
-    - [ ] Workspace reset to clean state
+    - [ ] Workflow completion enforcement acknowledged (Step 8 checkpoint)
+    
+    **INTEGRATION STEPS (MANDATORY - NO EXCEPTIONS):**
+    - [ ] Code committed with proper message referencing issue (Step 9)
+    - [ ] Changes pushed to GitHub (Step 9)
+    - [ ] Pull request created with proper description (Step 9)
+    - [ ] Roadmap checked and updated (Step 10)
+    - [ ] Completion sound played (Step 11)
+    - [ ] INTEGRATED completion summary provided (Step 12)
+    - [ ] PR merge preparation completed (Step 13)
+    - [ ] Workspace reset to main branch (Step 14)
+    
+    **FINAL VERIFICATION:**
+    - [ ] Git status is clean
+    - [ ] Currently on main branch
+    - [ ] Feature branch deleted
+    - [ ] Related issues updated/closed
+    - [ ] Team can immediately build upon this work
+    
+    **COMPLETION DEFINITION ENFORCED:**
+    ❌ Technical-only completion (code works) = INCOMPLETE
+    ✅ Full integration completion (code + git + PR + cleanup) = ACTUALLY COMPLETE
   </verify>
 </final_checklist>
