@@ -38,17 +38,29 @@ function aos() {
 	
 	# Function to detect project type
 	detect_project_type() {
-		local project_type="unknown"
+		local has_claude=false
+		local has_cursor=false
 		
 		# Check for Claude Code setup
 		if [ -f ".claude/claude.json" ] || [ -f "CLAUDE.md" ]; then
-			project_type="claude"
-		# Check for Cursor setup
-		elif [ -d ".cursor" ] || [ -f ".cursorrules" ]; then
-			project_type="cursor"
+			has_claude=true
 		fi
 		
-		echo "$project_type"
+		# Check for Cursor setup  
+		if [ -d ".cursor" ] || [ -f ".cursorrules" ]; then
+			has_cursor=true
+		fi
+		
+		# Return appropriate type
+		if [ "$has_claude" = true ] && [ "$has_cursor" = true ]; then
+			echo "both"
+		elif [ "$has_claude" = true ]; then
+			echo "claude"
+		elif [ "$has_cursor" = true ]; then
+			echo "cursor"
+		else
+			echo "unknown"
+		fi
 	}
 	
 	# Function to check for updates
@@ -154,6 +166,31 @@ function aos() {
 		
 		# Run appropriate setup
 		case "$project_type" in
+			"both")
+				print_status "info" "Setting up both Claude Code and Cursor integrations..."
+				
+				# Setup Claude Code
+				print_status "info" "Setting up Claude Code..."
+				if curl -sSL "$AGENT_OS_RAW_URL/setup-claude-code.sh" | bash; then
+					print_status "success" "Claude Code setup complete"
+				else
+					print_status "error" "Claude Code setup failed"
+					return 1
+				fi
+				
+				# Setup Cursor
+				print_status "info" "Setting up Cursor..."
+				if curl -sSL "$AGENT_OS_RAW_URL/setup-cursor.sh" | bash; then
+					print_status "success" "Cursor setup complete"
+				else
+					print_status "error" "Cursor setup failed"
+					return 1
+				fi
+				
+				echo -e "\n${GREEN}Available commands:${NC}"
+				echo "  Claude Code:     /plan-product, /analyze-product, /create-spec, /execute-tasks"
+				echo "  Cursor:          @plan-product, @analyze-product, @create-spec, @execute-tasks"
+				;;
 			"claude")
 				print_status "info" "Setting up Claude Code integration..."
 				if curl -sSL "$AGENT_OS_RAW_URL/setup-claude-code.sh" | bash; then
@@ -246,14 +283,16 @@ function aos() {
 			print_status "success" "Project type: $project_type"
 			
 			# Check for project-specific files
-			if [ "$project_type" = "claude" ]; then
+			if [ "$project_type" = "claude" ] || [ "$project_type" = "both" ]; then
 				if [ -d "$HOME/.claude/commands" ]; then
 					local cmd_count=$(ls ~/.claude/commands/ 2>/dev/null | wc -l | tr -d ' ')
 					print_status "success" "Claude commands installed: $cmd_count files"
 				else
 					print_status "warning" "Claude commands not installed"
 				fi
-			elif [ "$project_type" = "cursor" ]; then
+			fi
+			
+			if [ "$project_type" = "cursor" ] || [ "$project_type" = "both" ]; then
 				if [ -d ".cursor/rules" ]; then
 					local rule_count=$(ls .cursor/rules/ 2>/dev/null | wc -l | tr -d ' ')
 					print_status "success" "Cursor rules installed: $rule_count files"
