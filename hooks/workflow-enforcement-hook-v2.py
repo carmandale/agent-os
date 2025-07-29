@@ -24,7 +24,7 @@ PROCEED_PATTERNS = [
 ]
 
 # Tools that indicate starting new work
-NEW_WORK_TOOLS = ["Write", "Edit", "MultiEdit", "Bash", "TodoWrite"]
+NEW_WORK_TOOLS = ["Write", "Edit", "MultiEdit", "TodoWrite"]
 
 
 def log_debug(message):
@@ -88,29 +88,58 @@ def check_workflow_status():
 def handle_pretool(input_data):
     """Handle PreToolUse hook - block new work until workflow complete."""
     tool_name = input_data.get("tool_name", "")
+    tool_input = input_data.get("tool_input", {})
     
     log_debug(f"PreToolUse hook called for tool: {tool_name}")
     
+    # Special handling for Bash commands
+    if tool_name == "Bash":
+        command = tool_input.get("command", "").strip()
+        
+        # Allow git and gh commands for workflow completion
+        git_commands = ["git ", "gh "]
+        is_git_command = any(command.startswith(cmd) for cmd in git_commands)
+        
+        if is_git_command:
+            log_debug(f"Allowing git/gh command: {command}")
+            sys.exit(0)
+        
+        # Check workflow status for non-git bash commands
+        issues = check_workflow_status()
+        if issues:
+            message = "⚠️ Cannot start new work - Agent OS workflow incomplete:\n\n"
+            for issue in issues:
+                message += f"• {issue}\n"
+            message += "\nComplete git integration workflow first:\n"
+            message += "1. git add & commit with issue reference\n"
+            message += "2. git push & create PR\n"
+            message += "3. Complete merge process\n"
+            message += "4. Update issue status"
+            
+            print(message, file=sys.stderr)
+            sys.exit(2)
+    
     # Only check for tools that indicate new work
-    if tool_name not in NEW_WORK_TOOLS:
+    elif tool_name not in NEW_WORK_TOOLS:
         sys.exit(0)
     
-    # Check workflow status
-    issues = check_workflow_status()
-    
-    if issues:
-        # Block tool usage with feedback
-        message = "⚠️ Cannot start new work - Agent OS workflow incomplete:\n\n"
-        for issue in issues:
-            message += f"• {issue}\n"
-        message += "\nComplete git integration workflow first:\n"
-        message += "1. git add & commit with issue reference\n"
-        message += "2. git push & create PR\n"
-        message += "3. Complete merge process\n"
-        message += "4. Update issue status"
+    # Check workflow status for other tools
+    else:
+        issues = check_workflow_status()
         
-        print(message, file=sys.stderr)
-        sys.exit(2)  # Block with feedback to Claude
+        if issues:
+            # Block tool usage with feedback
+            message = "⚠️ Cannot start new work - Agent OS workflow incomplete:\n\n"
+            for issue in issues:
+                message += f"• {issue}\n"
+            message += "\nComplete git integration workflow first:\n"
+            message += "1. git add & commit with issue reference\n"
+            message += "2. git push & create PR\n"
+            message += "3. Complete merge process\n"
+            message += "4. Update issue status"
+            
+            print(message, file=sys.stderr)
+            sys.exit(2)  # Block with feedback to Claude
     
     sys.exit(0)
 
