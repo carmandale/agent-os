@@ -4,6 +4,20 @@
 
 [Agent OS](https://buildermethods.com/agent-os) transforms AI coding agents from confused interns into productive developers. With structured workflows that capture your standards, your stack, and the unique details of your codebase, Agent OS gives your agents the specs they need to ship quality code on the first try—not the fifth.
 
+---
+
+### About This Fork
+
+This is an enhanced fork of the original [Agent OS by Builder Methods](https://github.com/buildermethods/agent-os). We're building on Brian Casel's excellent foundation to add:
+
+- **GitHub Issues Workflow Enforcement**: Strict requirement for issue-based development with automated tracking
+- **Tab Indentation**: Preference for tabs over spaces in all generated code
+- **Python/React Stack Defaults**: Updated tech stack templates for Python backend (FastAPI/Django) and React frontend development
+- **Enhanced Workflow Automation**: Additional hooks and integrations for Claude Code and other AI assistants
+- **Improved Error Handling**: More robust workspace hygiene checks and recovery mechanisms
+
+All core Agent OS functionality remains intact, with these enhancements making it even more powerful for professional development teams.
+
 Use it with:
 
 ✅ Claude Code, Cursor, or any other AI coding tool.
