@@ -102,6 +102,79 @@ else
     echo "  curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/integrations/setup-subagent-integration.sh | bash"
 fi
 
+# Ask about Claude Code hooks installation  
+echo ""
+echo "🪝 Claude Code Hooks Available"
+echo "==============================="
+echo ""
+echo "Agent OS Claude Code hooks provide advanced workflow integration:"
+echo "• Prevents workflow abandonment after quality checks"
+echo "• Auto-commits Agent OS documentation changes"
+echo "• Injects contextual project information automatically"
+echo ""
+echo "These hooks run transparently during your normal Claude Code interactions."
+echo ""
+echo "Install Claude Code hooks? (y/n)"
+read -r hooks_response
+
+if [[ "$hooks_response" == "y" ]]; then
+    echo ""
+    echo "📥 Installing Claude Code hooks..."
+    
+    # Check if hooks are already installed
+    if [ -f "$HOME/.agent-os/hooks/install-hooks.sh" ]; then
+        echo "  ✓ Hook utilities found"
+        
+        # Run the hooks installation
+        if "$HOME/.agent-os/hooks/install-hooks.sh"; then
+            echo "  ✅ Claude Code hooks installed successfully!"
+        else
+            echo "  ⚠️ Claude Code hooks installation failed"
+            echo "     You can install them manually by running:"
+            echo "     ~/.agent-os/hooks/install-hooks.sh"
+        fi
+    else
+        echo "  ⚠️ Hook utilities not found. Installing from repository..."
+        
+        # Create hooks directory
+        mkdir -p "$HOME/.agent-os/hooks/lib"
+        mkdir -p "$HOME/.agent-os/hooks/tests"
+        
+        # Download hook utilities
+        for util in workflow-detector.sh git-utils.sh context-builder.sh; do
+            curl -s -o "$HOME/.agent-os/hooks/lib/$util" "${BASE_URL}/hooks/lib/$util"
+            echo "  ✓ Downloaded $util"
+        done
+        
+        # Download hook scripts
+        for hook in stop-hook.sh post-tool-use-hook.sh user-prompt-submit-hook.sh install-hooks.sh; do
+            curl -s -o "$HOME/.agent-os/hooks/$hook" "${BASE_URL}/hooks/$hook"
+            chmod +x "$HOME/.agent-os/hooks/$hook"
+            echo "  ✓ Downloaded $hook"
+        done
+        
+        # Download configuration
+        curl -s -o "$HOME/.agent-os/hooks/claude-code-hooks.json" "${BASE_URL}/hooks/claude-code-hooks.json"
+        echo "  ✓ Downloaded claude-code-hooks.json"
+        
+        # Run installation
+        if "$HOME/.agent-os/hooks/install-hooks.sh"; then
+            echo "  ✅ Claude Code hooks installed successfully!"
+        else
+            echo "  ⚠️ Claude Code hooks installation failed"
+        fi
+    fi
+else
+    echo ""
+    echo "⚠️ Claude Code hooks installation skipped."
+    echo ""
+    echo "You can install them later by running:"
+    echo "  ~/.agent-os/hooks/install-hooks.sh"
+    echo ""
+    echo "Or download them from:"
+    echo "  https://github.com/carmandale/agent-os/hooks/"
+fi
+
 echo ""
 echo "Next steps:"
 echo ""
