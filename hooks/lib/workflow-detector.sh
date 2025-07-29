@@ -81,6 +81,9 @@ detect_abandonment_risk() {
         "Next steps:"
         "Work is complete"
         "Implementation successful"
+        "Task.*COMPLETE"
+        "fully integrated and complete"
+        "development work finished"
     )
     
     for pattern in "${high_risk_patterns[@]}"; do
@@ -119,6 +122,24 @@ requires_workflow_completion() {
         # But not already in git workflow
         if ! echo "$conversation" | grep -qE "(Step 1[0-4]|git commit|PR created|merged)"; then
             return 0
+        fi
+    fi
+    
+    return 1
+}
+
+# Function to detect if Step 13 blocking is needed
+needs_step_13_blocking() {
+    local conversation="$1"
+    
+    # Check if quality checks passed but not yet at Step 13
+    if echo "$conversation" | grep -qiE "(Quality checks passed|All tests passing|Task.*COMPLETE)"; then
+        # Check if git workflow started
+        if echo "$conversation" | grep -qE "(git commit|PR created|Pull request)"; then
+            # Check if NOT already at Step 13 blocking message
+            if ! echo "$conversation" | grep -qE "(READY TO MERGE|Type.*merge.*to complete|Autonomous.*[Pp]reparation)"; then
+                return 0
+            fi
         fi
     fi
     
@@ -202,6 +223,9 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         "needs_completion")
             requires_workflow_completion "${2:-}" && echo "true" || echo "false"
             ;;
+        "needs_step_13")
+            needs_step_13_blocking "${2:-}" && echo "true" || echo "false"
+            ;;
         "current_spec")
             detect_current_spec
             ;;
@@ -212,7 +236,7 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
             get_workflow_suggestions "${2:-}"
             ;;
         *)
-            echo "Usage: $0 {is_workflow|phase|abandonment_risk|needs_completion|current_spec|needs_commit|suggestions} [conversation]"
+            echo "Usage: $0 {is_workflow|phase|abandonment_risk|needs_completion|needs_step_13|current_spec|needs_commit|suggestions} [conversation]"
             exit 1
             ;;
     esac

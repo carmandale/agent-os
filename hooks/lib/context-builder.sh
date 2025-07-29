@@ -201,15 +201,26 @@ build_stop_context() {
         risk=$(detect_abandonment_risk "$conversation")
         
         if [ "$risk" = "high" ]; then
-            context+="⚠️ **Workflow Abandonment Prevention Active**\n\n"
-            context+="This appears to be a completion summary that may lead to workflow abandonment. "
-            context+="Remember that Agent OS workflows require full integration (commit → PR → merge) to be considered complete.\n\n"
-            
-            if requires_workflow_completion "$conversation"; then
-                context+="**Required Next Steps:**\n"
-                context+="1. Commit changes with proper issue reference\n"
-                context+="2. Create pull request\n"
-                context+="3. Complete integration workflow\n\n"
+            # Check if Step 13 blocking is needed
+            if needs_step_13_blocking "$conversation"; then
+                context+="🚨🛑 **WORKFLOW COMPLETE - MERGE APPROVAL REQUIRED** 🛑🚨\n\n"
+                context+="✅ Code implemented and validated\n"
+                context+="✅ Subagent expert review completed\n"
+                context+="✅ All tests passing\n"
+                context+="✅ PR optimized and conflict-free\n\n"
+                context+="Type \"merge\" to complete workflow\n\n"
+                context+="⚠️ **DO NOT abandon the workflow here!** The Agent OS workflow requires Steps 13-14 to be completed.\n"
+            else
+                context+="⚠️ **Workflow Abandonment Prevention Active**\n\n"
+                context+="This appears to be a completion summary that may lead to workflow abandonment. "
+                context+="Remember that Agent OS workflows require full integration (commit → PR → merge) to be considered complete.\n\n"
+                
+                if requires_workflow_completion "$conversation"; then
+                    context+="**Required Next Steps:**\n"
+                    context+="1. Commit changes with proper issue reference\n"
+                    context+="2. Create pull request\n"
+                    context+="3. Complete integration workflow\n\n"
+                fi
             fi
         fi
     fi
