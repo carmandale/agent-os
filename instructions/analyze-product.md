@@ -120,20 +120,137 @@ encoding: UTF-8
     - File organization patterns
     - Testing approach
   </code_patterns>
+  <documentation_sources>
+    - .cursorrules file content
+    - README.md claims
+    - CLAUDE.md if present
+    - package.json scripts and configs
+    - Any setup documentation
+  </documentation_sources>
 </analysis_areas>
+
+<reality_check>
+  <package_manager>
+    - Check for: package-lock.json (npm), yarn.lock (yarn), pnpm-lock.yaml (pnpm)
+    - Check package.json scripts for manager-specific commands
+    - Note actual manager in use vs documented
+  </package_manager>
+  <language_versions>
+    - Python: Check .python-version, pyproject.toml, runtime.txt
+    - Node: Check .nvmrc, .node-version, engines in package.json
+    - Note actual versions vs documented
+  </language_versions>
+  <framework_versions>
+    - Extract from package.json, requirements.txt, Gemfile.lock
+    - Compare major versions with any documentation
+  </framework_versions>
+</reality_check>
 
 <instructions>
   ACTION: Thoroughly analyze the existing codebase
   DOCUMENT: Current technologies, features, and patterns
   IDENTIFY: Architectural decisions already made
   NOTE: Development progress and completed work
+  CAPTURE: Documentation claims from all sources
+  VERIFY: What's actually in use vs what's documented
 </instructions>
 
 </step>
 
-<step number="2" name="gather_product_context">
+<step number="2" name="organizational_standards_comparison">
 
-### Step 2: Gather Product Context
+### Step 2: Organizational Standards Comparison
+
+<step_metadata>
+  <compares>project reality with organizational standards</step_metadata>
+  <reports>discrepancies for user decision</reports>
+</step_metadata>
+
+<standards_check>
+  <read_standards>
+    - @~/.agent-os/standards/tech-stack.md
+    - @~/.agent-os/standards/code-style.md  
+    - @~/.agent-os/standards/best-practices.md
+  </read_standards>
+  <compare_against_project>
+    - Package manager standards vs project reality
+    - Language version standards vs project versions
+    - Framework version standards vs project dependencies
+    - Code style standards vs project patterns
+    - Best practices vs current implementation
+  </compare_against_project>
+</standards_check>
+
+<discrepancy_detection>
+  <package_manager_conflicts>
+    <if_standards_specify>yarn</if_standards_specify>
+    <but_project_has>package-lock.json (npm)</but_project_has>
+    <or_cursorrules_says>npm</or_cursorrules_says>
+    <flag_conflict>true</flag_conflict>
+  </package_manager_conflicts>
+  <language_version_conflicts>
+    <if_standards_specify>Python 3.12 with uv</if_standards_specify>
+    <but_project_has>requirements.txt (pip) and Python 3.9</but_project_has>
+    <flag_conflict>true</flag_conflict>
+  </language_version_conflicts>
+  <framework_version_conflicts>
+    <if_standards_specify>React 18+</if_standards_specify>
+    <but_project_has>React 16.8.0</but_project_has>
+    <flag_conflict>true</flag_conflict>
+  </framework_version_conflicts>
+</discrepancy_detection>
+
+<discrepancy_report_template>
+  ⚠️  **DISCREPANCY REPORT - Project vs Organization Standards**
+  
+  {FOR_EACH_CONFLICT}
+  
+  **{CONFLICT_NUMBER}. {CONFLICT_TITLE}:**
+  - **Org Standard** (~/.agent-os): {STANDARD_VALUE}
+  - **Project Reality**: {ACTUAL_PROJECT_STATE}
+  - **Project Docs say**: {DOCUMENTATION_CLAIMS}
+  
+  **Options:**
+  a) Align project with org standard ({MIGRATION_ACTION})
+  b) Keep current project approach ({EXCEPTION_REASON})
+  c) Update org standard ({STANDARD_CHANGE})
+  
+  → **Your choice [a/b/c]:** ___
+  
+  {END_FOR_EACH}
+</discrepancy_report_template>
+
+<issue_creation_offers>
+  <when_user_chooses_alignment>
+    <offer>Create GitHub issue for migration work?</offer>
+    <example_title>"Migrate from npm to yarn per org standards"</example_title>
+    <example_title>"Upgrade Python 3.9 → 3.12 and pip → uv"</example_title>
+    <example_title>"Upgrade React 16 → 18 per org standards"</example_title>
+  </when_user_chooses_alignment>
+</issue_creation_offers>
+
+<exception_documentation>
+  <when_user_chooses_exception>
+    <offer>Document this exception in decisions.md?</offer>
+    <example_reason>"Python 3.9 required due to AWS Lambda compatibility"</example_reason>
+    <example_reason>"npm required due to legacy CI/CD pipeline constraints"</example_reason>
+  </when_user_chooses_exception>
+</exception_documentation>
+
+<instructions>
+  ACTION: Compare project reality against organizational standards
+  DETECT: Mismatches between standards, reality, and documentation
+  REPORT: All discrepancies in structured format
+  OFFER: Solutions for each conflict (align, except, or update standards)
+  CREATE: Issues or document exceptions based on user choices
+  PROCEED: Only after all discrepancies are resolved or acknowledged
+</instructions>
+
+</step>
+
+<step number="3" name="gather_product_context">
+
+### Step 3: Gather Product Context
 
 <step_metadata>
   <supplements>codebase analysis</supplements>
@@ -164,9 +281,9 @@ encoding: UTF-8
 
 </step>
 
-<step number="3" name="execute_plan_product">
+<step number="4" name="execute_plan_product">
 
-### Step 3: Execute Plan-Product with Context
+### Step 4: Execute Plan-Product with Context
 
 <step_metadata>
   <uses>@~/.agent-os/instructions/plan-product.md</uses>
@@ -204,9 +321,9 @@ encoding: UTF-8
 
 </step>
 
-<step number="4" name="customize_generated_files">
+<step number="5" name="customize_generated_files">
 
-### Step 4: Customize Generated Documentation
+### Step 5: Customize Generated Documentation
 
 <step_metadata>
   <refines>generated documentation</refines>
@@ -276,9 +393,9 @@ encoding: UTF-8
 
 </step>
 
-<step number="5" name="final_verification">
+<step number="6" name="final_verification">
 
-### Step 5: Final Verification and Summary
+### Step 6: Final Verification and Summary
 
 <step_metadata>
   <verifies>installation completeness</verifies>
@@ -296,7 +413,7 @@ encoding: UTF-8
 <summary_template>
   ## ✅ Agent OS Successfully Installed
 
-  I've analyzed your [PRODUCT_TYPE] codebase and set up Agent OS with documentation that reflects your actual implementation.
+  I've analyzed your [PRODUCT_TYPE] codebase, reconciled discrepancies with organizational standards, and set up Agent OS with documentation that reflects your actual implementation.
 
   ### What I Found
 
@@ -305,23 +422,34 @@ encoding: UTF-8
   - **Code Style**: [DETECTED_PATTERNS]
   - **Current Phase**: [IDENTIFIED_DEVELOPMENT_STAGE]
 
+  ### Discrepancies Resolved
+
+  [IF_ANY_DISCREPANCIES_FOUND]
+  - **Resolved**: [COUNT] conflicts between org standards and project reality
+  - **Issues Created**: [LIST_OF_MIGRATION_ISSUES]
+  - **Exceptions Documented**: [LIST_OF_DOCUMENTED_EXCEPTIONS]
+  [ELSE]
+  - ✅ Project aligns perfectly with organizational standards
+  [END_IF]
+
   ### What Was Created
 
   - ✓ Product documentation in `.agent-os/product/`
   - ✓ Roadmap with completed work in Phase 0
   - ✓ Tech stack reflecting actual dependencies
+  - ✓ Decision log with discrepancy resolutions
 
   ### Next Steps
 
   1. Review the generated documentation in `.agent-os/product/`
-  2. Make any necessary adjustments to reflect your vision
+  2. Address any migration issues created during reconciliation
   3. See the Agent OS README for usage instructions: https://github.com/carmandale/agent-os
   4. Start using Agent OS for your next feature:
      ```
      @~/.agent-os/instructions/create-spec.md
      ```
 
-  Your codebase is now Agent OS-enabled! 🚀
+  Your codebase is now Agent OS-enabled with organizational alignment! 🚀
 </summary_template>
 
 <instructions>
@@ -356,9 +484,13 @@ encoding: UTF-8
 <final_checklist>
   <verify>
     - [ ] Codebase analyzed thoroughly
+    - [ ] Organizational standards compared with project reality
+    - [ ] All discrepancies detected and resolved or documented
+    - [ ] Migration issues created for alignment work (if applicable)
+    - [ ] Exceptions documented in decisions.md (if applicable)
     - [ ] User context gathered
     - [ ] plan-product.md executed with proper context
     - [ ] Documentation customized for existing product
-    - [ ] Team can adopt Agent OS workflow
+    - [ ] Team can adopt Agent OS workflow with clear standards
   </verify>
 </final_checklist>
