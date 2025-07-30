@@ -180,6 +180,12 @@ build_complete_context() {
     local conversation="$1"
     local context=""
     
+    # Always include workflow reminder first
+    if command -v build_workflow_reminder >/dev/null 2>&1; then
+        context+=$(build_workflow_reminder "$conversation")
+        context+="\n"
+    fi
+    
     context+=$(build_project_context)
     context+=$(build_git_context)
     context+=$(build_workflow_context "$conversation")
