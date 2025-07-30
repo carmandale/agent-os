@@ -7,11 +7,14 @@ This is the technical specification for the spec detailed in @.agent-os/specs/20
 
 ## Technical Requirements
 
+**IMPLEMENTATION CONSTRAINT**: All solutions must operate within Claude Code CLI sessions through Agent OS hooks. Cannot modify Claude Code itself, only inject context through user-prompt-submit hooks and related mechanisms.
+
 ### Project Context Loading System
 - **Automatic Configuration Detection**: Scan for .env, .env.local, start.sh, tech-stack.md at session start
 - **Configuration Parsing**: Extract port numbers, package managers, startup commands from various file formats
 - **Hierarchy Resolution**: Apply precedence rules to resolve conflicting configuration sources
 - **Error Handling**: Graceful fallback when configuration files are malformed or missing
+- **Hook Integration**: All loading must work through Claude Code's hook system
 
 ### Session Memory Persistence
 - **In-Memory Configuration Cache**: Store resolved configuration in session-persistent variables
