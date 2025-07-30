@@ -254,3 +254,5 @@ export -f contains_testing_evidence
 export -f detect_work_type
 export -f build_testing_reminder
 export -f requires_testing_evidence
+export -f extract_and_validate_evidence
+export -f get_testing_requirements
