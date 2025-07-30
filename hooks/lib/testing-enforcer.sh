@@ -13,7 +13,7 @@ COMPLETION_PATTERNS=(
     " done"
     " ready"
     " resolved"
-    "working"
+    " working"
     "successful"
     "implemented"
     " fixed"
