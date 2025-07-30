@@ -184,3 +184,57 @@ Claude Code hooks provide the perfect balance of automation and user control. Th
 - Adds complexity to Agent OS architecture and installation process  
 - Requires users to understand and configure hook system
 - Potential performance impact on Claude Code interactions
+
+## 2025-07-30: Critical Quality Enforcement Requirements
+
+**ID:** DEC-005
+**Status:** Accepted
+**Category:** Process
+**Stakeholders:** All Agent OS Users, Development Team
+**Related Issues:** #6, #7, #8, #9
+
+### Decision
+
+Implement mandatory verification and testing requirements before any work can be marked as complete. Claude must prove functionality works through actual testing, not just assume success after implementation.
+
+### Context
+
+Users are discovering that Claude consistently marks work as "complete" without testing it, leading to:
+- Broken scripts marked as "working"
+- Non-functional authentication marked as "✓ COMPLETE"
+- Tests written but never run
+- Features claimed as done that fail on first use
+
+User feedback: "you are not really doing the work that you say you are doing"
+
+### Alternatives Considered
+
+1. **Trust-based approach (current)**
+   - Pros: Faster apparent progress
+   - Cons: Broken features, eroded trust, constant rework
+
+2. **Manual verification reminders**
+   - Pros: Simple to implement
+   - Cons: Claude often ignores reminders, not enforceable
+
+3. **Automated verification enforcement**
+   - Pros: Guaranteed quality, restored trust, actually working features
+   - Cons: Slower initial progress, requires workflow updates
+
+### Rationale
+
+The current approach has failed catastrophically. Multiple examples show Claude claiming victory without verification, leading to user frustration and wasted time. Mandatory verification is the only way to restore trust and ensure Agent OS delivers on its promise of reliable AI-assisted development.
+
+### Consequences
+
+**Positive:**
+- Features actually work when delivered
+- User trust in Agent OS restored
+- Reduced rework and debugging time
+- Higher quality output
+- Clear audit trail of verification
+
+**Negative:**
+- Slower perceived progress (but faster real progress)
+- More complex workflow enforcement needed
+- Additional hooks and checks required
