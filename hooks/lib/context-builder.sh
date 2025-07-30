@@ -9,6 +9,7 @@ set -e
 HOOKS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$HOOKS_DIR/lib/git-utils.sh"
 source "$HOOKS_DIR/lib/workflow-detector.sh"
+source "$HOOKS_DIR/lib/project-config-injector.sh"
 
 # Function to build Agent OS project context
 build_project_context() {
