@@ -96,8 +96,14 @@ def handle_pretool(input_data):
     if tool_name == "Bash":
         command = tool_input.get("command", "").strip()
         
-        # Allow git, gh, and cd commands for workflow completion
-        allowed_commands = ["git ", "gh ", "cd "]
+        # Allow workflow and investigation commands
+        # These commands don't modify anything - they just investigate
+        allowed_commands = [
+            "git ", "gh ", "cd ",  # Workflow commands
+            "ls", "cat ", "head ", "tail ", "grep ", "find ",  # File investigation
+            "ps ", "netstat", "lsof ", "echo ", "env", "which ", "pwd",  # System investigation
+            "wc ", "sort ", "uniq ", "awk ", "sed "  # Text processing (read-only usage)
+        ]
         is_allowed_command = any(command.startswith(cmd) for cmd in allowed_commands)
         
         if is_allowed_command:
