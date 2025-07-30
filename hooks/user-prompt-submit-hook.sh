@@ -74,6 +74,16 @@ main() {
     log_hook "User prompt submit hook triggered"
     log_hook "User message length: ${#user_message}"
     
+    # Check for testing reminders first
+    local reminder
+    reminder=$(inject_reminder "$user_message")
+    
+    if [ -n "$reminder" ]; then
+        log_hook "Testing reminder injected"
+        echo "$reminder"
+        echo ""
+    fi
+    
     # Check if we need context injection
     if needs_context_injection "$user_message" "$conversation"; then
         log_hook "Context injection needed"
