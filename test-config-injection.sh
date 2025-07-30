@@ -57,7 +57,7 @@ EOF
 chmod +x start.sh
 
 # Source the config injector
-source /Users/dalecarman/Groove Jones Dropbox/Dale Carman/Projects/dev/agent-os/hooks/lib/project-config-injector.sh
+source "/Users/dalecarman/Groove Jones Dropbox/Dale Carman/Projects/dev/agent-os/hooks/lib/project-config-injector.sh"
 
 # Test the injection
 echo
@@ -66,7 +66,7 @@ echo
 build_config_reminder
 
 # Cleanup
-cd /Users/dalecarman/Groove Jones Dropbox/Dale Carman/Projects/dev/agent-os
+cd "/Users/dalecarman/Groove Jones Dropbox/Dale Carman/Projects/dev/agent-os"
 rm -rf "$TEST_DIR"
 
 echo
