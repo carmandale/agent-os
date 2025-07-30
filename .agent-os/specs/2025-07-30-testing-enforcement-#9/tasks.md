@@ -17,7 +17,7 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 1.7 Verify all detection tests pass
 
 - [ ] 2. Build Testing Evidence Standards
-  - [ ] 2.1 Write tests for evidence validation logic
+  - [x] 2.1 Write tests for evidence validation logic
   - [ ] 2.2 Define required evidence for frontend work (browser/Playwright)
   - [ ] 2.3 Define required evidence for backend work (API calls/tests)
   - [ ] 2.4 Define required evidence for scripts (execution output)
