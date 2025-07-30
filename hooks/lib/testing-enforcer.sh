@@ -6,6 +6,12 @@
 
 set -e
 
+# Source evidence standards for validation
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "$SCRIPT_DIR/evidence-standards.sh" ]; then
+    source "$SCRIPT_DIR/evidence-standards.sh"
+fi
+
 # Patterns that indicate completion claims
 COMPLETION_PATTERNS=(
     " complete"
