@@ -110,11 +110,20 @@ def handle_pretool(input_data):
             message = "⚠️ Cannot start new work - Agent OS workflow incomplete:\n\n"
             for issue in issues:
                 message += f"• {issue}\n"
-            message += "\nComplete git integration workflow first:\n"
-            message += "1. git add & commit with issue reference\n"
-            message += "2. git push & create PR\n"
-            message += "3. Complete merge process\n"
-            message += "4. Update issue status"
+            
+            # Provide specific guidance based on the issue
+            if "Open pull requests" in str(issues):
+                message += "\n🔍 REQUIRED: Review open PR and request merge approval:\n"
+                message += "1. Review the PR with `gh pr view [number]`\n"
+                message += "2. Ask user: 'I reviewed PR #X and it's ready to merge. Do I have your approval?'\n"
+                message += "3. Only merge after explicit approval\n"
+                message += "4. Then clean workspace and return to main"
+            else:
+                message += "\nComplete git integration workflow first:\n"
+                message += "1. git add & commit with issue reference\n"
+                message += "2. git push & create PR\n"
+                message += "3. Complete merge process\n"
+                message += "4. Update issue status"
             
             print(message, file=sys.stderr)
             sys.exit(2)
@@ -132,11 +141,20 @@ def handle_pretool(input_data):
             message = "⚠️ Cannot start new work - Agent OS workflow incomplete:\n\n"
             for issue in issues:
                 message += f"• {issue}\n"
-            message += "\nComplete git integration workflow first:\n"
-            message += "1. git add & commit with issue reference\n"
-            message += "2. git push & create PR\n"
-            message += "3. Complete merge process\n"
-            message += "4. Update issue status"
+            
+            # Provide specific guidance based on the issue
+            if "Open pull requests" in str(issues):
+                message += "\n🔍 REQUIRED: Review open PR and request merge approval:\n"
+                message += "1. Review the PR with `gh pr view [number]`\n"
+                message += "2. Ask user: 'I reviewed PR #X and it's ready to merge. Do I have your approval?'\n"
+                message += "3. Only merge after explicit approval\n"
+                message += "4. Then clean workspace and return to main"
+            else:
+                message += "\nComplete git integration workflow first:\n"
+                message += "1. git add & commit with issue reference\n"
+                message += "2. git push & create PR\n"
+                message += "3. Complete merge process\n"
+                message += "4. Update issue status"
             
             print(message, file=sys.stderr)
             sys.exit(2)  # Block with feedback to Claude
