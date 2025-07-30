@@ -8,15 +8,15 @@ set -e
 
 # Patterns that indicate completion claims
 COMPLETION_PATTERNS=(
-    "complete"
-    "finished"
-    "done"
-    "ready"
-    "resolved"
+    " complete"
+    " finished"
+    " done"
+    " ready"
+    " resolved"
     "working"
     "successful"
     "implemented"
-    "fixed"
+    " fixed"
     "✓"
     "✅"
     "🎉"
