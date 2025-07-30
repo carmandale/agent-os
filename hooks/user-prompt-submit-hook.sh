@@ -13,6 +13,7 @@ LOG_FILE="$HOME/.agent-os/logs/user-prompt-submit-hook.log"
 source "$HOOKS_DIR/lib/workflow-detector.sh"
 source "$HOOKS_DIR/lib/git-utils.sh"
 source "$HOOKS_DIR/lib/context-builder.sh"
+source "$HOOKS_DIR/lib/workflow-reminder.sh"
 
 # Ensure log directory exists
 mkdir -p "$(dirname "$LOG_FILE")"
