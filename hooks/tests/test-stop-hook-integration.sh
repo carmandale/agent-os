@@ -12,8 +12,8 @@ echo "I'm using @.agent-os/specs/test-spec/tasks.md to implement this. The featu
 
 echo ""
 echo "=== Testing stop hook with completion claim and evidence ==="
-echo "Using @.agent-os/specs/test-spec/tasks.md workflow. The feature is complete. Ran all tests and they pass." | bash "$HOOKS_DIR/stop-hook.sh"
+echo "I'm using @.agent-os/specs/test-spec/tasks.md to implement this. The feature is complete. Ran all tests and they pass." | bash "$HOOKS_DIR/stop-hook.sh"
 
 echo ""
 echo "=== Testing stop hook with normal conversation ==="
-echo "Using @.agent-os/specs/test-spec/tasks.md workflow. Working on the implementation" | bash "$HOOKS_DIR/stop-hook.sh"
+echo "I'm using @.agent-os/specs/test-spec/tasks.md to implement this. Working on the implementation" | bash "$HOOKS_DIR/stop-hook.sh"
