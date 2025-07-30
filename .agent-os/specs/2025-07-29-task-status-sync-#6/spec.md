@@ -9,6 +9,8 @@
 
 Implement automatic task status synchronization to ensure tasks.md accurately reflects actual implementation state, preventing the gap between completed work and task tracking that undermines Agent OS reliability.
 
+**CLAUDE CODE INTEGRATION NOTE**: This solution integrates with the completed Claude Code hooks system (Issue #37). Task detection and synchronization will operate through the post-tool-use hook and user-prompt-submit hook to detect when Claude completes work and automatically update task status in real-time.
+
 ## User Stories
 
 ### Broken Trust Recovery
