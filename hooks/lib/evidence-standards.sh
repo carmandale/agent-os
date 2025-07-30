@@ -241,15 +241,25 @@ validate_evidence_completeness() {
             ;;
     esac
     
-    # Check for general test execution (all work types)
+    # Check for general test execution (all work types) - this is a warning, not an error
+    local warnings=""
     if ! echo "$evidence" | grep -qiE "(test.*pass|npm test|pytest|test.*result)"; then
-        validation_result+="⚠️ Consider adding automated test execution\n"
+        warnings+="⚠️ Consider adding automated test execution\n"
     fi
     
+    # Return success if no errors (warnings are okay)
     if [ -z "$validation_result" ]; then
-        echo "✅ Evidence meets requirements for $work_type work"
+        if [ -z "$warnings" ]; then
+            echo "✅ Evidence meets requirements for $work_type work"
+        else
+            echo -e "✅ Evidence meets requirements for $work_type work\n$warnings"
+        fi
     else
-        echo -e "Evidence validation for $work_type work:\n$validation_result"
+        if [ -n "$warnings" ]; then
+            echo -e "Evidence validation for $work_type work:\n$validation_result$warnings"
+        else
+            echo -e "Evidence validation for $work_type work:\n$validation_result"
+        fi
     fi
 }
 
