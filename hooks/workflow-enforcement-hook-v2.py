@@ -100,7 +100,7 @@ def handle_pretool(input_data):
         # These commands don't modify anything - they just investigate
         allowed_commands = [
             "git ", "gh ", "cd ",  # Workflow commands
-            "ls", "cat ", "head ", "tail ", "grep ", "find ",  # File investigation
+            "ls ", "ls", "cat ", "head ", "tail ", "grep ", "find ",  # File investigation
             "ps ", "netstat", "lsof ", "echo ", "env", "which ", "pwd",  # System investigation
             "wc ", "sort ", "uniq ", "awk ", "sed "  # Text processing (read-only usage)
         ]
