@@ -75,6 +75,16 @@ contains_testing_evidence() {
         return 0
     fi
     
+    # Check for code blocks with execution evidence
+    if echo "$message" | grep -qE '```[^`]*(✓|passed|completed|successful)[^`]*```'; then
+        return 0
+    fi
+    
+    # Check for bash script execution blocks
+    if echo "$message" | grep -qE '```bash[^`]*```'; then
+        return 0
+    fi
+    
     # Check for specific test commands
     if echo "$message" | grep -qE 'bash.*test|python.*test|node.*test'; then
         return 0
