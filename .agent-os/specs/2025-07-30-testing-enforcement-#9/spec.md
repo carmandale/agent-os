@@ -65,3 +65,9 @@ As a team using Agent OS, I want confidence that when work is marked complete, i
 1. **No completion without testing** - Claude cannot mark work complete without running tests and showing results
 2. **Functional validation required** - All features must be demonstrated working through actual usage
 3. **Testing evidence enforced** - Test execution output, functional proof, and validation results required for completion
+
+## Spec Documentation
+
+- Tasks: @.agent-os/specs/2025-07-30-testing-enforcement-#9/tasks.md
+- Technical Specification: @.agent-os/specs/2025-07-30-testing-enforcement-#9/sub-specs/technical-spec.md
+- Tests Specification: @.agent-os/specs/2025-07-30-testing-enforcement-#9/sub-specs/tests.md
