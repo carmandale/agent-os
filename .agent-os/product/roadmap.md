@@ -1,10 +1,10 @@
 # Product Roadmap
 
-> Last Updated: 2025-01-27
-> Version: 1.0.0
-> Status: Planning
+> Last Updated: 2025-07-30
+> Version: 1.1.0
+> Status: Active Development
 
-## Phase 0: Already Completed
+## Phase 0: Core Framework (MOSTLY Complete)
 
 The following features have been implemented:
 
@@ -17,6 +17,26 @@ The following features have been implemented:
 - [x] GitHub workflow integration with issue tracking - Development workflow `L`
 - [x] Hygiene checking system - Workspace management `M`
 - [x] Reality check system for task consistency - Quality assurance `M`
+- [x] **Claude Code Hooks Implementation** - Workflow enforcement to prevent abandonment `L`
+
+## Phase 0.5: Critical Quality Issues (URGENT - 1-2 weeks)
+
+**Goal:** Fix systemic quality problems preventing reliable Agent OS usage
+**Success Criteria:** Claude actually tests work before claiming completion
+
+### Critical Issues to Fix
+
+- [ ] **Issue #9:** Enforce actual testing before completion claims - No more broken "complete" features `L`
+- [ ] **Issue #8:** Require verification proof in all completion summaries - Show test output `M`
+- [ ] **Issue #7:** Enhance PR creation with code review documentation - Build trust in PRs `M`
+- [ ] **Issue #6:** Task status synchronization gap - Fix trust in task tracking `L`
+
+### Must Complete Before Phase 1
+
+- [ ] Update workflow modules to enforce "test before complete" pattern
+- [ ] Add hooks to block false completion claims
+- [ ] Create verification templates for different work types
+- [ ] Implement "proof of work" requirements
 
 ## Phase 1: Enhanced Reliability (4-6 weeks)
 
