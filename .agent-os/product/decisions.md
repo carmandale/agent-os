@@ -238,3 +238,58 @@ The current approach has failed catastrophically. Multiple examples show Claude 
 - Slower perceived progress (but faster real progress)
 - More complex workflow enforcement needed
 - Additional hooks and checks required
+
+## 2025-07-30: Project Configuration Memory System
+
+**ID:** DEC-006
+**Status:** Accepted
+**Category:** Technical
+**Stakeholders:** Agent OS Users, Claude Code Users, Development Team
+**Related Spec:** @.agent-os/specs/2025-07-30-project-config-amnesia-#12/
+
+### Decision
+
+Implement comprehensive project configuration memory system to eliminate Claude Code's amnesia about project-specific settings (ports, package managers, startup commands) through enhanced context loading, session persistence, and hook integration.
+
+### Context
+
+Critical Issue #12 reports that Claude Code consistently forgets project configuration and reverts to defaults, causing:
+- Port configuration amnesia (uses 3000/8000 instead of configured ports)
+- Package manager switches (reverts from uv to pip, creates unnecessary virtual environments)
+- Startup command amnesia (ignores start.sh scripts, uses different commands)
+- Tech stack forgetfulness (ignores documented choices in tech-stack.md)
+
+This directly contradicts Agent OS's mission to provide "first-try success" and "consistent, high-quality output."
+
+### Alternatives Considered
+
+1. **Manual Configuration Reminders**
+   - Pros: Simple to implement, no architectural changes
+   - Cons: Claude ignores reminders, requires constant user intervention
+
+2. **Environment Variable Only Approach**
+   - Pros: Universal compatibility, simple implementation
+   - Cons: Limited to environment variables, doesn't solve startup command issues
+
+3. **Comprehensive Configuration Memory System** (Selected)
+   - Pros: Addresses all amnesia sources, persistent across sessions, hook-integrated
+   - Cons: Complex implementation, requires multiple components
+
+### Rationale
+
+The configuration amnesia problem directly undermines Agent OS's core value proposition. A comprehensive solution is necessary because partial fixes don't address the scope of the problem. The selected approach leverages existing hook infrastructure while remaining tool-agnostic for future expansion.
+
+### Consequences
+
+**Positive:**
+- Eliminates Claude Code's configuration amnesia completely
+- Provides consistent AI behavior that respects project patterns
+- Enhances user experience through reliable first-try success
+- Strengthens Agent OS's reliability and trust factor
+- Creates foundation for advanced project context awareness
+
+**Negative:**
+- Adds complexity to Agent OS architecture
+- Requires coordination between multiple components
+- Initial implementation effort is substantial
+- May impact performance if not optimized properly
