@@ -9,6 +9,8 @@
 
 Implement a comprehensive project configuration memory system to eliminate Claude Code's amnesia about project-specific settings (ports, package managers, startup commands), ensuring consistent AI behavior that respects established project patterns and configurations.
 
+**CRITICAL CONTEXT**: This solution must work within Claude Code CLI sessions. Claude Code is Anthropic's CLI tool that runs Claude (the AI assistant). The problem is session-level amnesia where Claude forgets project configuration mid-session despite initial loading. Solutions must operate through Agent OS hooks that inject context into Claude Code's processing.
+
 ## User Stories
 
 ### Amnesia-Free Development Experience
