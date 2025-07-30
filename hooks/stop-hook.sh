@@ -38,6 +38,7 @@ main() {
     log_hook "Agent OS workflow detected"
     
     # Check for testing enforcement
+    log_hook "Checking for testing enforcement"
     if requires_testing_evidence "$conversation"; then
         log_hook "Completion claim without testing evidence detected"
         local work_type
