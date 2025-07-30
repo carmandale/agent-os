@@ -171,15 +171,27 @@ echo
 echo -e "${YELLOW}Regression Testing:${NC}"
 
 # Run original testing enforcer tests
-original_test_result=$(bash "$HOOKS_DIR/tests/test-testing-enforcer.sh" 2>/dev/null && echo "pass" || echo "fail")
+if bash "$HOOKS_DIR/tests/test-testing-enforcer.sh" >/dev/null 2>&1; then
+    original_test_result="pass"
+else
+    original_test_result="fail"
+fi
 run_test "Original testing enforcer tests still pass" "pass" "$original_test_result"
 
 # Run evidence standards tests
-evidence_test_result=$(bash "$HOOKS_DIR/tests/test-evidence-standards.sh" 2>/dev/null && echo "pass" || echo "fail")
+if bash "$HOOKS_DIR/tests/test-evidence-standards.sh" >/dev/null 2>&1; then
+    evidence_test_result="pass"
+else
+    evidence_test_result="fail"
+fi
 run_test "Evidence standards tests still pass" "pass" "$evidence_test_result"
 
 # Run evidence validation tests
-validation_test_result=$(bash "$HOOKS_DIR/tests/test-evidence-validation.sh" 2>/dev/null && echo "pass" || echo "fail")
+if bash "$HOOKS_DIR/tests/test-evidence-validation.sh" >/dev/null 2>&1; then
+    validation_test_result="pass"
+else
+    validation_test_result="fail"
+fi
 run_test "Evidence validation tests still pass" "pass" "$validation_test_result"
 
 echo
