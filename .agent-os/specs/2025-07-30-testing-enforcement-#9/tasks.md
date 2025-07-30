@@ -8,13 +8,13 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
 ## Tasks
 
 - [ ] 1. Create Testing Enforcement Hook System
-  - [ ] 1.1 Write tests for testing detection in Claude's responses
-  - [ ] 1.2 Create testing-enforcer.sh to detect completion claims without evidence
-  - [ ] 1.3 Implement patterns to identify "complete" claims in responses
-  - [ ] 1.4 Add detection for common false completion phrases
-  - [ ] 1.5 Create blocking mechanism when testing evidence is missing
+  - [x] 1.1 Write tests for testing detection in Claude's responses
+  - [x] 1.2 Create testing-enforcer.sh to detect completion claims without evidence
+  - [x] 1.3 Implement patterns to identify "complete" claims in responses
+  - [x] 1.4 Add detection for common false completion phrases
+  - [x] 1.5 Create blocking mechanism when testing evidence is missing
   - [ ] 1.6 Integrate with existing stop-hook.sh system
-  - [ ] 1.7 Verify all detection tests pass
+  - [x] 1.7 Verify all detection tests pass
 
 - [ ] 2. Build Testing Evidence Standards
   - [ ] 2.1 Write tests for evidence validation logic
