@@ -34,14 +34,14 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 3.6 Add testing evidence to PR descriptions
   - [x] 3.7 Verify workflow integration tests pass
 
-- [ ] 4. Create Testing Reminder System
-  - [ ] 4.1 Write tests for testing reminder injection
-  - [ ] 4.2 Create testing-reminder.sh for context injection
-  - [ ] 4.3 Add reminders based on work type detection
-  - [ ] 4.4 Integrate with user-prompt-submit-hook.sh
-  - [ ] 4.5 Create work-type specific testing guidance
-  - [ ] 4.6 Add testing commands suggestions
-  - [ ] 4.7 Verify reminder system tests pass
+- [x] 4. Create Testing Reminder System
+  - [x] 4.1 Write tests for testing reminder injection
+  - [x] 4.2 Create testing-reminder.sh for context injection
+  - [x] 4.3 Add reminders based on work type detection
+  - [x] 4.4 Integrate with user-prompt-submit-hook.sh
+  - [x] 4.5 Create work-type specific testing guidance
+  - [x] 4.6 Add testing commands suggestions
+  - [x] 4.7 Verify reminder system tests pass
 
 - [ ] 5. End-to-End Testing and Validation
   - [ ] 5.1 Write integration tests for complete system

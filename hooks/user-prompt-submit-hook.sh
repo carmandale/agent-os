@@ -14,6 +14,7 @@ source "$HOOKS_DIR/lib/workflow-detector.sh"
 source "$HOOKS_DIR/lib/git-utils.sh"
 source "$HOOKS_DIR/lib/context-builder.sh"
 source "$HOOKS_DIR/lib/workflow-reminder.sh"
+source "$HOOKS_DIR/lib/testing-reminder.sh"
 
 # Ensure log directory exists
 mkdir -p "$(dirname "$LOG_FILE")"
@@ -72,6 +73,16 @@ main() {
     
     log_hook "User prompt submit hook triggered"
     log_hook "User message length: ${#user_message}"
+    
+    # Check for testing reminders first
+    local reminder
+    reminder=$(inject_reminder "$user_message")
+    
+    if [ -n "$reminder" ]; then
+        log_hook "Testing reminder injected"
+        echo "$reminder"
+        echo ""
+    fi
     
     # Check if we need context injection
     if needs_context_injection "$user_message" "$conversation"; then
