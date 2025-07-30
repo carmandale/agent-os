@@ -9,6 +9,7 @@ set -e
 HOOKS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$HOOKS_DIR/lib/git-utils.sh"
 source "$HOOKS_DIR/lib/workflow-detector.sh"
+source "$HOOKS_DIR/lib/project-config-injector.sh"
 
 # Function to build Agent OS project context
 build_project_context() {
@@ -184,6 +185,11 @@ build_complete_context() {
     if command -v build_workflow_reminder >/dev/null 2>&1; then
         context+=$(build_workflow_reminder "$conversation")
         context+="\n"
+    fi
+    
+    # Include project config reminder to prevent amnesia
+    if command -v build_config_reminder >/dev/null 2>&1; then
+        context+=$(build_config_reminder)
     fi
     
     context+=$(build_project_context)
