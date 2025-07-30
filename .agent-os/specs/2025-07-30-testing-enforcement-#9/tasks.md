@@ -13,7 +13,7 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 1.3 Implement patterns to identify "complete" claims in responses
   - [x] 1.4 Add detection for common false completion phrases
   - [x] 1.5 Create blocking mechanism when testing evidence is missing
-  - [ ] 1.6 Integrate with existing stop-hook.sh system
+  - [x] 1.6 Integrate with existing stop-hook.sh system
   - [x] 1.7 Verify all detection tests pass
 
 - [ ] 2. Build Testing Evidence Standards
