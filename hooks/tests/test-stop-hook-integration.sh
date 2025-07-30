@@ -8,12 +8,12 @@ HOOKS_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # Test with completion claim but no evidence
 echo "=== Testing stop hook with completion claim ==="
-echo "Testing conversation: The feature is complete and ready for review" | bash "$HOOKS_DIR/stop-hook.sh"
+echo "Using @.agent-os/specs/test-spec/tasks.md workflow. The feature is complete and ready for review" | bash "$HOOKS_DIR/stop-hook.sh"
 
 echo ""
 echo "=== Testing stop hook with completion claim and evidence ==="
-echo "Testing conversation: The feature is complete. Ran all tests and they pass." | bash "$HOOKS_DIR/stop-hook.sh"
+echo "Using @.agent-os/specs/test-spec/tasks.md workflow. The feature is complete. Ran all tests and they pass." | bash "$HOOKS_DIR/stop-hook.sh"
 
 echo ""
 echo "=== Testing stop hook with normal conversation ==="
-echo "Testing conversation: Working on the implementation" | bash "$HOOKS_DIR/stop-hook.sh"
+echo "Using @.agent-os/specs/test-spec/tasks.md workflow. Working on the implementation" | bash "$HOOKS_DIR/stop-hook.sh"
