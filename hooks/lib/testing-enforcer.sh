@@ -34,10 +34,15 @@ TESTING_EVIDENCE_PATTERNS=(
     "api.*call"
     "browser.*test"
     "verified.*in.*browser"
+    "tested.*in.*browser"
     "tested.*locally"
     "ran.*test"
     "execution.*output"
     "command.*output"
+    "executed.*script"
+    "script.*works"
+    "backup.*completed"
+    "migration.*completed"
 )
 
 # Function to check if message contains completion claims
