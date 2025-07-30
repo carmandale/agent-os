@@ -16,14 +16,14 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 1.6 Integrate with existing stop-hook.sh system
   - [x] 1.7 Verify all detection tests pass
 
-- [ ] 2. Build Testing Evidence Standards
+- [x] 2. Build Testing Evidence Standards
   - [x] 2.1 Write tests for evidence validation logic
   - [x] 2.2 Define required evidence for frontend work (browser/Playwright)
   - [x] 2.3 Define required evidence for backend work (API calls/tests)
   - [x] 2.4 Define required evidence for scripts (execution output)
-  - [ ] 2.5 Create evidence templates for different work types
-  - [ ] 2.6 Implement evidence extraction from Claude's responses
-  - [ ] 2.7 Verify all evidence validation tests pass
+  - [x] 2.5 Create evidence templates for different work types
+  - [x] 2.6 Implement evidence extraction from Claude's responses
+  - [x] 2.7 Verify all evidence validation tests pass
 
 - [ ] 3. Implement Workflow Module Updates
   - [ ] 3.1 Write tests for updated workflow behavior
