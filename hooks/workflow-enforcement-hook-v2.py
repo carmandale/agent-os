@@ -97,8 +97,14 @@ def handle_pretool(input_data):
         command = tool_input.get("command", "").strip()
         
         # Allow git and gh commands for workflow completion
+        # Handle complex commands with cd, &&, pipes, etc.
         git_commands = ["git ", "gh "]
-        is_git_command = any(command.startswith(cmd) for cmd in git_commands)
+        is_git_command = (
+            any(command.startswith(cmd) for cmd in git_commands) or
+            any(f" {cmd}" in command for cmd in git_commands) or
+            any(f"&& {cmd}" in command for cmd in git_commands) or
+            any(f"; {cmd}" in command for cmd in git_commands)
+        )
         
         if is_git_command:
             log_debug(f"Allowing git/gh command: {command}")
