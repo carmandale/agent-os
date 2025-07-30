@@ -9,6 +9,8 @@
 
 Implement intelligent workspace cleanup to replace the current "commit everything" approach with smart analysis that distinguishes between valuable changes and temporary files, preventing over-committing while maintaining workflow enforcement.
 
+**CLAUDE CODE INTEGRATION NOTE**: This solution modifies the completed Claude Code hooks system (Issue #37). Specifically, it enhances the `workflow-enforcement-hook-v2.py` to use intelligent analysis instead of blind commits. The hook infrastructure is complete and operational - this spec adds smart workspace analysis to the existing enforcement mechanism.
+
 ## User Stories
 
 ### Smart Workspace Analysis
