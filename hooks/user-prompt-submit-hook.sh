@@ -14,6 +14,7 @@ source "$HOOKS_DIR/lib/workflow-detector.sh"
 source "$HOOKS_DIR/lib/git-utils.sh"
 source "$HOOKS_DIR/lib/context-builder.sh"
 source "$HOOKS_DIR/lib/workflow-reminder.sh"
+source "$HOOKS_DIR/lib/testing-reminder.sh"
 
 # Ensure log directory exists
 mkdir -p "$(dirname "$LOG_FILE")"
