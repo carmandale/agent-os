@@ -113,28 +113,35 @@ def handle_pretool(input_data):
         # Check workflow status for non-git bash commands
         issues = check_workflow_status()
         if issues:
-            message = "⚠️ Cannot start new work - Agent OS workflow incomplete:\n\n"
+            message = "⚠️ Agent OS workflow guidance needed:\n\n"
+            
+            # Show current issues
             for issue in issues:
                 message += f"• {issue}\n"
             
+            # Add workflow reminder
+            message += "\n🔄 **AGENT OS WORKFLOW - FOLLOW EXACTLY:**\n"
+            message += "1. CHECK: git status (must be clean)\n"
+            message += "2. ISSUE: Create or reference GitHub issue\n"
+            message += "3. BRANCH: git checkout -b feature-name-#123\n"
+            message += "4. WORK: Make changes, test them IN BROWSER/REALITY\n"
+            message += "5. COMMIT: git add . && git commit -m 'type: message #123'\n"
+            message += "6. PR: gh pr create\n\n"
+            
             # Provide specific guidance based on the issue
             if "Open pull requests" in str(issues):
-                message += "\n🔍 REQUIRED: Review open PR and request merge approval:\n"
-                message += "1. Review the PR with `gh pr view [number]`\n"
-                message += "2. Ask user: 'I reviewed PR #X and it's ready to merge. Do I have your approval?'\n"
-                message += "3. Only merge after explicit approval\n"
-                message += "4. Then clean workspace and return to main"
+                message += "📋 **NEXT STEP**: Review and merge your open PR:\n"
+                message += "• gh pr view [number]\n"
+                message += "• Ask user for merge approval\n"
+                message += "• gh pr merge [number]\n"
+                message += "• git checkout main && git pull"
             elif "Uncommitted changes" in str(issues):
-                message += "\n📋 To resolve uncommitted changes:\n"
-                message += "**Git commands ARE allowed!** You can run:\n"
-                message += "• `git status` - See what changed\n"
-                message += "• `git diff` - Review changes in detail\n"
-                message += "• `git add` & `git commit` - Save changes\n"
-                message += "• `git stash` - Temporarily set aside changes\n"
-                message += "\nDEBUGGING TIP: If you need to investigate an issue,\n"
-                message += "first check changes with git status/diff, then either:\n"
-                message += "1. Commit the changes if they're complete\n"
-                message += "2. Stash them if you need to debug first"
+                message += "\n📋 **NEXT STEP**: You have uncommitted changes\n"
+                message += "• git status - See what changed\n"
+                message += "• git diff - Review changes\n"
+                message += "• TEST your changes in browser/reality\n"
+                message += "• git add . && git commit -m 'type: description #NUM'\n\n"
+                message += "⚠️ NEVER claim work is complete without testing!"
             else:
                 message += "\nComplete git integration workflow first:\n"
                 message += "1. git add & commit with issue reference\n"
@@ -155,28 +162,35 @@ def handle_pretool(input_data):
         
         if issues:
             # Block tool usage with feedback
-            message = "⚠️ Cannot start new work - Agent OS workflow incomplete:\n\n"
+            message = "⚠️ Agent OS workflow guidance needed:\n\n"
+            
+            # Show current issues
             for issue in issues:
                 message += f"• {issue}\n"
             
+            # Add workflow reminder
+            message += "\n🔄 **AGENT OS WORKFLOW - FOLLOW EXACTLY:**\n"
+            message += "1. CHECK: git status (must be clean)\n"
+            message += "2. ISSUE: Create or reference GitHub issue\n"
+            message += "3. BRANCH: git checkout -b feature-name-#123\n"
+            message += "4. WORK: Make changes, test them IN BROWSER/REALITY\n"
+            message += "5. COMMIT: git add . && git commit -m 'type: message #123'\n"
+            message += "6. PR: gh pr create\n\n"
+            
             # Provide specific guidance based on the issue
             if "Open pull requests" in str(issues):
-                message += "\n🔍 REQUIRED: Review open PR and request merge approval:\n"
-                message += "1. Review the PR with `gh pr view [number]`\n"
-                message += "2. Ask user: 'I reviewed PR #X and it's ready to merge. Do I have your approval?'\n"
-                message += "3. Only merge after explicit approval\n"
-                message += "4. Then clean workspace and return to main"
+                message += "📋 **NEXT STEP**: Review and merge your open PR:\n"
+                message += "• gh pr view [number]\n"
+                message += "• Ask user for merge approval\n"
+                message += "• gh pr merge [number]\n"
+                message += "• git checkout main && git pull"
             elif "Uncommitted changes" in str(issues):
-                message += "\n📋 To resolve uncommitted changes:\n"
-                message += "**Git commands ARE allowed!** You can run:\n"
-                message += "• `git status` - See what changed\n"
-                message += "• `git diff` - Review changes in detail\n"
-                message += "• `git add` & `git commit` - Save changes\n"
-                message += "• `git stash` - Temporarily set aside changes\n"
-                message += "\nDEBUGGING TIP: If you need to investigate an issue,\n"
-                message += "first check changes with git status/diff, then either:\n"
-                message += "1. Commit the changes if they're complete\n"
-                message += "2. Stash them if you need to debug first"
+                message += "\n📋 **NEXT STEP**: You have uncommitted changes\n"
+                message += "• git status - See what changed\n"
+                message += "• git diff - Review changes\n"
+                message += "• TEST your changes in browser/reality\n"
+                message += "• git add . && git commit -m 'type: description #NUM'\n\n"
+                message += "⚠️ NEVER claim work is complete without testing!"
             else:
                 message += "\nComplete git integration workflow first:\n"
                 message += "1. git add & commit with issue reference\n"
