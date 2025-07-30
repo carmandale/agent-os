@@ -25,14 +25,14 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 2.6 Implement evidence extraction from Claude's responses
   - [x] 2.7 Verify all evidence validation tests pass
 
-- [ ] 3. Implement Workflow Module Updates
+- [x] 3. Implement Workflow Module Updates
   - [x] 3.1 Write tests for updated workflow behavior
   - [x] 3.2 Update step-3-quality-assurance.md with testing requirements
   - [x] 3.3 Add mandatory testing step before completion claims
   - [x] 3.4 Create testing checklist templates
   - [x] 3.5 Update completion summary requirements
-  - [ ] 3.6 Add testing evidence to PR descriptions
-  - [ ] 3.7 Verify workflow integration tests pass
+  - [x] 3.6 Add testing evidence to PR descriptions
+  - [x] 3.7 Verify workflow integration tests pass
 
 - [ ] 4. Create Testing Reminder System
   - [ ] 4.1 Write tests for testing reminder injection
