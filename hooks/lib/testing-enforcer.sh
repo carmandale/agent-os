@@ -187,6 +187,52 @@ build_testing_reminder() {
     echo -e "$reminder"
 }
 
+# Function to extract and validate evidence from Claude's response
+extract_and_validate_evidence() {
+    local work_type="$1"
+    local message="$2"
+    local validation_result=""
+    
+    # Use evidence standards validation if available
+    if command -v validate_evidence_completeness >/dev/null 2>&1; then
+        validation_result=$(validate_evidence_completeness "$work_type" "$message")
+        echo "$validation_result"
+    else
+        # Fallback to basic validation
+        if contains_testing_evidence "$message"; then
+            echo "✅ Basic testing evidence detected"
+        else
+            echo "❌ No testing evidence found"
+        fi
+    fi
+}
+
+# Enhanced function to provide work-type specific requirements
+get_testing_requirements() {
+    local work_type="$1"
+    
+    # Use evidence standards requirements if available
+    if command -v get_evidence_requirements >/dev/null 2>&1; then
+        get_evidence_requirements "$work_type"
+    else
+        # Fallback to basic requirements
+        case "$work_type" in
+            "frontend")
+                echo "Frontend work requires browser testing and user interaction verification"
+                ;;
+            "backend")
+                echo "Backend work requires API testing and database validation"
+                ;;
+            "script")
+                echo "Script work requires execution proof and output verification"
+                ;;
+            *)
+                echo "All work requires functional testing and evidence of completion"
+                ;;
+        esac
+    fi
+}
+
 # Function to check if testing is required
 requires_testing_evidence() {
     local message="$1"
