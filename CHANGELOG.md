@@ -5,6 +5,26 @@ All notable changes to Agent OS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2025-01-10
+
+### Added
+- **Background Task Management**: Complete implementation of Claude Code's background execution features
+  - `aos-background` tool for managing long-running processes
+  - Task registry with JSON storage for tracking all tasks
+  - Process monitoring with PID tracking and automatic cleanup
+  - Log management system with search and tail capabilities
+  - Debug helper for troubleshooting failed tasks
+- **aos v4**: Unified CLI combining Agent OS management with background tasks
+  - All v3 features plus integrated background task commands
+  - Single `aos` command for everything
+  - Background task status in comprehensive reports
+- **Background Task Specification**: Complete planning document for async features
+
+### Improved
+- **Developer Workflow**: Enable non-blocking development with background tasks
+- **Task Visibility**: Monitor all running processes from one place
+- **Error Debugging**: Automatic error pattern detection in logs
+
 ## [2.1.0] - 2025-01-10
 
 ### Added
