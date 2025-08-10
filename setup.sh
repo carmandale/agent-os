@@ -42,6 +42,9 @@ echo "🚀 Agent OS Setup Script"
 echo "========================"
 echo ""
 
+# Version tracking
+AGENT_OS_VERSION="2.0.0"
+
 # Base URL for raw GitHub content
 # Updated to use carmandale/agent-os fork with custom GitHub Issues workflow,
 # tabs indentation, and Python/React tech stack preferences
@@ -185,6 +188,10 @@ echo "  ✓ ~/.agent-os/workflow-modules/step-3-quality-assurance.md"
 curl -s -o "$HOME/.agent-os/workflow-modules/step-4-git-integration.md" "${BASE_URL}/workflow-modules/step-4-git-integration.md"
 echo "  ✓ ~/.agent-os/workflow-modules/step-4-git-integration.md"
 
+# Track version
+echo "$AGENT_OS_VERSION" > "$HOME/.agent-os/.version"
+echo "  ✓ Version $AGENT_OS_VERSION tracked"
+
 echo ""
 echo "✅ Agent OS base installation complete!"
 echo ""
@@ -193,6 +200,7 @@ echo "   ~/.agent-os/standards/        - Your development standards"
 echo "   ~/.agent-os/instructions/     - Agent OS instructions"
 echo "   ~/.agent-os/scripts/          - Dynamic workflow scripts"
 echo "   ~/.agent-os/workflow-modules/ - Modular workflow components"
+echo "   ~/.agent-os/.version          - Version $AGENT_OS_VERSION"
 echo ""
 if [ "$OVERWRITE_INSTRUCTIONS" = false ] && [ "$OVERWRITE_STANDARDS" = false ]; then
     echo "💡 Note: Existing files were skipped to preserve your customizations"
