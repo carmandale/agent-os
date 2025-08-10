@@ -24,7 +24,7 @@ PROCEED_PATTERNS = [
 ]
 
 # Tools that indicate starting new work
-NEW_WORK_TOOLS = ["Write", "Edit", "MultiEdit", "TodoWrite"]
+NEW_WORK_TOOLS = ["Write", "Edit", "MultiEdit"]
 
 
 def log_debug(message):
