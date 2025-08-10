@@ -97,14 +97,17 @@ def handle_pretool(input_data):
         command = tool_input.get("command", "").strip()
         
         # Allow workflow and investigation commands
-        # These commands don't modify anything - they just investigate
         allowed_commands = [
             "git ", "gh ", "cd ",  # Workflow commands
             "ls ", "ls", "cat ", "head ", "tail ", "grep ", "find ",  # File investigation
             "ps ", "netstat", "lsof ", "echo ", "env", "which ", "pwd",  # System investigation
-            "wc ", "sort ", "uniq ", "awk ", "sed "  # Text processing (read-only usage)
+            "wc ", "sort ", "uniq ", "awk ", "sed ",  # Text processing (read-only usage)
+            "chmod ", "mv ", "rm ", "cp ", "touch "  # File operations often needed with git
         ]
-        is_allowed_command = any(command.startswith(cmd) for cmd in allowed_commands)
+        
+        # Check if command contains git operations (even in compound commands)
+        is_git_command = "git " in command or "gh " in command
+        is_allowed_command = any(command.startswith(cmd) for cmd in allowed_commands) or is_git_command
         
         if is_allowed_command:
             log_debug(f"Allowing command: {command}")
@@ -112,6 +115,13 @@ def handle_pretool(input_data):
         
         # Check workflow status for non-git bash commands
         issues = check_workflow_status()
+        
+        # If there are uncommitted changes but the command includes git operations,
+        # allow it (they're trying to fix the issue)
+        if issues and "Uncommitted changes" in str(issues) and is_git_command:
+            log_debug(f"Allowing git command to resolve uncommitted changes: {command}")
+            sys.exit(0)
+        
         if issues:
             message = "⚠️ Agent OS workflow guidance needed:\n\n"
             
