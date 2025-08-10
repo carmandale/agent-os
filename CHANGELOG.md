@@ -5,6 +5,20 @@ All notable changes to Agent OS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2025-01-10
+
+### Added
+- **aos v3**: Comprehensive project validation
+  - Separate tracking of global vs project status
+  - Detection of outdated project components
+  - Actionable status reports showing what needs updating
+  - Smart validation of Claude commands, Cursor rules, and hooks
+
+### Improved
+- **Status Command**: Now validates both Agent OS installation AND project setup
+- **Better Diagnostics**: Shows specific issues that need fixing
+- **Quick Actions**: Provides exact commands to fix detected issues
+
 ## [2.0.0] - 2025-01-10
 
 ### Added
