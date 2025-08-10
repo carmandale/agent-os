@@ -1,0 +1,449 @@
+#!/bin/bash
+
+# Agent OS Background Task Manager
+# Implements Claude Code's background execution capabilities for Agent OS
+
+AGENT_OS_HOME="${AGENT_OS_HOME:-$HOME/.agent-os}"
+TASKS_DIR="$AGENT_OS_HOME/tasks"
+LOGS_DIR="$AGENT_OS_HOME/logs"
+TASK_REGISTRY="$TASKS_DIR/registry.json"
+
+# Ensure directories exist
+mkdir -p "$TASKS_DIR" "$LOGS_DIR/tasks"
+
+# Initialize registry if it doesn't exist
+if [ ! -f "$TASK_REGISTRY" ]; then
+    echo '{"tasks": []}' > "$TASK_REGISTRY"
+fi
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Generate task ID
+generate_task_id() {
+    local timestamp=$(date +%Y%m%d-%H%M%S)
+    local random=$(openssl rand -hex 3)
+    echo "task-${timestamp}-${random}"
+}
+
+# Update task status in registry
+update_task_status() {
+    local task_id="$1"
+    local status="$2"
+    local pid="${3:-}"
+    
+    # Use Python for JSON manipulation (more reliable than jq)
+    python3 -c "
+import json
+import sys
+
+with open('$TASK_REGISTRY', 'r') as f:
+    data = json.load(f)
+
+for task in data['tasks']:
+    if task['id'] == '$task_id':
+        task['status'] = '$status'
+        task['updated_at'] = '$(date -Iseconds)'
+        if '$pid':
+            task['pid'] = '$pid'
+        break
+
+with open('$TASK_REGISTRY', 'w') as f:
+    json.dump(data, f, indent=2)
+"
+}
+
+# Add task to registry
+add_task_to_registry() {
+    local task_id="$1"
+    local command="$2"
+    local pid="$3"
+    local log_file="$4"
+    
+    python3 -c "
+import json
+import sys
+
+with open('$TASK_REGISTRY', 'r') as f:
+    data = json.load(f)
+
+task = {
+    'id': '$task_id',
+    'command': '''$command''',
+    'pid': $pid,
+    'status': 'running',
+    'log_file': '$log_file',
+    'started_at': '$(date -Iseconds)',
+    'updated_at': '$(date -Iseconds)'
+}
+
+data['tasks'].append(task)
+
+with open('$TASK_REGISTRY', 'w') as f:
+    json.dump(data, f, indent=2)
+"
+}
+
+# Check if process is running
+is_process_running() {
+    local pid="$1"
+    if [ -z "$pid" ]; then
+        return 1
+    fi
+    kill -0 "$pid" 2>/dev/null
+}
+
+# Clean up dead tasks
+cleanup_dead_tasks() {
+    python3 -c "
+import json
+import os
+import signal
+
+with open('$TASK_REGISTRY', 'r') as f:
+    data = json.load(f)
+
+for task in data['tasks']:
+    if task['status'] == 'running':
+        try:
+            os.kill(task['pid'], 0)
+        except (OSError, KeyError):
+            task['status'] = 'stopped'
+
+with open('$TASK_REGISTRY', 'w') as f:
+    json.dump(data, f, indent=2)
+"
+}
+
+# Run command in background
+run_background() {
+    local command="$1"
+    local task_name="${2:-background-task}"
+    
+    # Generate task ID
+    local task_id=$(generate_task_id)
+    local log_file="$LOGS_DIR/tasks/${task_id}.log"
+    
+    echo -e "${BLUE}🚀 Starting background task: ${task_id}${NC}"
+    echo -e "${BLUE}   Command: ${command}${NC}"
+    echo -e "${BLUE}   Log file: ${log_file}${NC}"
+    
+    # Start the process in background
+    (
+        exec 1>"$log_file" 2>&1
+        echo "=== Task Started: $(date) ==="
+        echo "Command: $command"
+        echo "================================"
+        echo ""
+        eval "$command"
+        exit_code=$?
+        echo ""
+        echo "================================"
+        echo "=== Task Completed: $(date) ==="
+        echo "Exit code: $exit_code"
+        
+        # Update task status
+        if [ $exit_code -eq 0 ]; then
+            update_task_status "$task_id" "completed"
+        else
+            update_task_status "$task_id" "failed"
+        fi
+    ) &
+    
+    local pid=$!
+    
+    # Add to registry
+    add_task_to_registry "$task_id" "$command" "$pid" "$log_file"
+    
+    echo -e "${GREEN}✓ Task ${task_id} started with PID ${pid}${NC}"
+    echo ""
+    echo "Monitor with: aos monitor ${task_id}"
+    echo "View logs: aos logs ${task_id}"
+    echo "Stop task: aos stop ${task_id}"
+}
+
+# List all tasks
+list_tasks() {
+    # Clean up dead tasks first
+    cleanup_dead_tasks
+    
+    echo -e "${BLUE}📋 Agent OS Background Tasks${NC}"
+    echo ""
+    
+    python3 -c "
+import json
+import sys
+from datetime import datetime
+
+with open('$TASK_REGISTRY', 'r') as f:
+    data = json.load(f)
+
+if not data['tasks']:
+    print('No background tasks found.')
+    sys.exit(0)
+
+# Sort by started_at, most recent first
+tasks = sorted(data['tasks'], key=lambda x: x.get('started_at', ''), reverse=True)
+
+for task in tasks:
+    task_id = task['id']
+    command = task['command'][:50] + '...' if len(task['command']) > 50 else task['command']
+    status = task['status']
+    pid = task.get('pid', 'N/A')
+    
+    # Color based on status
+    if status == 'running':
+        status_color = '\033[0;32m'  # Green
+        status_icon = '🟢'
+    elif status == 'completed':
+        status_color = '\033[0;34m'  # Blue
+        status_icon = '✅'
+    elif status == 'failed':
+        status_color = '\033[0;31m'  # Red
+        status_icon = '❌'
+    else:
+        status_color = '\033[1;33m'  # Yellow
+        status_icon = '⚠️'
+    
+    print(f'{status_icon} {task_id}')
+    print(f'   Status: {status_color}{status}\033[0m')
+    print(f'   Command: {command}')
+    if status == 'running':
+        print(f'   PID: {pid}')
+    print()
+"
+}
+
+# Monitor task output
+monitor_task() {
+    local task_id="$1"
+    
+    # Get log file from registry
+    local log_file=$(python3 -c "
+import json
+with open('$TASK_REGISTRY', 'r') as f:
+    data = json.load(f)
+for task in data['tasks']:
+    if task['id'] == '$task_id':
+        print(task['log_file'])
+        break
+")
+    
+    if [ -z "$log_file" ]; then
+        echo -e "${RED}❌ Task ${task_id} not found${NC}"
+        return 1
+    fi
+    
+    if [ ! -f "$log_file" ]; then
+        echo -e "${RED}❌ Log file not found: ${log_file}${NC}"
+        return 1
+    fi
+    
+    echo -e "${BLUE}📊 Monitoring task: ${task_id}${NC}"
+    echo -e "${BLUE}Press Ctrl+C to stop monitoring${NC}"
+    echo ""
+    
+    # Follow the log file
+    tail -f "$log_file"
+}
+
+# View task logs
+view_logs() {
+    local task_id="$1"
+    local grep_pattern="${2:-}"
+    
+    # Get log file from registry
+    local log_file=$(python3 -c "
+import json
+with open('$TASK_REGISTRY', 'r') as f:
+    data = json.load(f)
+for task in data['tasks']:
+    if task['id'] == '$task_id':
+        print(task['log_file'])
+        break
+")
+    
+    if [ -z "$log_file" ]; then
+        echo -e "${RED}❌ Task ${task_id} not found${NC}"
+        return 1
+    fi
+    
+    if [ ! -f "$log_file" ]; then
+        echo -e "${RED}❌ Log file not found: ${log_file}${NC}"
+        return 1
+    fi
+    
+    echo -e "${BLUE}📄 Logs for task: ${task_id}${NC}"
+    echo ""
+    
+    if [ -n "$grep_pattern" ]; then
+        grep -E "$grep_pattern" "$log_file"
+    else
+        cat "$log_file"
+    fi
+}
+
+# Stop a task
+stop_task() {
+    local task_id="$1"
+    
+    # Get PID from registry
+    local pid=$(python3 -c "
+import json
+with open('$TASK_REGISTRY', 'r') as f:
+    data = json.load(f)
+for task in data['tasks']:
+    if task['id'] == '$task_id' and task['status'] == 'running':
+        print(task.get('pid', ''))
+        break
+")
+    
+    if [ -z "$pid" ]; then
+        echo -e "${YELLOW}⚠️  Task ${task_id} is not running${NC}"
+        return 1
+    fi
+    
+    echo -e "${YELLOW}🛑 Stopping task ${task_id} (PID: ${pid})...${NC}"
+    
+    # Try graceful shutdown first
+    kill "$pid" 2>/dev/null
+    
+    # Wait a bit
+    sleep 2
+    
+    # Check if still running
+    if is_process_running "$pid"; then
+        echo -e "${YELLOW}Force stopping...${NC}"
+        kill -9 "$pid" 2>/dev/null
+    fi
+    
+    # Update status
+    update_task_status "$task_id" "stopped"
+    
+    echo -e "${GREEN}✓ Task ${task_id} stopped${NC}"
+}
+
+# Debug helper - show errors from recent tasks
+debug_tasks() {
+    echo -e "${BLUE}🔍 Debugging recent task errors${NC}"
+    echo ""
+    
+    python3 -c "
+import json
+import os
+
+with open('$TASK_REGISTRY', 'r') as f:
+    data = json.load(f)
+
+# Find failed tasks
+failed_tasks = [t for t in data['tasks'] if t['status'] == 'failed']
+
+if not failed_tasks:
+    print('No failed tasks found.')
+else:
+    for task in failed_tasks[-5:]:  # Last 5 failed tasks
+        print(f\"Task: {task['id']}\")
+        print(f\"Command: {task['command']}\")
+        log_file = task['log_file']
+        if os.path.exists(log_file):
+            print('Last 10 lines of log:')
+            with open(log_file, 'r') as f:
+                lines = f.readlines()
+                for line in lines[-10:]:
+                    print(f'  {line.rstrip()}')
+        print('-' * 50)
+"
+}
+
+# Clean old tasks and logs
+clean_tasks() {
+    local days="${1:-7}"
+    
+    echo -e "${BLUE}🧹 Cleaning tasks older than ${days} days${NC}"
+    
+    # Clean old log files
+    find "$LOGS_DIR/tasks" -type f -name "*.log" -mtime "+${days}" -delete
+    
+    # Clean registry
+    python3 -c "
+import json
+from datetime import datetime, timedelta
+
+with open('$TASK_REGISTRY', 'r') as f:
+    data = json.load(f)
+
+cutoff = datetime.now() - timedelta(days=$days)
+data['tasks'] = [
+    t for t in data['tasks'] 
+    if datetime.fromisoformat(t['started_at'].replace('Z', '+00:00')) > cutoff
+]
+
+with open('$TASK_REGISTRY', 'w') as f:
+    json.dump(data, f, indent=2)
+"
+    
+    echo -e "${GREEN}✓ Cleanup complete${NC}"
+}
+
+# Main command handler
+case "$1" in
+    run)
+        shift
+        if [[ "$1" == "-b" ]] || [[ "$1" == "--background" ]]; then
+            shift
+        fi
+        run_background "$@"
+        ;;
+    tasks)
+        list_tasks
+        ;;
+    list)
+        list_tasks
+        ;;
+    monitor)
+        monitor_task "$2"
+        ;;
+    logs)
+        shift
+        if [[ "$1" == "-f" ]] || [[ "$1" == "--follow" ]]; then
+            monitor_task "$2"
+        elif [[ "$1" == "--grep" ]]; then
+            view_logs "$2" "$3"
+        else
+            view_logs "$1" "$2"
+        fi
+        ;;
+    stop)
+        stop_task "$2"
+        ;;
+    debug)
+        debug_tasks
+        ;;
+    clean)
+        clean_tasks "$2"
+        ;;
+    *)
+        echo "Agent OS Background Task Manager"
+        echo ""
+        echo "Usage:"
+        echo "  aos run <command>         Run command in background"
+        echo "  aos tasks                 List all background tasks"
+        echo "  aos monitor <task-id>     Monitor task output (tail -f)"
+        echo "  aos logs <task-id>        View task logs"
+        echo "  aos logs -f <task-id>     Follow task logs (tail -f)"
+        echo "  aos logs --grep <id> <pattern>  Search logs"
+        echo "  aos stop <task-id>        Stop a running task"
+        echo "  aos debug                 Show recent task errors"
+        echo "  aos clean [days]          Clean old tasks (default: 7 days)"
+        echo ""
+        echo "Examples:"
+        echo "  aos run 'npm run dev'"
+        echo "  aos run 'python manage.py runserver'"
+        echo "  aos monitor task-20250108-143022-a1b2c3"
+        echo "  aos logs --grep task-123 'ERROR'"
+        ;;
+esac
