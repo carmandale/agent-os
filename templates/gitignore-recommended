@@ -1,0 +1,15 @@
+# Agent OS Recommended .gitignore entries
+# Add these to your project's .gitignore
+
+# Ignore temporary Agent OS files but keep product docs
+.agent-os/temp/
+.agent-os/cache/
+.agent-os/logs/
+
+# Keep product documentation tracked
+!.agent-os/product/
+!.agent-os/product/**
+
+# Optional: Track active specs if desired
+# !.agent-os/specs/
+# !.agent-os/specs/**
