@@ -2,37 +2,10 @@
 """
 Agent OS Workflow Enforcement Hook
 ==================================
-This hook runs as both UserPromptSubmit and PreToolUse to enforce Agent OS workflows.
+Unified hook handler for Agent OS workflow enforcement in Claude Code.
 
-UserPromptSubmit: Adds workflow status context when users try to proceed
-PreToolUse: Blocks tool usage until git workflow is complete
-
-Configuration in ~/.claude/settings.json:
-{
-  "hooks": {
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 /Users/dalecarman/.agent-os/hooks/workflow-enforcement-hook.py"
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 /Users/dalecarman/.agent-os/hooks/workflow-enforcement-hook.py"
-          }
-        ]
-      }
-    ]
-  }
-}
+Usage: python3 workflow-enforcement-hook.py [hook-type]
+Hook types: pretool, pretool-task, userprompt, posttool
 """
 
 import json
@@ -40,6 +13,8 @@ import os
 import re
 import subprocess
 import sys
+from datetime import datetime
+
 
 # Patterns that indicate user wants to proceed
 PROCEED_PATTERNS = [
@@ -48,19 +23,17 @@ PROCEED_PATTERNS = [
     r"let'?s (do|start|work on)",
 ]
 
-# Patterns that indicate workflow completion claims
-COMPLETION_PATTERNS = [
-    r"task.*complete",
-    r"quality checks? passed",
-    r"all tests? pass",
-    r"implementation complete",
-    r"ready for.*task",
-    r"work is complete",
-    r"fully integrated",
-]
-
 # Tools that indicate starting new work
-NEW_WORK_TOOLS = ["Write", "Edit", "MultiEdit", "Task"]
+NEW_WORK_TOOLS = ["Write", "Edit", "MultiEdit"]
+
+
+def log_debug(message):
+    """Write debug logs if debugging enabled."""
+    if os.environ.get("AGENT_OS_DEBUG", "").lower() == "true":
+        log_path = os.path.expanduser("~/.agent-os/logs/hooks-debug.log")
+        os.makedirs(os.path.dirname(log_path), exist_ok=True)
+        with open(log_path, "a") as f:
+            f.write(f"[{datetime.now().isoformat()}] {message}\n")
 
 
 def check_git_status():
@@ -70,10 +43,12 @@ def check_git_status():
             ["git", "status", "--porcelain"],
             capture_output=True,
             text=True,
-            timeout=5
+            timeout=5,
+            cwd=os.getcwd()
         )
         return bool(result.stdout.strip())
-    except:
+    except Exception as e:
+        log_debug(f"Git status check failed: {e}")
         return False
 
 
@@ -86,9 +61,12 @@ def check_open_prs():
             text=True,
             timeout=5
         )
-        prs = json.loads(result.stdout)
-        return len(prs) > 0
-    except:
+        if result.returncode == 0:
+            prs = json.loads(result.stdout)
+            return len(prs) > 0
+        return False
+    except Exception as e:
+        log_debug(f"PR check failed: {e}")
         return False
 
 
@@ -107,12 +85,164 @@ def check_workflow_status():
     return issues
 
 
-def handle_user_prompt_submit_with_data(input_data):
-    """Handle UserPromptSubmit hook - add context for proceed attempts."""
+def handle_pretool(input_data):
+    """Handle PreToolUse hook - block new work until workflow complete."""
+    tool_name = input_data.get("tool_name", "")
+    tool_input = input_data.get("tool_input", {})
+    
+    log_debug(f"PreToolUse hook called for tool: {tool_name}")
+    
+    # Special handling for Bash commands
+    if tool_name == "Bash":
+        command = tool_input.get("command", "").strip()
+        
+        # Allow workflow and investigation commands
+        allowed_commands = [
+            "git ", "gh ", "cd ",  # Workflow commands
+            "ls ", "ls", "cat ", "head ", "tail ", "grep ", "find ",  # File investigation
+            "ps ", "netstat", "lsof ", "echo ", "env", "which ", "pwd",  # System investigation
+            "wc ", "sort ", "uniq ", "awk ", "sed ",  # Text processing (read-only usage)
+            "chmod ", "mv ", "rm ", "cp ", "touch "  # File operations often needed with git
+        ]
+        
+        # Check if command contains git operations (even in compound commands)
+        is_git_command = "git " in command or "gh " in command
+        is_allowed_command = any(command.startswith(cmd) for cmd in allowed_commands) or is_git_command
+        
+        if is_allowed_command:
+            log_debug(f"Allowing command: {command}")
+            sys.exit(0)
+        
+        # Check workflow status for non-git bash commands
+        issues = check_workflow_status()
+        
+        # If there are uncommitted changes but the command includes git operations,
+        # allow it (they're trying to fix the issue)
+        if issues and "Uncommitted changes" in str(issues) and is_git_command:
+            log_debug(f"Allowing git command to resolve uncommitted changes: {command}")
+            sys.exit(0)
+        
+        if issues:
+            message = "⚠️ Agent OS workflow guidance needed:\n\n"
+            
+            # Show current issues
+            for issue in issues:
+                message += f"• {issue}\n"
+            
+            # Add workflow reminder
+            message += "\n🔄 **AGENT OS WORKFLOW - FOLLOW EXACTLY:**\n"
+            message += "1. CHECK: git status (must be clean)\n"
+            message += "2. ISSUE: Create or reference GitHub issue\n"
+            message += "3. BRANCH: git checkout -b feature-name-#123\n"
+            message += "4. WORK: Make changes, test them IN BROWSER/REALITY\n"
+            message += "5. COMMIT: git add . && git commit -m 'type: message #123'\n"
+            message += "6. PR: gh pr create\n\n"
+            
+            # Provide specific guidance based on the issue
+            if "Open pull requests" in str(issues):
+                message += "📋 **NEXT STEP**: Review and merge your open PR:\n"
+                message += "• gh pr view [number]\n"
+                message += "• Ask user for merge approval\n"
+                message += "• gh pr merge [number]\n"
+                message += "• git checkout main && git pull"
+            elif "Uncommitted changes" in str(issues):
+                message += "\n📋 **NEXT STEP**: You have uncommitted changes\n"
+                message += "• git status - See what changed\n"
+                message += "• git diff - Review changes\n"
+                message += "• TEST your changes in browser/reality\n"
+                message += "• git add . && git commit -m 'type: description #NUM'\n\n"
+                message += "⚠️ NEVER claim work is complete without testing!"
+            else:
+                message += "\nComplete git integration workflow first:\n"
+                message += "1. git add & commit with issue reference\n"
+                message += "2. git push & create PR\n"
+                message += "3. Complete merge process\n"
+                message += "4. Update issue status"
+            
+            print(message, file=sys.stderr)
+            sys.exit(2)
+    
+    # Only check for tools that indicate new work
+    elif tool_name not in NEW_WORK_TOOLS:
+        sys.exit(0)
+    
+    # Check workflow status for other tools
+    else:
+        issues = check_workflow_status()
+        
+        if issues:
+            # Block tool usage with feedback
+            message = "⚠️ Agent OS workflow guidance needed:\n\n"
+            
+            # Show current issues
+            for issue in issues:
+                message += f"• {issue}\n"
+            
+            # Add workflow reminder
+            message += "\n🔄 **AGENT OS WORKFLOW - FOLLOW EXACTLY:**\n"
+            message += "1. CHECK: git status (must be clean)\n"
+            message += "2. ISSUE: Create or reference GitHub issue\n"
+            message += "3. BRANCH: git checkout -b feature-name-#123\n"
+            message += "4. WORK: Make changes, test them IN BROWSER/REALITY\n"
+            message += "5. COMMIT: git add . && git commit -m 'type: message #123'\n"
+            message += "6. PR: gh pr create\n\n"
+            
+            # Provide specific guidance based on the issue
+            if "Open pull requests" in str(issues):
+                message += "📋 **NEXT STEP**: Review and merge your open PR:\n"
+                message += "• gh pr view [number]\n"
+                message += "• Ask user for merge approval\n"
+                message += "• gh pr merge [number]\n"
+                message += "• git checkout main && git pull"
+            elif "Uncommitted changes" in str(issues):
+                message += "\n📋 **NEXT STEP**: You have uncommitted changes\n"
+                message += "• git status - See what changed\n"
+                message += "• git diff - Review changes\n"
+                message += "• TEST your changes in browser/reality\n"
+                message += "• git add . && git commit -m 'type: description #NUM'\n\n"
+                message += "⚠️ NEVER claim work is complete without testing!"
+            else:
+                message += "\nComplete git integration workflow first:\n"
+                message += "1. git add & commit with issue reference\n"
+                message += "2. git push & create PR\n"
+                message += "3. Complete merge process\n"
+                message += "4. Update issue status"
+            
+            print(message, file=sys.stderr)
+            sys.exit(2)  # Block with feedback to Claude
+    
+    sys.exit(0)
+
+
+def handle_pretool_task(input_data):
+    """Handle Task tool - enforce subagent usage for complex work."""
+    tool_input = input_data.get("tool_input", {})
+    description = tool_input.get("description", "").lower()
+    
+    log_debug(f"Task tool called with description: {description}")
+    
+    # Check if this is a review/validation task that should use subagents
+    review_keywords = ["review", "validate", "check", "verify", "test", "analyze"]
+    needs_subagent = any(keyword in description for keyword in review_keywords)
+    
+    if needs_subagent:
+        message = ("⚠️ Use specialized subagents for quality assurance:\n\n"
+                  "• senior-software-engineer - For architecture and design review\n"
+                  "• qa-test-engineer - For comprehensive test validation\n"
+                  "• code-analyzer-debugger - For debugging complex issues\n\n"
+                  "Example: 'Use senior-software-engineer to review the implementation'")
+        
+        print(message, file=sys.stderr)
+        sys.exit(2)  # Block with subagent recommendation
+    
+    sys.exit(0)
+
+
+def handle_userprompt(input_data):
+    """Handle UserPromptSubmit - add context for proceed attempts."""
     prompt = input_data.get("prompt", "").lower()
     
-    # Note: conversation history may not be available in the input
-    # We'll check git status and PR status directly
+    log_debug(f"UserPromptSubmit called with prompt: {prompt[:100]}...")
     
     # Check if user is trying to proceed
     is_proceed_attempt = any(re.search(pattern, prompt) for pattern in PROCEED_PATTERNS)
@@ -120,7 +250,7 @@ def handle_user_prompt_submit_with_data(input_data):
     if not is_proceed_attempt:
         sys.exit(0)
     
-    # Check workflow status (without conversation context)
+    # Check workflow status
     issues = check_workflow_status()
     
     if issues:
@@ -138,7 +268,7 @@ def handle_user_prompt_submit_with_data(input_data):
         
         # Return JSON to add context
         output = {
-            "decision": "continue",
+            "decision": "allow",
             "hookSpecificOutput": {
                 "additionalContext": context
             }
@@ -148,70 +278,53 @@ def handle_user_prompt_submit_with_data(input_data):
     sys.exit(0)
 
 
-def handle_pre_tool_use_with_data(input_data):
-    """Handle PreToolUse hook - block new work until workflow complete."""
+def handle_posttool(input_data):
+    """Handle PostToolUse - auto-commit Agent OS documentation changes."""
     tool_name = input_data.get("tool_name", "")
+    tool_input = input_data.get("tool_input", {})
     
-    # Only check for tools that indicate new work
-    if tool_name not in NEW_WORK_TOOLS:
-        sys.exit(0)
+    log_debug(f"PostToolUse called for tool: {tool_name}")
     
-    # Check workflow status (without conversation context)
-    issues = check_workflow_status()
+    # Check if Agent OS files were modified
+    if tool_name in ["Write", "Edit", "MultiEdit"]:
+        file_path = tool_input.get("file_path", "")
+        if ".agent-os/" in file_path or "CLAUDE.md" in file_path:
+            log_debug(f"Agent OS file modified: {file_path}")
+            # Could auto-commit here if needed
     
-    if issues:
-        # Block tool usage with feedback
-        message = "⚠️ Cannot start new work - Agent OS workflow incomplete:\n\n"
-        for issue in issues:
-            message += f"• {issue}\n"
-        message += "\nComplete git integration workflow first:\n"
-        message += "1. git add & commit with issue reference\n"
-        message += "2. git push & create PR\n"
-        message += "3. Complete merge process\n"
-        message += "4. Update issue status"
-        
-        print(message, file=sys.stderr)
-        sys.exit(2)  # Block with feedback to Claude
-
-
-# Legacy handlers for backward compatibility
-def handle_user_prompt_submit():
-    """Legacy handler - reads from stdin."""
-    try:
-        input_data = json.load(sys.stdin)
-        handle_user_prompt_submit_with_data(input_data)
-    except:
-        sys.exit(0)
-
-
-def handle_pre_tool_use():
-    """Legacy handler - reads from stdin."""
-    try:
-        input_data = json.load(sys.stdin)
-        handle_pre_tool_use_with_data(input_data)
-    except:
-        sys.exit(0)
+    sys.exit(0)
 
 
 def main():
-    """Route to appropriate handler based on hook event."""
+    """Main entry point - route to appropriate handler."""
+    if len(sys.argv) < 2:
+        print("Error: Hook type not specified", file=sys.stderr)
+        sys.exit(1)
+    
+    hook_type = sys.argv[1]
+    
     try:
-        # Read input once
+        # Read JSON input from stdin
         input_data = json.load(sys.stdin)
-        
-        # Determine hook type based on hook_event_name or available fields
-        hook_event = input_data.get("hook_event_name", "")
-        
-        if hook_event == "UserPromptSubmit" or "prompt" in input_data:
-            handle_user_prompt_submit_with_data(input_data)
-        elif hook_event == "PreToolUse" or "tool_name" in input_data:
-            handle_pre_tool_use_with_data(input_data)
-        else:
-            sys.exit(0)
+        log_debug(f"Hook {hook_type} called with data: {json.dumps(input_data)[:200]}...")
     except Exception as e:
-        # Log error for debugging
-        print(f"Hook error: {e}", file=sys.stderr)
-        sys.exit(0)
+        log_debug(f"Failed to parse JSON input: {e}")
+        sys.exit(0)  # Don't block on parse errors
+    
+    # Route to appropriate handler
+    handlers = {
+        "pretool": handle_pretool,
+        "pretool-task": handle_pretool_task,
+        "userprompt": handle_userprompt,
+        "posttool": handle_posttool
+    }
+    
+    handler = handlers.get(hook_type)
+    if handler:
+        handler(input_data)
+    else:
+        log_debug(f"Unknown hook type: {hook_type}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
