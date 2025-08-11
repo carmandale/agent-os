@@ -215,6 +215,7 @@ echo "   ~/.agent-os/standards/        - Your development standards"
 echo "   ~/.agent-os/instructions/     - Agent OS instructions"
 echo "   ~/.agent-os/scripts/          - Dynamic workflow scripts"
 echo "   ~/.agent-os/workflow-modules/ - Modular workflow components"
+echo "   ~/.agent-os/tools/            - Agent OS CLI tools (aos-background, aos-v4)"
 echo "   ~/.agent-os/.version          - Version $AGENT_OS_VERSION"
 echo ""
 if [ "$OVERWRITE_INSTRUCTIONS" = false ] && [ "$OVERWRITE_STANDARDS" = false ]; then
