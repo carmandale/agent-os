@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# Agent OS Command Line Interface (aos) - Version 4
-# Version: 4.0.0
+# Agent OS Command Line Interface (aos)
 # Includes background task management integration
 
 # Configuration
