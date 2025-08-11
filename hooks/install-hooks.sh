@@ -34,7 +34,7 @@ if [ ! -d "$HOOKS_DIR" ]; then
 fi
 
 # Check if hook scripts exist
-for hook in "stop-hook.sh" "post-tool-use-hook.sh" "user-prompt-submit-hook.sh"; do
+for hook in "stop-hook.sh" "post-tool-use-hook.sh" "user-prompt-submit-hook.sh" "pre-bash-hook.sh" "post-bash-hook.sh" "notify-hook.sh"; do
     if [ ! -f "$HOOKS_DIR/$hook" ]; then
         echo "❌ Hook script not found: $hook"
         exit 1
