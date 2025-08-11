@@ -1,0 +1,652 @@
+#!/bin/bash
+
+# Agent OS Command Line Interface (aos) - Version 4
+# Version: 4.0.0
+# Includes background task management integration
+
+# Configuration
+AGENT_OS_VERSION="4.0.0"
+AGENT_OS_REPO="https://github.com/carmandale/agent-os"
+AGENT_OS_RAW_URL="https://raw.githubusercontent.com/carmandale/agent-os/main"
+AGENT_OS_HOME="${AGENT_OS_HOME:-$HOME/.agent-os}"
+
+# Colors
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
+# Helper function for status messages
+print_status() {
+    case "$1" in
+        "success") echo -e "${GREEN}✅ $2${NC}" ;;
+        "warning") echo -e "${YELLOW}⚠️  $2${NC}" ;;
+        "error") echo -e "${RED}❌ $2${NC}" ;;
+        "info") echo -e "${BLUE}ℹ️  $2${NC}" ;;
+        "check") echo -e "${CYAN}🔍 $2${NC}" ;;
+        *) echo "$2" ;;
+    esac
+}
+
+# Check if Agent OS is installed globally
+check_global_installation() {
+    if [ -d "$HOME/.agent-os/instructions" ] && [ -d "$HOME/.agent-os/standards" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# Show Bash observation dashboard (Issue #19)
+show_bash_dashboard() {
+    local log_file=""
+    
+    # Determine log location
+    if [ -n "${CLAUDE_PROJECT_DIR:-}" ] && [ -f "${CLAUDE_PROJECT_DIR}/.agent-os/observed-bash.jsonl" ]; then
+        log_file="${CLAUDE_PROJECT_DIR}/.agent-os/observed-bash.jsonl"
+    elif [ -f "$HOME/.agent-os/logs/observed-bash.jsonl" ]; then
+        log_file="$HOME/.agent-os/logs/observed-bash.jsonl"
+    else
+        print_status "info" "No Bash observation data yet"
+        echo "Run commands through Claude Code with background tasks enabled to see observations"
+        return 0
+    fi
+    
+    echo "📊 Bash Command Dashboard"
+    echo "========================="
+    echo ""
+    
+    # Check if jq is available
+    if ! command -v jq >/dev/null 2>&1; then
+        print_status "warning" "jq not installed - showing raw data"
+        tail -20 "$log_file"
+        return 0
+    fi
+    
+    # Show recent commands
+    echo "🕐 Recent Commands (last 10):"
+    echo "------------------------------"
+    tail -10 "$log_file" | jq -r '
+        "\(.ts | split("T")[1] | split(".")[0]) [\(.intent)] \(.cmd | .[0:60])\(if (.cmd | length) > 60 then "..." else "" end) → \(if .exit then "exit: \(.exit)" else "running" end)"
+    '
+    
+    echo ""
+    echo "📈 Statistics:"
+    echo "--------------"
+    
+    # Count by intent
+    local server_count=$(grep '"intent":"server"' "$log_file" 2>/dev/null | wc -l | tr -d ' ')
+    local test_count=$(grep '"intent":"test"' "$log_file" 2>/dev/null | wc -l | tr -d ' ')
+    local build_count=$(grep '"intent":"build"' "$log_file" 2>/dev/null | wc -l | tr -d ' ')
+    local other_count=$(grep '"intent":"other"' "$log_file" 2>/dev/null | wc -l | tr -d ' ')
+    
+    echo "  🚀 Servers started: $server_count"
+    echo "  🧪 Tests run: $test_count"  
+    echo "  🔨 Builds executed: $build_count"
+    echo "  📦 Other commands: $other_count"
+    
+    # Show recent failures
+    echo ""
+    echo "❌ Recent Failures:"
+    echo "------------------"
+    local failures=$(tail -50 "$log_file" | jq -r 'select(.event == "post" and .exit != "0" and .exit != "unknown") | "  • \(.cmd | .[0:60]) (exit: \(.exit))"' | tail -5)
+    if [ -n "$failures" ]; then
+        echo "$failures"
+    else
+        echo "  No recent failures"
+    fi
+    
+    echo ""
+    echo "💡 Tips:"
+    echo "  • Use 'aos monitor <id>' to watch running tasks"
+    echo "  • Use 'aos logs <id>' to view task output"
+    echo "  • Enable ENABLE_BACKGROUND_TASKS=1 in Claude Code for auto-backgrounding"
+}
+
+# Detect project type (claude, cursor, both, or unknown)
+detect_project_type() {
+    local has_claude=false
+    local has_cursor=false
+    
+    if [ -f ".claude/claude.json" ] || [ -f "CLAUDE.md" ]; then
+        has_claude=true
+    fi
+    
+    if [ -d ".cursor" ] || [ -f ".cursorrules" ]; then
+        has_cursor=true
+    fi
+    
+    if $has_claude && $has_cursor; then
+        echo "both"
+    elif $has_claude; then
+        echo "claude"
+    elif $has_cursor; then
+        echo "cursor"
+    else
+        echo "unknown"
+    fi
+}
+
+# Check if project setup is current
+check_project_currency() {
+    local project_type=$(detect_project_type)
+    local issues=()
+    
+    case "$project_type" in
+        "claude"|"both")
+            # Check Claude commands
+            if [ -f ".claude/claude.json" ]; then
+                if ! grep -q "plan-product" ".claude/claude.json" 2>/dev/null; then
+                    issues+=("Claude commands outdated")
+                fi
+            else
+                # Fallback: consider global Claude commands as OK if present
+                if [ -f "$HOME/.claude/commands/plan-product.md" ]; then
+                    : # treated as current
+                else
+                    issues+=("Claude commands not configured")
+                fi
+            fi
+            
+            # Check hooks version
+            if [ -f "$HOME/.claude/settings.json" ]; then
+                if ! grep -q "workflow-enforcement-hook-v2" "$HOME/.claude/settings.json" 2>/dev/null; then
+                    issues+=("Claude hooks need update")
+                fi
+            fi
+            ;;
+    esac
+    
+    case "$project_type" in
+        "cursor"|"both")
+            # Check Cursor rules
+            local cursor_ok=false
+            if [ -f ".cursorrules" ]; then
+                if grep -q "execute-tasks.md" ".cursorrules" 2>/dev/null; then
+                    cursor_ok=true
+                fi
+            fi
+            # Also consider modern .cursor/rules/*.mdc
+            if [ "$cursor_ok" = false ] && ls .cursor/rules/*execute-tasks*.mdc >/dev/null 2>&1; then
+                cursor_ok=true
+            fi
+            if [ "$cursor_ok" = false ]; then
+                if [ -f ".cursorrules" ] || [ -d ".cursor/rules" ]; then
+                    issues+=("Cursor rules outdated")
+                else
+                    issues+=("Cursor rules not configured")
+                fi
+            fi
+            ;;
+    esac
+    
+    # Check for product docs
+    if [ "$project_type" != "unknown" ]; then
+        if [ ! -d ".agent-os/product" ]; then
+            issues+=("Product documentation not initialized")
+        fi
+    fi
+    
+    if [ ${#issues[@]} -eq 0 ]; then
+        echo "current"
+    else
+        printf '%s\n' "${issues[@]}"
+    fi
+}
+
+# Check for updates
+check_for_updates() {
+    # Get remote version
+    local remote_version=$(curl -sSL "$AGENT_OS_RAW_URL/VERSION" 2>/dev/null | head -n1)
+    
+    # Get local version
+    local local_version=""
+    if [ -f "$HOME/.agent-os/VERSION" ]; then
+        local_version=$(head -n1 "$HOME/.agent-os/VERSION")
+    fi
+    
+    # Normalize versions (remove 'v' prefix if present)
+    remote_version="${remote_version#v}"
+    local_version="${local_version#v}"
+    
+    if [ "$local_version" = "$remote_version" ]; then
+        echo "current"
+    elif [ -z "$local_version" ]; then
+        echo "not installed"
+    else
+        echo "$remote_version"
+    fi
+}
+
+# Smart update function
+smart_update() {
+    # Non-interactive support: -y/--yes/--non-interactive or env AOS_NONINTERACTIVE=1
+    local non_interactive=false
+    for arg in "$@"; do
+        case "$arg" in
+            -y|--yes|--non-interactive)
+                non_interactive=true
+                ;;
+        esac
+    done
+    if [ "${AOS_NONINTERACTIVE:-}" = "1" ]; then
+        non_interactive=true
+    fi
+
+    print_status "check" "Checking for updates..."
+    
+    local update_status=$(check_for_updates)
+    
+    if [ "$update_status" = "current" ]; then
+        print_status "success" "Agent OS is already up to date!"
+        return 0
+    elif [ "$update_status" = "not installed" ]; then
+        print_status "error" "Agent OS is not installed. Run 'aos init' first."
+        return 1
+    else
+        print_status "info" "Update available: $update_status"
+        local response=""
+        if [ "$non_interactive" = true ]; then
+            response="y"
+            print_status "info" "Proceeding with non-interactive update..."
+        else
+            echo -n "Update now? [y/N]: "
+            read -r response
+        fi
+        
+        if [[ "$response" =~ ^[Yy]$ ]]; then
+            print_status "info" "Updating Agent OS..."
+            if curl -sSL "$AGENT_OS_RAW_URL/setup.sh" | bash -s -- --overwrite; then
+                print_status "success" "Update complete!"
+                
+                # Check if we're in a project; skip extra prompts in non-interactive mode
+                local project_type=$(detect_project_type)
+                if [ "$project_type" != "unknown" ] && [ "$non_interactive" != true ]; then
+                    echo -n "Update project setup too? [y/N]: "
+                    read -r response
+                    if [[ "$response" =~ ^[Yy]$ ]]; then
+                        quick_setup_project
+                    fi
+                fi
+            else
+                print_status "error" "Update failed"
+                return 1
+            fi
+        fi
+    fi
+}
+
+# Comprehensive status check
+check_comprehensive_status() {
+    echo "🔍 Agent OS Status Report"
+    echo "========================="
+    echo ""
+    
+    # Global installation
+    echo "Global Installation:"
+    if check_global_installation; then
+        print_status "success" "Installed at ~/.agent-os"
+        
+        # Version details
+        local update_status=$(check_for_updates)
+        local local_version=""
+        local remote_version=""
+        [ -f "$HOME/.agent-os/VERSION" ] && local_version=$(head -n1 "$HOME/.agent-os/VERSION")
+        remote_version=$(curl -sSL "$AGENT_OS_RAW_URL/VERSION" 2>/dev/null | head -n1)
+        # Normalize
+        local_version="${local_version#v}"; remote_version="${remote_version#v}"
+        
+        if [ "$update_status" = "current" ]; then
+            print_status "success" "Version is current (${local_version})"
+        elif [ "$update_status" = "not installed" ]; then
+            print_status "error" "Version: not installed (latest ${remote_version})"
+        else
+            print_status "warning" "Update available: ${remote_version} (local ${local_version})"
+        fi
+        
+        # Check components
+        echo ""
+        echo "Components:"
+        [ -d "$HOME/.agent-os/instructions" ] && print_status "success" "Instructions installed" || print_status "error" "Instructions missing"
+        [ -d "$HOME/.agent-os/standards" ] && print_status "success" "Standards installed" || print_status "error" "Standards missing"
+        [ -d "$HOME/.agent-os/workflow-modules" ] && print_status "success" "Workflow modules installed" || print_status "error" "Workflow modules missing"
+        [ -d "$HOME/.agent-os/hooks" ] && print_status "success" "Hooks installed" || print_status "error" "Hooks missing"
+    else
+        print_status "error" "Not installed"
+        echo "Run: curl -sSL $AGENT_OS_RAW_URL/setup.sh | bash"
+    fi
+    
+    # Project setup
+    echo ""
+    echo "Project Setup:"
+    local project_type=$(detect_project_type)
+    
+    if [ "$project_type" = "unknown" ]; then
+        print_status "info" "No AI assistant configured in this project"
+    else
+        print_status "info" "Type: $project_type"
+        
+        local project_issues=$(check_project_currency)
+        if [ "$project_issues" = "current" ]; then
+            print_status "success" "All components current"
+        else
+            print_status "warning" "Issues found:"
+            echo "$project_issues" | while IFS= read -r issue; do
+                echo "   ⚠️  $issue"
+            done
+        fi
+        
+        # Check product docs
+        if [ -d ".agent-os/product" ]; then
+            print_status "success" "Product documentation exists"
+        else
+            print_status "info" "Product docs not initialized (run /plan-product or /analyze-product)"
+        fi
+    fi
+    
+    # Background tasks status
+    echo ""
+    echo "Background Tasks:"
+    if [ -f "$AGENT_OS_HOME/tasks/registry.json" ]; then
+        local task_count=$(python3 -c "
+import json
+with open('$AGENT_OS_HOME/tasks/registry.json', 'r') as f:
+    data = json.load(f)
+    running = len([t for t in data['tasks'] if t['status'] == 'running'])
+    total = len(data['tasks'])
+    print(f'{running} running, {total} total')
+" 2>/dev/null || echo "0 tasks")
+        print_status "info" "Tasks: $task_count"
+    else
+        print_status "info" "No background tasks"
+    fi
+}
+
+# Quick project setup
+quick_setup_project() {
+    local project_type=$(detect_project_type)
+    local project_issues=$(check_project_currency)
+    
+    # Show current status
+    if [ "$project_type" != "unknown" ]; then
+        echo ""
+        print_status "info" "Current setup: $project_type"
+        if [ "$project_issues" != "current" ]; then
+            print_status "warning" "Issues detected:"
+            echo "$project_issues" | while IFS= read -r issue; do
+                echo "   ⚠️  $issue"
+            done
+            echo ""
+        fi
+    fi
+    
+    # If type unknown, ask once
+    if [ "$project_type" = "unknown" ]; then
+        echo ""
+        echo "Which AI assistant will you use?"
+        echo "  1) Claude Code"
+        echo "  2) Cursor"
+        echo "  3) Both"
+        echo "  4) Skip"
+        echo -n "Choice [1-4]: "
+        read -r choice
+        
+        case "$choice" in
+            1) project_type="claude" ;;
+            2) project_type="cursor" ;;
+            3) project_type="both" ;;
+            *) return 1 ;;
+        esac
+    fi
+    
+    # Setup based on type
+    case "$project_type" in
+        "claude"|"both")
+            print_status "info" "Setting up Claude Code..."
+            # Check if hooks should be skipped
+            local skip_hooks=""
+            if [ -f "$HOME/.claude/settings.json" ] && grep -q "workflow-enforcement-hook" "$HOME/.claude/settings.json" 2>/dev/null; then
+                skip_hooks="--skip-hooks"
+            fi
+            
+            if curl -sSL "$AGENT_OS_RAW_URL/setup-claude-code.sh" | bash -s -- $skip_hooks 2>/dev/null; then
+                print_status "success" "Claude Code ready"
+            else
+                print_status "error" "Claude Code setup failed"
+            fi
+            
+            if [ "$project_type" = "both" ]; then
+                print_status "info" "Setting up Cursor..."
+                if curl -sSL "$AGENT_OS_RAW_URL/setup-cursor.sh" | bash 2>/dev/null; then
+                    print_status "success" "Cursor ready"
+                else
+                    print_status "error" "Cursor setup failed"
+                fi
+            fi
+            ;;
+            
+        "cursor")
+            print_status "info" "Setting up Cursor..."
+            if curl -sSL "$AGENT_OS_RAW_URL/setup-cursor.sh" | bash 2>/dev/null; then
+                print_status "success" "Cursor ready"
+            else
+                print_status "error" "Cursor setup failed"
+            fi
+            ;;
+    esac
+    
+    # Verify setup
+    echo ""
+    print_status "check" "Verifying project setup..."
+    local new_issues=$(check_project_currency)
+    if [ "$new_issues" = "current" ]; then
+        print_status "success" "Project setup complete and current!"
+    else
+        print_status "warning" "Some issues remain - manual intervention may be needed"
+    fi
+    
+    # Quick tips
+    echo ""
+    echo "Quick start commands:"
+    if [ "$project_type" = "claude" ] || [ "$project_type" = "both" ]; then
+        echo "  Claude: /analyze-product (for existing code) or /plan-product (for new)"
+    fi
+    if [ "$project_type" = "cursor" ] || [ "$project_type" = "both" ]; then
+        echo "  Cursor: @analyze-product (for existing code) or @plan-product (for new)"
+    fi
+}
+
+# Pass through to background task manager for task commands
+handle_background_command() {
+    local bg_script="$AGENT_OS_HOME/tools/aos-background"
+    
+    # Check if background script exists
+    if [ ! -f "$bg_script" ]; then
+        # Try to find it in the repo
+        bg_script="$(dirname "$0")/aos-background"
+        if [ ! -f "$bg_script" ]; then
+            print_status "error" "Background task manager not found"
+            print_status "info" "Update Agent OS to get background task support"
+            return 1
+        fi
+    fi
+    
+    # Pass through the command
+    "$bg_script" "$@"
+}
+
+# Main menu - streamlined with better validation
+main_menu() {
+    # Quick validation
+    local global_ok=false
+    local project_ok=false
+    
+    if check_global_installation; then
+        global_ok=true
+        local update_status=$(check_for_updates)
+        if [ "$update_status" != "current" ] && [ "$update_status" != "main" ] && [ ! -z "$update_status" ]; then
+            print_status "warning" "Agent OS update available: $update_status"
+        else
+            print_status "success" "Agent OS is up to date"
+        fi
+    else
+        print_status "warning" "Agent OS not installed"
+    fi
+    
+    local project_type=$(detect_project_type)
+    local project_issues=$(check_project_currency)
+    if [ "$project_type" != "unknown" ]; then
+        if [ "$project_issues" = "current" ]; then
+            project_ok=true
+            print_status "success" "Project setup is current"
+        else
+            print_status "warning" "Project setup needs updates"
+        fi
+    else
+        print_status "info" "No project setup detected"
+    fi
+    
+    # Show menu
+    echo ""
+    echo "What would you like to do?"
+    
+    if [ "$global_ok" = false ]; then
+        echo "  1) Install Agent OS"
+    elif [ "$project_ok" = false ]; then
+        echo "  1) Setup/fix project"
+    else
+        echo "  1) Verify project setup"
+    fi
+    
+    echo "  2) Update Agent OS"
+    echo "  3) Full status report"
+    echo "  4) Background tasks"
+    echo "  5) Exit"
+    echo ""
+    echo -n "Choice [1-5]: "
+    read -r choice
+    
+    case "$choice" in
+        1) 
+            if [ "$global_ok" = false ]; then
+                # Install Agent OS
+                if curl -sSL "$AGENT_OS_RAW_URL/setup.sh" | bash; then
+                    print_status "success" "Installation complete!"
+                    quick_setup_project
+                fi
+            else
+                # Setup or verify project
+                quick_setup_project
+            fi
+            ;;
+        2) smart_update ;;
+        3) check_comprehensive_status ;;
+        4) handle_background_command tasks ;;
+        *) print_status "info" "Goodbye!" ;;
+    esac
+}
+
+# Command line interface
+case "${1:-}" in
+    # Core commands
+    "init")
+        if ! check_global_installation; then
+            print_status "info" "Installing Agent OS first..."
+            curl -sSL "$AGENT_OS_RAW_URL/setup.sh" | bash
+        fi
+        quick_setup_project
+        ;;
+    "update")
+        shift
+        smart_update "$@"
+        ;;
+    "status"|"check")
+        check_comprehensive_status
+        ;;
+    
+    # Background task commands
+    "run")
+        shift
+        handle_background_command run "$@"
+        ;;
+    "tasks"|"list")
+        handle_background_command tasks
+        ;;
+    "monitor")
+        handle_background_command monitor "$2"
+        ;;
+    "logs")
+        shift
+        handle_background_command logs "$@"
+        ;;
+    "stop")
+        handle_background_command stop "$2"
+        ;;
+    "debug")
+        handle_background_command debug
+        ;;
+    "clean")
+        handle_background_command clean "$2"
+        ;;
+    
+    # Bash observation commands (Issue #19)
+    "notify")
+        shift
+        if [ -z "$*" ]; then
+            print_status "error" "Usage: aos notify <message>"
+            exit 1
+        fi
+        print_status "info" "$*"
+        ;;
+    "dashboard")
+        show_bash_dashboard
+        ;;
+    
+    # Help
+    "help"|"--help"|"-h")
+        echo "aos - Agent OS CLI v4"
+        echo ""
+        echo "Usage: aos [command] [options]"
+        echo ""
+        echo "Core Commands:"
+        echo "  init              Setup/fix Agent OS in current project"
+        echo "  update            Smart update Agent OS"
+        echo "  status            Comprehensive status report"
+        echo ""
+        echo "Background Task Commands:"
+        echo "  run <command>     Run command in background"
+        echo "  tasks             List all background tasks"
+        echo "  monitor <id>      Monitor task output (tail -f)"
+        echo "  logs <id>         View task logs"
+        echo "  logs -f <id>      Follow task logs"
+        echo "  stop <id>         Stop a running task"
+        echo "  debug             Show recent task errors"
+        echo "  clean [days]      Clean old tasks (default: 7)"
+        echo ""
+        echo "Bash Observation Commands:"
+        echo "  dashboard         View observed Bash command history"
+        echo "  notify <msg>      Display a notification message"
+        echo ""
+        echo "Examples:"
+        echo "  aos init                    # Setup Agent OS in project"
+        echo "  aos run 'npm run dev'       # Run dev server in background"
+        echo "  aos tasks                   # List running tasks"
+        echo "  aos monitor task-123        # Watch task output"
+        echo ""
+        echo "No command runs interactive mode"
+        ;;
+    "")
+        # Interactive mode
+        echo "🚀 Agent OS CLI v4"
+        echo "=================="
+        echo ""
+        main_menu
+        ;;
+    *)
+        print_status "error" "Unknown command: $1"
+        echo "Run 'aos help' for usage"
+        exit 1
+        ;;
+esac
