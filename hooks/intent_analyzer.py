@@ -88,8 +88,8 @@ class IntentAnalyzer:
         self.new_work_patterns = self.config.get('new_work_patterns', self._get_default_new_work_patterns())
         
         # Confidence thresholds
-        self.confidence_threshold = self.config.get('confidence_threshold', 0.6)
-        self.ambiguous_threshold = self.config.get('ambiguous_threshold', 0.3)
+        self.confidence_threshold = self.config.get('confidence_threshold', 0.3)
+        self.ambiguous_threshold = self.config.get('ambiguous_threshold', 0.15)
         
         # Compile patterns for performance
         self.compiled_maintenance_patterns = self._compile_patterns(self.maintenance_patterns)
