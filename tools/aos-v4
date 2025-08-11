@@ -525,6 +525,19 @@ case "${1:-}" in
         handle_background_command clean "$2"
         ;;
     
+    # Bash observation commands (Issue #19)
+    "notify")
+        shift
+        if [ -z "$*" ]; then
+            print_status "error" "Usage: aos notify <message>"
+            exit 1
+        fi
+        print_status "info" "$*"
+        ;;
+    "dashboard")
+        show_bash_dashboard
+        ;;
+    
     # Help
     "help"|"--help"|"-h")
         echo "aos - Agent OS CLI v4"
