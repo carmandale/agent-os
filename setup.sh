@@ -207,6 +207,9 @@ echo "  ✓ ~/.agent-os/tools/aos-v4"
 echo "$AGENT_OS_VERSION" > "$HOME/.agent-os/VERSION"
 echo "  ✓ Version $AGENT_OS_VERSION tracked"
 
+# Remove deprecated lowercase version file if present
+rm -f "$HOME/.agent-os/.version" 2>/dev/null || true
+
 echo ""
 echo "✅ Agent OS base installation complete!"
 echo ""

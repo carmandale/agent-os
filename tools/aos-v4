@@ -76,7 +76,12 @@ check_project_currency() {
                     issues+=("Claude commands outdated")
                 fi
             else
-                issues+=("Claude commands not configured")
+                # Fallback: consider global Claude commands as OK if present
+                if [ -f "$HOME/.claude/commands/plan-product.md" ]; then
+                    : # treated as current
+                else
+                    issues+=("Claude commands not configured")
+                fi
             fi
             
             # Check hooks version
@@ -91,12 +96,22 @@ check_project_currency() {
     case "$project_type" in
         "cursor"|"both")
             # Check Cursor rules
+            local cursor_ok=false
             if [ -f ".cursorrules" ]; then
-                if ! grep -q "execute-tasks.md" ".cursorrules" 2>/dev/null; then
-                    issues+=("Cursor rules outdated")
+                if grep -q "execute-tasks.md" ".cursorrules" 2>/dev/null; then
+                    cursor_ok=true
                 fi
-            else
-                issues+=("Cursor rules not configured")
+            fi
+            # Also consider modern .cursor/rules/*.mdc
+            if [ "$cursor_ok" = false ] && ls .cursor/rules/*execute-tasks*.mdc >/dev/null 2>&1; then
+                cursor_ok=true
+            fi
+            if [ "$cursor_ok" = false ]; then
+                if [ -f ".cursorrules" ] || [ -d ".cursor/rules" ]; then
+                    issues+=("Cursor rules outdated")
+                else
+                    issues+=("Cursor rules not configured")
+                fi
             fi
             ;;
     esac
@@ -141,6 +156,19 @@ check_for_updates() {
 
 # Smart update function
 smart_update() {
+    # Non-interactive support: -y/--yes/--non-interactive or env AOS_NONINTERACTIVE=1
+    local non_interactive=false
+    for arg in "$@"; do
+        case "$arg" in
+            -y|--yes|--non-interactive)
+                non_interactive=true
+                ;;
+        esac
+    done
+    if [ "${AOS_NONINTERACTIVE:-}" = "1" ]; then
+        non_interactive=true
+    fi
+
     print_status "check" "Checking for updates..."
     
     local update_status=$(check_for_updates)
@@ -153,17 +181,23 @@ smart_update() {
         return 1
     else
         print_status "info" "Update available: $update_status"
-        echo -n "Update now? [y/N]: "
-        read -r response
+        local response=""
+        if [ "$non_interactive" = true ]; then
+            response="y"
+            print_status "info" "Proceeding with non-interactive update..."
+        else
+            echo -n "Update now? [y/N]: "
+            read -r response
+        fi
         
         if [[ "$response" =~ ^[Yy]$ ]]; then
             print_status "info" "Updating Agent OS..."
             if curl -sSL "$AGENT_OS_RAW_URL/setup.sh" | bash -s -- --overwrite; then
                 print_status "success" "Update complete!"
                 
-                # Check if we're in a project
+                # Check if we're in a project; skip extra prompts in non-interactive mode
                 local project_type=$(detect_project_type)
-                if [ "$project_type" != "unknown" ]; then
+                if [ "$project_type" != "unknown" ] && [ "$non_interactive" != true ]; then
                     echo -n "Update project setup too? [y/N]: "
                     read -r response
                     if [[ "$response" =~ ^[Yy]$ ]]; then
@@ -189,12 +223,21 @@ check_comprehensive_status() {
     if check_global_installation; then
         print_status "success" "Installed at ~/.agent-os"
         
-        # Check version
+        # Version details
         local update_status=$(check_for_updates)
+        local local_version=""
+        local remote_version=""
+        [ -f "$HOME/.agent-os/VERSION" ] && local_version=$(head -n1 "$HOME/.agent-os/VERSION")
+        remote_version=$(curl -sSL "$AGENT_OS_RAW_URL/VERSION" 2>/dev/null | head -n1)
+        # Normalize
+        local_version="${local_version#v}"; remote_version="${remote_version#v}"
+        
         if [ "$update_status" = "current" ]; then
-            print_status "success" "Version is current"
-        elif [ "$update_status" != "not installed" ]; then
-            print_status "warning" "Update available: $update_status"
+            print_status "success" "Version is current (${local_version})"
+        elif [ "$update_status" = "not installed" ]; then
+            print_status "error" "Version: not installed (latest ${remote_version})"
+        else
+            print_status "warning" "Update available: ${remote_version} (local ${local_version})"
         fi
         
         # Check components
@@ -450,7 +493,8 @@ case "${1:-}" in
         quick_setup_project
         ;;
     "update")
-        smart_update
+        shift
+        smart_update "$@"
         ;;
     "status"|"check")
         check_comprehensive_status

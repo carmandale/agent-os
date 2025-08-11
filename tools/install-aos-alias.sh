@@ -38,31 +38,32 @@ echo "Detected shell: $SHELL_NAME"
 echo "Configuration file: $SHELL_CONFIG"
 echo ""
 
-# Check if alias already exists
-if grep -q "function aos()" "$SHELL_CONFIG" 2>/dev/null || grep -q "alias aos=" "$SHELL_CONFIG" 2>/dev/null; then
-	echo "⚠️  'aos' alias already exists in $SHELL_CONFIG"
-	echo ""
-	echo "Would you like to update it? (y/n)"
-	read -r response
-	if [[ "$response" != "y" ]]; then
-		echo "Installation cancelled."
-		exit 0
-	fi
-	
-	# Remove existing alias
-	echo "Removing existing alias..."
-	# Create a backup
-	cp "$SHELL_CONFIG" "$SHELL_CONFIG.backup"
-	# Remove the function and alias
-	sed -i.tmp '/^function aos()/,/^}/d' "$SHELL_CONFIG"
-	sed -i.tmp '/^alias agentos=/d' "$SHELL_CONFIG"
-	rm -f "$SHELL_CONFIG.tmp"
+# Check if an Agent OS quick-init block already exists (idempotent)
+if grep -Fq 'source "$HOME/.agent-os/tools/agentos-alias.sh"' "$SHELL_CONFIG" 2>/dev/null; then
+    echo "⚠️  Agent OS quick-init already present in $SHELL_CONFIG - skipping append"
+else
+    # If legacy function/alias definitions exist, offer to clean them up
+    if grep -q "^function aos()" "$SHELL_CONFIG" 2>/dev/null || grep -q "^alias aos=" "$SHELL_CONFIG" 2>/dev/null; then
+        echo "⚠️  Existing 'aos' definition found in $SHELL_CONFIG"
+        echo ""
+        echo "Would you like to remove legacy definitions and proceed? (y/n)"
+        read -r response
+        if [[ "$response" == "y" ]]; then
+            echo "Removing legacy definitions..."
+            cp "$SHELL_CONFIG" "$SHELL_CONFIG.backup"
+            sed -i.tmp '/^function aos()/,/^}/d' "$SHELL_CONFIG"
+            sed -i.tmp '/^alias aos=/d' "$SHELL_CONFIG"
+            sed -i.tmp '/^alias agentos=/d' "$SHELL_CONFIG"
+            rm -f "$SHELL_CONFIG.tmp"
+        fi
+    fi
 fi
 
 # Download and append the alias function
 echo "Installing 'aos' alias..."
 
-# Add a marker and the source command
+# Add a marker and the source command (only if not already present)
+if ! grep -Fq 'source "$HOME/.agent-os/tools/agentos-alias.sh"' "$SHELL_CONFIG" 2>/dev/null; then
 cat >> "$SHELL_CONFIG" << 'EOF'
 
 # Agent OS Quick Init Alias
@@ -70,6 +71,7 @@ if [ -f "$HOME/.agent-os/tools/agentos-alias.sh" ]; then
 	source "$HOME/.agent-os/tools/agentos-alias.sh"
 fi
 EOF
+fi
 
 # Create the tools directory and download the alias file
 mkdir -p "$HOME/.agent-os/tools"

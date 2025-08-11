@@ -1,22 +1,9 @@
 ---
 alwaysApply: false
-description: Run workspace hygiene check in Cursor and report results
 ---
 
-# Hygiene Check (Cursor)
+# Hygiene Check
 
-Run a comprehensive workspace hygiene check and report actionable results.
+Perform a comprehensive workspace hygiene check to verify the environment is clean and ready for work.
 
-## Execution
-- Execute the workspace script non-interactively:
-  - `~/.agent-os/scripts/workspace-hygiene-check.sh`
-- If the script is missing, first install Agent OS base: 
-  - `curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup.sh | bash`
-
-## Report Format
-- Provide the report using the summary template from the instructions
-- Include actual command outputs where relevant (git status, branch, GH status)
-- Use clear visual indicators (✅❌⚠️)
-
-## Full Instructions
-- See detailed guidance: [instructions/hygiene-check.md](mdc:instructions/hygiene-check.md) 
+Refer to the instructions located in @~/.agent-os/instructions/hygiene-check.md 
