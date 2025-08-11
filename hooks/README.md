@@ -101,6 +101,61 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 - Development standards (global and project-specific)
 - Current task progress
 
+### Pre-Bash Hook (`pre-bash-hook.sh`)
+**Purpose**: Observes and classifies Bash commands before execution without blocking.
+
+**Triggers**:
+- PreToolUse event with Bash matcher
+- Any Bash command executed through Claude Code
+
+**Actions**:
+- Classifies command intent (server/test/build/other)
+- Logs command to `observed-bash.jsonl`
+- Provides brief status message (e.g., "🚀 Starting development server...")
+- Never blocks execution
+
+**Intent Classification**:
+- **Server**: npm run dev, python manage.py runserver, etc.
+- **Test**: pytest, jest, npm test, etc.
+- **Build**: npm build, make, cargo build, etc.
+- **Other**: All other commands
+
+### Post-Bash Hook (`post-bash-hook.sh`)
+**Purpose**: Reports Bash command execution results and provides helpful suggestions.
+
+**Triggers**:
+- PostToolUse event with Bash matcher
+- After any Bash command completes
+
+**Actions**:
+- Parses stdin JSON for command details and exit code
+- Logs results to `observed-bash.jsonl`
+- Displays 1-3 line summary in transcript
+- Suggests next actions based on command intent
+
+**Output Example**:
+```
+📊 Bash command: npm run dev
+   Status: ✅ Completed successfully
+   💡 Say 'aos dashboard' to view running processes or 'tail server logs' to monitor output.
+```
+
+### Notify Hook (`notify-hook.sh`)
+**Purpose**: Provides optional, gentle reminders based on recent Bash activity.
+
+**Triggers**:
+- Notification event
+- Periodic Claude Code checks
+
+**Actions**:
+- Checks recent observed Bash activity
+- Identifies patterns (running servers, test failures, frequent builds)
+- Displays minimal, helpful reminders (max 3 lines)
+
+**Example Notifications**:
+- "🚀 Development server appears to be running. You can ask me to check logs."
+- "⚠️ Recent test failures detected. Say 'grep error' to find issues."
+
 **Example Context**:
 ```
 ---
