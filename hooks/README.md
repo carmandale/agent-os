@@ -222,6 +222,51 @@ Agent OS hooks operate **completely transparently** - no manual intervention req
 - **Zero Configuration**: No settings to adjust after installation
 - **Background Operation**: Runs invisibly during conversations
 
+## Hook Matchers and JSON Parsing
+
+### Claude Code Hook Events
+Agent OS uses Claude Code's native hook events with matchers:
+
+- **PreToolUse**: Triggered before tool execution with tool-specific matchers
+- **PostToolUse**: Triggered after tool execution with results
+- **Notification**: Periodic notifications
+- **UserPromptSubmit**: Before processing user prompts
+- **Stop**: When Claude is about to stop responding
+
+### Stdin JSON Parsing
+Hooks receive JSON payloads via stdin (not command-line arguments):
+
+```bash
+#!/usr/bin/env bash
+# Read stdin JSON
+payload="$(cat)"
+
+# Parse with jq
+tool_name="$(jq -r '.hookMetadata.toolName // empty' <<<"$payload")"
+cmd="$(jq -r '.tool_input.command // empty' <<<"$payload")"
+exit_code="$(jq -r '.tool_response.exit_code // empty' <<<"$payload")"
+```
+
+### Hook Matcher Configuration
+```json
+{
+  "PreToolUse": [{
+    "matcher": "Bash",
+    "hooks": [{
+      "type": "command",
+      "command": "~/.agent-os/hooks/pre-bash-hook.sh"
+    }]
+  }],
+  "PostToolUse": [{
+    "matcher": "Bash|Write|Edit",
+    "hooks": [{
+      "type": "command", 
+      "command": "~/.agent-os/hooks/post-tool-use-hook.sh"
+    }]
+  }]
+}
+```
+
 ## Configuration
 
 Hook behavior is controlled by `~/.claude/hooks/agent-os-hooks.json`:
