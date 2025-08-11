@@ -22,10 +22,16 @@ Usage:
 import os
 import re
 import time
-import yaml
 from dataclasses import dataclass
 from enum import Enum
 from typing import List, Optional, Dict, Any
+
+# Optional YAML import for configuration
+try:
+    import yaml
+    HAS_YAML = True
+except ImportError:
+    HAS_YAML = False
 
 
 class IntentType(Enum):
