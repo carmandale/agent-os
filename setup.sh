@@ -203,8 +203,8 @@ curl -s -o "$HOME/.agent-os/tools/aos-v4" "${BASE_URL}/tools/aos-v4"
 chmod +x "$HOME/.agent-os/tools/aos-v4" 2>/dev/null || true
 echo "  ✓ ~/.agent-os/tools/aos-v4"
 
-# Track version
-echo "$AGENT_OS_VERSION" > "$HOME/.agent-os/.version"
+# Track version (use uppercase VERSION for consistency)
+echo "$AGENT_OS_VERSION" > "$HOME/.agent-os/VERSION"
 echo "  ✓ Version $AGENT_OS_VERSION tracked"
 
 echo ""
