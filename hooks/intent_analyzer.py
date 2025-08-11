@@ -145,22 +145,18 @@ class IntentAnalyzer:
     def _get_default_new_work_patterns(self) -> List[str]:
         """Get default new work patterns."""
         return [
-            r'\bimplement\b.*\bfeature\b',
+            r'\bimplement\b.*\b(feature|dashboard|profile|system|component)\b',
             r'\bimplement\b.*\bfunctionality\b',
             r'\bbuild\b.*\bnew\b',
-            r'\bcreate\b.*\bfeature\b',
-            r'\bcreate\b.*\bcomponent\b',
-            r'\bcreate\b.*\bsystem\b',
-            r'\bcreate\b.*\binterface\b',
-            r'\badd\b.*\bfeature\b',
-            r'\badd\b.*\bfunctionality\b',
-            r'\badd\b.*\bsystem\b',
-            r'\bdevelop\b.*\b(feature|system|interface|component)\b',
-            r'\bdesign\b.*\b(feature|system|interface|component)\b',
             r'\bbuild\b.*\b(dashboard|interface|system|feature)\b',
-            r'\bimplement\b.*\b(oauth|auth|login|signup)\b',
-            r'\bcreate\b.*\b(api|endpoint|service)\b',
-            r'\badd\b.*\b(search|notification|integration)\b'
+            r'\bcreate\b.*\b(feature|component|system|interface|dashboard|profile)\b',
+            r'\badd\b.*\b(feature|functionality|system|dashboard)\b',
+            r'\bdevelop\b.*\b(feature|system|interface|component|dashboard)\b',
+            r'\bdesign\b.*\b(feature|system|interface|component|dashboard)\b',
+            r'\bimplement\b.*\b(oauth|auth|login|signup|profile)\b',
+            r'\bcreate\b.*\b(api|endpoint|service|dashboard)\b',
+            r'\badd\b.*\b(search|notification|integration|dashboard)\b',
+            r'\bimplement\b.*\buser\b.*\b(profile|dashboard|management|interface)\b'
         ]
     
     def _compile_patterns(self, patterns: List[str]) -> List[re.Pattern]:
