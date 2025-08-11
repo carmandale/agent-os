@@ -188,6 +188,21 @@ echo "  ✓ ~/.agent-os/workflow-modules/step-3-quality-assurance.md"
 curl -s -o "$HOME/.agent-os/workflow-modules/step-4-git-integration.md" "${BASE_URL}/workflow-modules/step-4-git-integration.md"
 echo "  ✓ ~/.agent-os/workflow-modules/step-4-git-integration.md"
 
+# Download background task tools
+echo ""
+echo "📥 Downloading background task tools to ~/.agent-os/tools/"
+mkdir -p "$HOME/.agent-os/tools"
+
+# aos-background tool
+curl -s -o "$HOME/.agent-os/tools/aos-background" "${BASE_URL}/tools/aos-background"
+chmod +x "$HOME/.agent-os/tools/aos-background" 2>/dev/null || true
+echo "  ✓ ~/.agent-os/tools/aos-background"
+
+# aos-v4 unified CLI
+curl -s -o "$HOME/.agent-os/tools/aos-v4" "${BASE_URL}/tools/aos-v4"
+chmod +x "$HOME/.agent-os/tools/aos-v4" 2>/dev/null || true
+echo "  ✓ ~/.agent-os/tools/aos-v4"
+
 # Track version
 echo "$AGENT_OS_VERSION" > "$HOME/.agent-os/.version"
 echo "  ✓ Version $AGENT_OS_VERSION tracked"
