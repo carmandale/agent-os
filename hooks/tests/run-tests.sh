@@ -45,6 +45,7 @@ while [[ $# -gt 0 ]]; do
             echo "  workflow-detector - Test workflow detection utilities"
             echo "  git-utils         - Test git operation utilities"
             echo "  hook-integration  - Test complete hook integration"
+            echo "  bash-hooks        - Test Bash observation hooks"
             echo "  all               - Run all tests (default)"
             exit 0
             ;;
