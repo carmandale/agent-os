@@ -10,7 +10,11 @@ import os
 import tempfile
 import unittest
 from unittest.mock import patch, mock_open
-import yaml
+try:
+    import yaml
+    HAS_YAML = True
+except ImportError:
+    HAS_YAML = False
 from intent_analyzer import IntentAnalyzer, WorkIntentResult, IntentType
 
 
