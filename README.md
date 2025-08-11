@@ -10,7 +10,9 @@
 
 This is an enhanced fork of the original [Agent OS by Builder Methods](https://github.com/buildermethods/agent-os). We're building on Brian Casel's excellent foundation to add:
 
+- **Background Task Management**: Run development tasks (builds, tests, servers) in background without blocking AI workflows
 - **GitHub Issues Workflow Enforcement**: Strict requirement for issue-based development with automated tracking
+- **Enhanced CLI Tools**: Unified `aos` command with comprehensive project management and task monitoring
 - **Tab Indentation**: Preference for tabs over spaces in all generated code
 - **Python/React Stack Defaults**: Updated tech stack templates for Python backend (FastAPI/Django) and React frontend development
 - **Enhanced Workflow Automation**: Additional hooks and integrations for Claude Code and other AI assistants
