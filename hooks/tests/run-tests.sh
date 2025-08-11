@@ -185,11 +185,15 @@ main() {
         "hook-integration")
             test_suites=("hook-integration:$TESTS_DIR/test-hook-integration.sh")
             ;;
+        "bash-hooks")
+            test_suites=("bash-hooks:$TESTS_DIR/test-bash-hooks.sh")
+            ;;
         "all"|*)
             test_suites=(
                 "workflow-detector:$TESTS_DIR/test-workflow-detector.sh"
                 "git-utils:$TESTS_DIR/test-git-utils.sh"
                 "hook-integration:$TESTS_DIR/test-hook-integration.sh"
+                "bash-hooks:$TESTS_DIR/test-bash-hooks.sh"
             )
             ;;
     esac
