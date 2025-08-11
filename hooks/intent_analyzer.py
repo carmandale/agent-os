@@ -100,6 +100,10 @@ class IntentAnalyzer:
     
     def _load_configuration(self) -> Dict[str, Any]:
         """Load configuration from YAML file with error handling."""
+        if not HAS_YAML:
+            log_debug("PyYAML not available, using default configuration")
+            return {}
+            
         if not os.path.exists(self.config_path):
             log_debug(f"Configuration file not found at {self.config_path}, using defaults")
             return {}
