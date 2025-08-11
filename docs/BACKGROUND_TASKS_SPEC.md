@@ -3,6 +3,53 @@
 ## Overview
 Implementing Claude Code's new background execution and log monitoring capabilities in Agent OS.
 
+## Claude-First Integration (Issue #19)
+
+### Philosophy
+Agent OS observes and reports on Claude Code's native backgrounding capabilities rather than wrapping or replacing them. This ensures compatibility and prevents double-execution.
+
+### Hook-Based Observation
+
+#### PreToolUse Hook for Bash
+- **Matcher:** `"Bash"`
+- **Script:** `~/.agent-os/hooks/pre-bash-hook.sh`
+- **Purpose:** Classify command intent (server/test/build/other)
+- **Behavior:** Never blocks execution, logs to `observed-bash.jsonl`
+
+#### PostToolUse Hook for Bash  
+- **Matcher:** `"Bash"`
+- **Script:** `~/.agent-os/hooks/post-bash-hook.sh`
+- **Purpose:** Report execution results and provide suggestions
+- **Output:** 1-3 line summary in transcript
+- **Storage:** Appends to `observed-bash.jsonl` with exit code
+
+#### Notification Hook
+- **Script:** `~/.agent-os/hooks/notify-hook.sh`
+- **Purpose:** Gentle reminders about running servers or test failures
+- **Behavior:** Optional, minimal output
+
+### Data Storage
+```
+# Project-scoped (preferred)
+$CLAUDE_PROJECT_DIR/.agent-os/observed-bash.jsonl
+
+# Global fallback
+~/.agent-os/logs/observed-bash.jsonl
+
+# Format (JSON lines)
+{"ts":"2025-01-01T12:00:00Z", "event":"pre|post", "cmd":"npm run dev", 
+ "exit":0, "intent":"server", "project":"/path", "cwd":"/path"}
+```
+
+### Dashboard Commands
+```bash
+# View observed command history
+aos dashboard
+
+# Send notification to transcript
+aos notify "Server is running on port 3000"
+```
+
 ## Features to Implement
 
 ### 1. Background Process Management
