@@ -66,7 +66,8 @@ fi
 
 # Copy hooks configuration
 echo "📋 Installing hooks configuration..."
-cp "$HOOKS_DIR/claude-code-hooks.json" "$HOOKS_CONFIG/agent-os-hooks.json"
+# Use the new Bash integration hooks configuration
+cp "$HOOKS_DIR/agent-os-bash-hooks.json" "$HOOKS_CONFIG/agent-os-hooks.json"
 echo "  ✓ Copied hooks configuration to ~/.claude/hooks/"
 
 # Ensure hook scripts are executable
