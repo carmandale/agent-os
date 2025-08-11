@@ -39,6 +39,72 @@ check_global_installation() {
     fi
 }
 
+# Show Bash observation dashboard (Issue #19)
+show_bash_dashboard() {
+    local log_file=""
+    
+    # Determine log location
+    if [ -n "${CLAUDE_PROJECT_DIR:-}" ] && [ -f "${CLAUDE_PROJECT_DIR}/.agent-os/observed-bash.jsonl" ]; then
+        log_file="${CLAUDE_PROJECT_DIR}/.agent-os/observed-bash.jsonl"
+    elif [ -f "$HOME/.agent-os/logs/observed-bash.jsonl" ]; then
+        log_file="$HOME/.agent-os/logs/observed-bash.jsonl"
+    else
+        print_status "info" "No Bash observation data yet"
+        echo "Run commands through Claude Code with background tasks enabled to see observations"
+        return 0
+    fi
+    
+    echo "📊 Bash Command Dashboard"
+    echo "========================="
+    echo ""
+    
+    # Check if jq is available
+    if ! command -v jq >/dev/null 2>&1; then
+        print_status "warning" "jq not installed - showing raw data"
+        tail -20 "$log_file"
+        return 0
+    fi
+    
+    # Show recent commands
+    echo "🕐 Recent Commands (last 10):"
+    echo "------------------------------"
+    tail -10 "$log_file" | jq -r '
+        "\(.ts | split("T")[1] | split(".")[0]) [\(.intent)] \(.cmd | .[0:60])\(if (.cmd | length) > 60 then "..." else "" end) → \(if .exit then "exit: \(.exit)" else "running" end)"
+    '
+    
+    echo ""
+    echo "📈 Statistics:"
+    echo "--------------"
+    
+    # Count by intent
+    local server_count=$(grep '"intent":"server"' "$log_file" 2>/dev/null | wc -l | tr -d ' ')
+    local test_count=$(grep '"intent":"test"' "$log_file" 2>/dev/null | wc -l | tr -d ' ')
+    local build_count=$(grep '"intent":"build"' "$log_file" 2>/dev/null | wc -l | tr -d ' ')
+    local other_count=$(grep '"intent":"other"' "$log_file" 2>/dev/null | wc -l | tr -d ' ')
+    
+    echo "  🚀 Servers started: $server_count"
+    echo "  🧪 Tests run: $test_count"  
+    echo "  🔨 Builds executed: $build_count"
+    echo "  📦 Other commands: $other_count"
+    
+    # Show recent failures
+    echo ""
+    echo "❌ Recent Failures:"
+    echo "------------------"
+    local failures=$(tail -50 "$log_file" | jq -r 'select(.event == "post" and .exit != "0" and .exit != "unknown") | "  • \(.cmd | .[0:60]) (exit: \(.exit))"' | tail -5)
+    if [ -n "$failures" ]; then
+        echo "$failures"
+    else
+        echo "  No recent failures"
+    fi
+    
+    echo ""
+    echo "💡 Tips:"
+    echo "  • Use 'aos monitor <id>' to watch running tasks"
+    echo "  • Use 'aos logs <id>' to view task output"
+    echo "  • Enable ENABLE_BACKGROUND_TASKS=1 in Claude Code for auto-backgrounding"
+}
+
 # Detect project type (claude, cursor, both, or unknown)
 detect_project_type() {
     local has_claude=false
