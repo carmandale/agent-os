@@ -193,15 +193,10 @@ echo ""
 echo "📥 Downloading background task tools to ~/.agent-os/tools/"
 mkdir -p "$HOME/.agent-os/tools"
 
-# aos-background tool
-curl -s -o "$HOME/.agent-os/tools/aos-background" "${BASE_URL}/tools/aos-background"
-chmod +x "$HOME/.agent-os/tools/aos-background" 2>/dev/null || true
-echo "  ✓ ~/.agent-os/tools/aos-background"
-
-# aos-v4 unified CLI
-curl -s -o "$HOME/.agent-os/tools/aos-v4" "${BASE_URL}/tools/aos-v4"
-chmod +x "$HOME/.agent-os/tools/aos-v4" 2>/dev/null || true
-echo "  ✓ ~/.agent-os/tools/aos-v4"
+# aos unified CLI
+curl -s -o "$HOME/.agent-os/tools/aos" "${BASE_URL}/tools/aos"
+chmod +x "$HOME/.agent-os/tools/aos" 2>/dev/null || true
+echo "  ✓ ~/.agent-os/tools/aos"
 
 # Track version (use uppercase VERSION for consistency)
 echo "$AGENT_OS_VERSION" > "$HOME/.agent-os/VERSION"
@@ -218,7 +213,7 @@ echo "   ~/.agent-os/standards/        - Your development standards"
 echo "   ~/.agent-os/instructions/     - Agent OS instructions"
 echo "   ~/.agent-os/scripts/          - Dynamic workflow scripts"
 echo "   ~/.agent-os/workflow-modules/ - Modular workflow components"
-echo "   ~/.agent-os/tools/            - Agent OS CLI tools (aos-background, aos-v4)"
+echo "   ~/.agent-os/tools/            - Agent OS CLI tools (aos)"
 echo "   ~/.agent-os/VERSION           - Version $AGENT_OS_VERSION"
 echo ""
 if [ "$OVERWRITE_INSTRUCTIONS" = false ] && [ "$OVERWRITE_STANDARDS" = false ]; then
