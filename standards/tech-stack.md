@@ -73,6 +73,26 @@ VITE_API_URL=http://localhost:8000
 API_PORT=8000
 ```
 
+### JavaScript/Node.js Environment (Yarn)
+```bash
+# Install dependencies
+yarn install
+
+# Add new dependency
+yarn add react@19 react-dom@19
+
+# Add dev dependency
+yarn add -D @types/react @types/react-dom
+
+# Run scripts
+yarn dev
+yarn build
+yarn test
+
+# Create new project
+yarn create vite my-app --template react-ts
+```
+
 ### Python Environment (uv)
 ```bash
 # Create virtual environment
