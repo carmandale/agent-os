@@ -1,7 +1,7 @@
 # Tech Stack
 
-> Version: 1.1.0
-> Last Updated: 2025-07-26
+> Version: 1.2.0
+> Last Updated: 2025-08-11
 
 ## Context
 
