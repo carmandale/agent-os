@@ -17,7 +17,8 @@ This file is part of the Agent OS standards system. These global tech stack defa
 - **API:** RESTful or GraphQL
 
 #### Frontend
-- **Framework:** React 18+
+- **Framework:** React 19 (or React 18 if compatibility required)
+- **Package Manager:** Yarn (or npm for existing projects)
 - **Language:** TypeScript
 - **Build Tool:** Vite
 - **State Management:** Zustand or Context API
