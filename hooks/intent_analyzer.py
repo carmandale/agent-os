@@ -231,9 +231,10 @@ class IntentAnalyzer:
                          message: str) -> WorkIntentResult:
         """Determine final intent based on pattern analysis."""
         
-        # Calculate confidence levels
-        maintenance_confidence = min(1.0, maintenance_score * (1 + len(maintenance_matches) * 0.1))
-        new_work_confidence = min(1.0, new_work_score * (1 + len(new_work_matches) * 0.1))
+        # Calculate confidence based on number of matches and base score
+        # Use a more lenient confidence calculation
+        maintenance_confidence = min(1.0, len(maintenance_matches) * 0.3 + maintenance_score * 0.2)
+        new_work_confidence = min(1.0, len(new_work_matches) * 0.3 + new_work_score * 0.2)
         
         # Determine intent type
         if maintenance_confidence > self.confidence_threshold and maintenance_confidence > new_work_confidence:
