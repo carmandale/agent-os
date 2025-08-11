@@ -43,7 +43,7 @@ echo "========================"
 echo ""
 
 # Version tracking
-AGENT_OS_VERSION="2.1.0"
+AGENT_OS_VERSION="2.2.0"
 
 # Base URL for raw GitHub content
 # Updated to use carmandale/agent-os fork with custom GitHub Issues workflow,
