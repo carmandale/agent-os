@@ -24,9 +24,12 @@ Agent OS hooks integrate with Claude Code's native hook system to provide three 
 ├── stop-hook.sh               # Prevents workflow abandonment
 ├── post-tool-use-hook.sh      # Auto-commits documentation
 ├── user-prompt-submit-hook.sh # Injects context information
+├── pre-bash-hook.sh           # Observes Bash commands (PreToolUse)
+├── post-bash-hook.sh          # Reports Bash results (PostToolUse)
+├── notify-hook.sh             # Optional notifications
 ├── install-hooks.sh           # Installation script
 ├── uninstall-hooks.sh         # Removal script
-├── claude-code-hooks.json     # Hook configuration
+├── agent-os-bash-hooks.json   # Hook configuration with matchers
 └── tests/                     # Comprehensive test suite
     ├── run-tests.sh
     ├── test-workflow-detector.sh
