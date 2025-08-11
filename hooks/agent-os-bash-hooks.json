@@ -1,0 +1,89 @@
+{
+  "name": "Agent OS Bash Integration Hooks",
+  "version": "2.0.0",
+  "description": "First-class Claude Code background Bash integration via observation hooks",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.agent-os/hooks/pre-bash-hook.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash", 
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.agent-os/hooks/post-bash-hook.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.agent-os/hooks/post-tool-use-hook.sh"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.agent-os/hooks/notify-hook.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.agent-os/hooks/user-prompt-submit-hook.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.agent-os/hooks/stop-hook.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "settings": {
+    "logLevel": "info",
+    "logDirectory": "~/.agent-os/logs",
+    "observedBashLog": "observed-bash.jsonl",
+    "projectScopedLogs": true,
+    "autoCommitDocumentation": true,
+    "contextInjection": true,
+    "workflowEnforcement": true
+  },
+  "compatibility": {
+    "claudeCodeVersion": ">=1.0.0",
+    "agentOsVersion": ">=2.0.0", 
+    "requiresBackgroundTasks": true
+  },
+  "documentation": {
+    "installation": "Run ~/.agent-os/hooks/install-hooks.sh to install these hooks",
+    "uninstallation": "Run ~/.agent-os/hooks/uninstall-hooks.sh to remove these hooks",
+    "troubleshooting": "Check ~/.agent-os/logs/ for hook execution logs",
+    "bashObservation": "View Bash command history with 'aos dashboard'",
+    "repository": "https://github.com/carmandale/agent-os"
+  }
+}
