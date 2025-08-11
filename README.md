@@ -32,6 +32,66 @@ Use it with:
 
 ---
 
+## Quick Start
+
+### Installation
+```bash
+curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup.sh | bash
+```
+
+### Background Task Management (New!)
+```bash
+# Install the aos CLI tool
+curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/tools/install-aos-alias.sh | bash
+
+# Run dev server in background
+aos run "npm run dev"
+
+# List running tasks
+aos tasks
+
+# Monitor task output
+aos monitor <task-id>
+
+# View logs
+aos logs <task-id>
+
+# Stop a task
+aos stop <task-id>
+```
+
+### AI Assistant Setup
+```bash
+# For Claude Code
+curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup-claude-code.sh | bash
+
+# For Cursor
+curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup-cursor.sh | bash
+```
+
+---
+
+### Features
+
+#### 🚀 Background Task Management
+- **Non-blocking development**: Keep working while builds/tests run
+- **Task monitoring**: Real-time log viewing and process management  
+- **Error debugging**: Automatic detection and troubleshooting
+- **Unified CLI**: All functionality through single `aos` command
+
+#### 📋 Structured Workflows
+- **Product Planning**: Initialize projects with mission, roadmap, and tech stack
+- **Feature Specification**: Create detailed specs with tasks and acceptance criteria
+- **Task Execution**: TDD-focused implementation with quality gates
+- **Git Integration**: Automatic PR creation with issue linking
+
+#### 🛡️ Quality Assurance
+- **Workflow Enforcement**: Hooks prevent incomplete work and ensure testing
+- **Reality Checking**: Validation of task status against actual implementation
+- **Testing Requirements**: Mandatory verification before completion claims
+
+---
+
 ### Documentation & Installation
 
 Docs, installation, useage, & best practices 👉 [It's all here](https://buildermethods.com/agent-os)
