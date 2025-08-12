@@ -35,6 +35,11 @@ The following features have been implemented:
 
 ### Critical Issues to Fix
 
+- [x] **Issue #22:** Context-Aware Workflow Enforcement - Smart maintenance vs new work detection `XL` ⚠️ **PAUSED** (Critical fixes required)
+  - ✅ **Task 1 Complete:** Intent Analysis Engine (PR #23 merged)
+  - ✅ **Task 2 Complete:** Context-Aware Hook Wrapper (PR #24 merged) 
+  - ⚠️ **Critical Issues Identified:** Interactive input hangs Claude Code, performance 5x too slow
+  - 🔧 **Phase 0 Required:** Critical bug fixes before integration
 - [ ] **Issue #9:** Enforce actual testing before completion claims - No more broken "complete" features `L`
 - [ ] **Issue #8:** Require verification proof in all completion summaries - Show test output `M`
 - [ ] **Issue #7:** Enhance PR creation with code review documentation - Build trust in PRs `M`
@@ -42,6 +47,11 @@ The following features have been implemented:
 
 ### Must Complete Before Phase 1
 
+- [ ] **Issue #22 Phase 0:** Complete critical fixes for context-aware enforcement
+  - [ ] Fix interactive input() bug that hangs Claude Code
+  - [ ] Optimize performance from 500ms to <100ms requirement
+  - [ ] Add circuit breakers for external service failures
+  - [ ] Create comprehensive Claude Code integration tests
 - [ ] Update workflow modules to enforce "test before complete" pattern
 - [ ] Add hooks to block false completion claims
 - [ ] Create verification templates for different work types
