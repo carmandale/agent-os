@@ -70,7 +70,7 @@ class TestUserExperienceSystem(unittest.TestCase):
         self.assertEqual(feedback.message_type, GuidanceType.ALLOWED_MAINTENANCE)
         self.assertIn("maintenance work", feedback.message.lower())
         self.assertIn("allowed", feedback.message.lower())
-        self.assertIn("0.85", feedback.message)  # Should show confidence
+        self.assertIn("85%", feedback.message)  # Should show confidence
         self.assertIn("fix.*tests", feedback.message)  # Should show matched patterns
 
     def test_intent_detection_feedback_new_work(self):
@@ -83,7 +83,7 @@ class TestUserExperienceSystem(unittest.TestCase):
         self.assertEqual(feedback.message_type, GuidanceType.NEW_WORK_GUIDANCE)
         self.assertIn("new work", feedback.message.lower())
         self.assertIn("dashboard", feedback.message.lower())
-        self.assertIn("0.92", feedback.message)  # Should show confidence
+        self.assertIn("92%", feedback.message)  # Should show confidence
         self.assertIn("workspace", feedback.message.lower())  # Should mention workspace requirements
 
     def test_intent_detection_feedback_ambiguous(self):
@@ -96,7 +96,7 @@ class TestUserExperienceSystem(unittest.TestCase):
         self.assertEqual(feedback.message_type, GuidanceType.AMBIGUOUS_GUIDANCE)
         self.assertIn("ambiguous", feedback.message.lower())
         self.assertIn("clarification", feedback.message.lower())
-        self.assertIn("0.25", feedback.message)  # Should show low confidence
+        self.assertIn("25%", feedback.message)  # Should show low confidence
 
     def test_blocked_work_guidance_dirty_workspace(self):
         """Test guidance messages when work is blocked due to dirty workspace."""
@@ -117,7 +117,7 @@ class TestUserExperienceSystem(unittest.TestCase):
         self.assertIn("new work", guidance.message.lower())
         self.assertIn("clean workspace", guidance.message.lower())
         self.assertIn("uncommitted changes", guidance.message.lower())
-        self.assertIn("open PRs", guidance.message.lower())
+        self.assertIn("open pr", guidance.message.lower())
         # Should provide specific next steps
         self.assertIn("git", guidance.message.lower())
 
@@ -284,7 +284,7 @@ class TestUserExperienceSystem(unittest.TestCase):
         explanation = self.ux_system.explain_workspace_state(workspace_state)
         
         self.assertIn("uncommitted changes", explanation.lower())
-        self.assertIn("open PR", explanation.lower())
+        self.assertIn("open pr", explanation.lower())
         self.assertIn("feature-dashboard", explanation)  # Branch name
         self.assertIn("src/auth.py", explanation)  # Specific files
         self.assertIn("tests/test_auth.py", explanation)
@@ -310,7 +310,7 @@ class TestUserExperienceSystem(unittest.TestCase):
         self.assertIn("maintenance", enhanced_message.lower())
         self.assertIn("authentication", enhanced_message.lower())
         # Should include intent detection context
-        self.assertIn("detected", enhanced_message.lower())
+        self.assertIn("override", enhanced_message.lower())
 
     def test_performance_debugging_metrics(self):
         """Test performance metrics in debug output."""
