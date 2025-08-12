@@ -194,10 +194,10 @@ class ContextAwareWorkflowHook:
             reason = f"Manual override via AGENT_OS_WORK_TYPE={manual_work_type}"
         else:
             # Analyze user intent
-            intent_result = self.intent_analyzer.analyze(user_message)
-            work_type = intent_result['classification']
-            confidence = intent_result['confidence']
-            reason = intent_result.get('reasoning', '')
+            intent_result = self.intent_analyzer.analyze_intent(user_message)
+            work_type = intent_result.intent_type.value
+            confidence = intent_result.confidence
+            reason = intent_result.reasoning
             
             logger.info(f"Intent analysis: {work_type} (confidence: {confidence:.2f})")
         
