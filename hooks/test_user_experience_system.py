@@ -183,7 +183,7 @@ class TestUserExperienceSystem(unittest.TestCase):
                 }
             )
             
-            # Verbose mode wasn't actually enabled in the test setup, check debug output exists
+        # Verbose mode wasn't actually enabled in the test setup, check debug output exists
         self.assertIn("DEBUG", debug_info)
             self.assertIn("0.025", debug_info)  # Processing time
             self.assertIn("debug", debug_info)  # Matched patterns
