@@ -72,7 +72,7 @@ class HookDecisionResult:
 
 def log_override_decision(decision: OverrideDecision, user_message: str) -> None:
     """Log override decision for debugging and audit purposes."""
-    log_debug(f"OVERRIDE DECISION: {decision.override_type.value} for message: '{user_message[:100]}' - {decision.reasoning}")
+    log_debug(f"OVERRIDE DECISION: {decision.override_type.value.upper()} for message: '{user_message[:100]}' - {decision.reasoning}")
 
 
 class ManualOverrideSystem:
