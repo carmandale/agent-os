@@ -120,9 +120,9 @@ override_behavior:
         # Test various maintenance messages
         maintenance_messages = [
             "fix the failing tests",
-            "debug the CI pipeline issue",
+            "debug the CI pipeline issue", 
             "resolve merge conflicts",
-            "address the broken build",
+            "fix broken functionality",
             "update dependencies to fix security vulnerability"
         ]
         
