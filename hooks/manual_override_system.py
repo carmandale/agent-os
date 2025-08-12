@@ -324,7 +324,7 @@ class ManualOverrideSystem:
         elif decision.override_type == OverrideType.FORCE_MAINTENANCE:
             return (
                 "🔧 **Maintenance Work Override Active**\n"
-                "Your work will be treated as maintenance. You can proceed with the "
+                "Your work will be treated as maintenance. You are allowed to proceed with the "
                 "current workspace state, including uncommitted changes and open PRs."
             )
             
