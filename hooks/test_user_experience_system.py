@@ -168,7 +168,7 @@ class TestUserExperienceSystem(unittest.TestCase):
         self.assertIn("fix", educational_msg.lower())
         self.assertIn("proceed", educational_msg.lower())
         # Should explain maintenance work benefits
-        self.assertIn("dirty workspace", educational_msg.lower())
+        self.assertIn("messy", educational_msg.lower())  # Implementation uses "messy workspace"
 
     def test_debugging_output_verbose_mode(self):
         """Test debugging output in verbose mode."""
