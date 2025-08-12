@@ -50,7 +50,7 @@ class WorkIntentResult:
     reasoning: str
     
     def __str__(self) -> str:
-        return f"WorkIntentResult(type={self.intent_type.value}, confidence={self.confidence:.2f})"
+        return f"WorkIntentResult(type={self.intent_type.value.upper()}, confidence={self.confidence:.2f})"
 
 
 def log_debug(message: str) -> None:
