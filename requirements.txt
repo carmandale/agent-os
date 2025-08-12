@@ -1,0 +1,6 @@
+# Agent OS Python Dependencies
+# =============================
+# Required for context-aware workflow enforcement and intent analysis
+
+# YAML configuration parsing (optional - fallback to defaults if not available)
+PyYAML>=5.4.1
