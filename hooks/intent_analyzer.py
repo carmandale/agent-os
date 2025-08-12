@@ -155,7 +155,7 @@ class IntentAnalyzer:
             r'\bdesign\b.*\b(feature|system|interface|component|dashboard)\b',
             r'\bimplement\b.*\b(oauth|auth|login|signup|profile)\b',
             r'\bcreate\b.*\b(api|endpoint|service|dashboard)\b',
-            r'\badd\b.*\b(search|notification|integration|dashboard)\b',
+            r'\badd\b.*\b(search|notifications?|integration|dashboard|real-time)\b',
             r'\bimplement\b.*\buser\b.*\b(profile|dashboard|management|interface)\b'
         ]
     
