@@ -225,13 +225,13 @@ class ContextAwareWorkflowHook:
                 if not reason:
                     reason = "New work requires clean workspace - blocked"
         else:
-            # Unknown intent - be conservative
+            # Ambiguous intent that wasn't prompted - be conservative
             if workspace_state.is_clean:
                 action = 'allow'
-                reason = "Unknown intent but workspace is clean - allowed"
+                reason = "Ambiguous intent but workspace is clean - allowed"
             else:
                 action = 'block'
-                reason = "Unknown intent with dirty workspace - blocked for safety"
+                reason = "Ambiguous intent with dirty workspace - blocked for safety"
         
         decision = WorkflowDecision(
             action=action,
