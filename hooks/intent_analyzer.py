@@ -130,7 +130,7 @@ class IntentAnalyzer:
             r'\baddress\b.*\bci\b',
             r'\baddress\b.*\bpipeline\b',
             r'\bupdate\b.*\bdependen',
-            r'\brefactor\b(?!.*\bnew\b)',
+            r'\brefactor\b.*\b(existing|code|without.*new)\b',
             r'\bfix\b.*\bstyles?\b',
             r'\bfix\b.*\bbrok',
             r'\bresolve\b.*\berrors?\b',
