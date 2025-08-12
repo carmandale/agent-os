@@ -180,7 +180,7 @@ override_behavior:
         
         for message in new_work_messages:
             with self.subTest(message=message):
-                result = hook.should_allow_work(message, dirty_workspace)
+                result = hook.should_allow_work(message, clean_workspace)
                 self.assertTrue(result, f"Should allow new work in clean workspace: '{message}'")
     
     @patch.dict(os.environ, {'AGENT_OS_WORK_TYPE': 'maintenance'})
