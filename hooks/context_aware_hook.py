@@ -202,7 +202,7 @@ class ContextAwareWorkflowHook:
             logger.info(f"Intent analysis: {work_type} (confidence: {confidence:.2f})")
         
         # Handle ambiguous intent
-        if work_type == 'unknown' and confidence < 0.7:
+        if work_type == 'ambiguous' and confidence < 0.7:
             # Prompt user for clarification
             work_type = self._prompt_for_clarification(user_message)
             confidence = 1.0
