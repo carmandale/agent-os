@@ -151,7 +151,7 @@ class IntentAnalyzer:
             r'\bbuild\b.*\b(dashboard|interface|system|feature)\b',
             r'\bcreate\b.*\b(feature|component|system|interface|dashboard|profile)\b',
             r'\badd\b.*\b(feature|functionality|system|dashboard|notifications?)\b',
-            r'\bdevelop\b.*\b(feature|system|interface|component|dashboard)\b',
+            r'\bdevelop\b.*\b(feature|system|interface|component|dashboard|api|rate|limiting)\b',
             r'\bdesign\b.*\b(feature|system|interface|component|dashboard)\b',
             r'\bimplement\b.*\b(oauth|auth|login|signup|profile)\b',
             r'\bcreate\b.*\b(api|endpoint|service|dashboard)\b',
