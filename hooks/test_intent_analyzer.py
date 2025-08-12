@@ -209,6 +209,8 @@ class TestConfigurationLoading(unittest.TestCase):
     @patch('os.path.exists')
     def test_config_loading_success(self, mock_exists, mock_file):
         """Test successful configuration loading."""
+        if not HAS_YAML:
+            self.skipTest("PyYAML not available")
         mock_exists.return_value = True
         mock_file.return_value.read.return_value = yaml.dump(self.test_config)
         
