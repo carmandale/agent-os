@@ -139,7 +139,15 @@ class IntentAnalyzer:
             r'\brepair\b',
             r'\bcorrect\b',
             r'\bmend\b',
-            r'\bpatch\b'
+            r'\bpatch\b',
+            # Performance and optimization patterns (usually maintenance)
+            r'\boptimize\b.*\b(database|queries|performance|speed)\b',
+            r'\bimprove\b.*\b(performance|speed|loading|response)\b',
+            r'\benhance\b.*\b(performance|security|existing)\b',
+            # Refactoring and improvement patterns
+            r'\brefactor\b(?!.*\bnew\b)',
+            r'\bimprove\b.*\b(existing|current)\b',
+            r'\benhance\b.*\b(current|existing)\b'
         ]
     
     def _get_default_new_work_patterns(self) -> List[str]:
