@@ -156,7 +156,7 @@ class IntentAnalyzer:
             r'\bimplement\b.*\b(feature|dashboard|profile|system|component)\b',
             r'\bimplement\b.*\bfunctionality\b',
             r'\bbuild\b.*\bnew\b',
-            r'\bbuild\b.*\b(dashboard|interface|system|feature)\b',
+            r'\bbuild\b.*\b(dashboard|interface|system|feature|notification|service)\b',
             r'\bcreate\b.*\b(feature|component|system|interface|dashboard|profile)\b',
             r'\badd\b.*\b(feature|functionality|system|dashboard|notifications?)\b',
             r'\bdevelop\b.*\b(feature|system|interface|component|dashboard|api|rate|limiting)\b',
@@ -164,7 +164,22 @@ class IntentAnalyzer:
             r'\bimplement\b.*\b(oauth|auth|login|signup|profile)\b',
             r'\bcreate\b.*\b(api|endpoint|service|dashboard)\b',
             r'\badd\b.*\b(search|notifications?|integration|dashboard|real-time)\b',
-            r'\bimplement\b.*\buser\b.*\b(profile|dashboard|management|interface)\b'
+            r'\bimplement\b.*\buser\b.*\b(profile|dashboard|management|interface)\b',
+            # New patterns for cases that were previously ambiguous
+            r'\bbuild\b.*\b(notification|service|api|endpoint)\b',
+            r'\badd\b.*\b(user|profile|management)\b',
+            r'\bdesign\b.*\bnew\b.*\b(api|endpoints?)\b',
+            r'\bcreate\b.*\bnew\b',
+            r'\bimplement\b.*\bnew\b',
+            r'\bdevelop\b.*\bnew\b',
+            # Specific service/component patterns
+            r'\bbuild\b.*\bservice\b',
+            r'\bcreate\b.*\bservice\b',
+            r'\bimplement\b.*\bservice\b',
+            # Management and user-facing features
+            r'\badd\b.*\bmanagement\b',
+            r'\bcreate\b.*\bmanagement\b',
+            r'\bimplement\b.*\bmanagement\b'
         ]
     
     def _compile_patterns(self, patterns: List[str]) -> List[re.Pattern]:
