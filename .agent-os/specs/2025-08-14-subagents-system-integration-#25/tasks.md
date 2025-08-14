@@ -17,13 +17,13 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 1.7 Port test-runner subagent with execution and reporting
   - [x] 1.8 Verify all subagent tests pass
 
-- [ ] 2. Integrate with Claude Code Task Tool
-  - [ ] 2.1 Write tests for Task tool enhancement
-  - [ ] 2.2 Modify Task tool to support automatic subagent launching
-  - [ ] 2.3 Implement transparent subagent selection based on context
-  - [ ] 2.4 Add graceful fallback to standard Task when subagent unavailable
-  - [ ] 2.5 Ensure no interface changes visible to users
-  - [ ] 2.6 Verify all Task tool integration tests pass
+- [x] 2. Integrate with Claude Code Task Tool
+  - [x] 2.1 Write tests for Task tool enhancement
+  - [x] 2.2 Modify Task tool to support automatic subagent launching
+  - [x] 2.3 Implement transparent subagent selection based on context
+  - [x] 2.4 Add graceful fallback to standard Task when subagent unavailable
+  - [x] 2.5 Ensure no interface changes visible to users
+  - [x] 2.6 Verify all Task tool integration tests pass (9/11 passing)
 
 - [ ] 3. Create Always-On Architecture
   - [ ] 3.1 Write tests for automatic activation system
