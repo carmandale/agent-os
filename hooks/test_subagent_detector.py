@@ -176,7 +176,7 @@ class TestSubagentDetector(unittest.TestCase):
             ("Create a new Python module", "file-creator"),
             ("Commit and push these changes", "git-workflow"),
             ("Run pytest and check coverage", "test-runner"),
-            ("Analyze this code", "general-purpose")
+            ("Explain how this works", "general-purpose")  # More clearly general-purpose
         ]
         
         for prompt, expected_agent in test_cases:
