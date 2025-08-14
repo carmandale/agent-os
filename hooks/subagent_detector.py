@@ -223,9 +223,16 @@ class SubagentDetector:
             if context.get('requires_template') and agent == 'file-creator':
                 score += 3.0
             
-            # Check trigger words
-            for trigger in capabilities.get('triggers', []):
-                if trigger in combined_text:
+            # Check trigger words with word boundary matching
+            words = combined_text.split()
+            triggers = capabilities.get('triggers', [])
+            for trigger in triggers:
+                # Check for multi-word triggers
+                if ' ' in trigger:
+                    if trigger in combined_text:
+                        score += 2.0
+                # Check for single-word triggers with word boundaries
+                elif trigger in words:
                     score += 2.0
             
             # Check regex patterns
