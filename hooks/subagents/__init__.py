@@ -10,9 +10,13 @@ This module provides specialized subagents for optimized task execution:
 """
 
 from .context_fetcher import ContextFetcherAgent
+from .date_checker import DateCheckerAgent
+from .file_creator import FileCreatorAgent
 
 __all__ = [
     'ContextFetcherAgent',
+    'DateCheckerAgent',
+    'FileCreatorAgent',
 ]
 
 # Version info
