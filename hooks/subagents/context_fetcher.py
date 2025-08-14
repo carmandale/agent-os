@@ -169,14 +169,35 @@ class ContextFetcherAgent:
             Dictionary with search results
         """
         try:
-            # Build find + grep command
-            find_cmd = f"find {path} -name '{pattern}' -type f"
-            grep_cmd = f"grep -n -i '{query}'"
-            full_cmd = f"{find_cmd} | xargs {grep_cmd}"
+            # First, find files matching the pattern (safer approach)
+            find_result = subprocess.run(
+                ['find', path, '-name', pattern, '-type', 'f'],
+                capture_output=True,
+                text=True,
+                timeout=3
+            )
+            
+            if find_result.returncode != 0:
+                return {
+                    'success': False,
+                    'error': 'Failed to find files'
+                }
+            
+            files = [f for f in find_result.stdout.splitlines() if f]
+            if not files:
+                return {
+                    'success': True,
+                    'query': query,
+                    'matches': [],
+                    'total_found': 0,
+                    'search_path': path
+                }
+            
+            # Then grep through the found files (no shell=True)
+            grep_cmd = ['grep', '-n', '-i', query] + files[:100]  # Limit files
             
             result = subprocess.run(
-                full_cmd,
-                shell=True,
+                grep_cmd,
                 capture_output=True,
                 text=True,
                 timeout=5
