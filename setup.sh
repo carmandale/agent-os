@@ -56,6 +56,8 @@ mkdir -p "$HOME/.agent-os/standards"
 mkdir -p "$HOME/.agent-os/instructions"
 mkdir -p "$HOME/.agent-os/scripts"
 mkdir -p "$HOME/.agent-os/workflow-modules"
+mkdir -p "$HOME/.agent-os/hooks"
+mkdir -p "$HOME/.agent-os/hooks/subagents"
 
 # Download standards files
 echo ""
@@ -187,6 +189,43 @@ echo "  ✓ ~/.agent-os/workflow-modules/step-3-quality-assurance.md"
 # step-4-git-integration.md
 curl -s -o "$HOME/.agent-os/workflow-modules/step-4-git-integration.md" "${BASE_URL}/workflow-modules/step-4-git-integration.md"
 echo "  ✓ ~/.agent-os/workflow-modules/step-4-git-integration.md"
+
+# Download subagents system
+echo ""
+echo "🤖 Installing Agent OS Subagents System..."
+echo "  Downloading subagent components..."
+
+# Core subagent files
+curl -s -o "$HOME/.agent-os/hooks/subagent_detector.py" "${BASE_URL}/hooks/subagent_detector.py"
+echo "  ✓ subagent_detector.py"
+
+curl -s -o "$HOME/.agent-os/hooks/task_tool_wrapper.py" "${BASE_URL}/hooks/task_tool_wrapper.py"
+echo "  ✓ task_tool_wrapper.py"
+
+curl -s -o "$HOME/.agent-os/hooks/deploy_subagents.py" "${BASE_URL}/hooks/deploy_subagents.py"
+chmod +x "$HOME/.agent-os/hooks/deploy_subagents.py" 2>/dev/null || true
+echo "  ✓ deploy_subagents.py"
+
+# Subagent modules
+curl -s -o "$HOME/.agent-os/hooks/subagents/__init__.py" "${BASE_URL}/hooks/subagents/__init__.py"
+echo "  ✓ subagents/__init__.py"
+
+curl -s -o "$HOME/.agent-os/hooks/subagents/context_fetcher.py" "${BASE_URL}/hooks/subagents/context_fetcher.py"
+echo "  ✓ context_fetcher.py"
+
+curl -s -o "$HOME/.agent-os/hooks/subagents/date_checker.py" "${BASE_URL}/hooks/subagents/date_checker.py"
+echo "  ✓ date_checker.py"
+
+curl -s -o "$HOME/.agent-os/hooks/subagents/file_creator.py" "${BASE_URL}/hooks/subagents/file_creator.py"
+echo "  ✓ file_creator.py"
+
+curl -s -o "$HOME/.agent-os/hooks/subagents/git_workflow.py" "${BASE_URL}/hooks/subagents/git_workflow.py"
+echo "  ✓ git_workflow.py"
+
+curl -s -o "$HOME/.agent-os/hooks/subagents/test_runner.py" "${BASE_URL}/hooks/subagents/test_runner.py"
+echo "  ✓ test_runner.py"
+
+echo "  ✅ Subagents system installed (5 specialized agents)"
 
 # Download background task tools
 echo ""
