@@ -12,11 +12,15 @@ This module provides specialized subagents for optimized task execution:
 from .context_fetcher import ContextFetcherAgent
 from .date_checker import DateCheckerAgent
 from .file_creator import FileCreatorAgent
+from .git_workflow import GitWorkflowAgent
+from .test_runner import TestRunnerAgent
 
 __all__ = [
     'ContextFetcherAgent',
     'DateCheckerAgent',
     'FileCreatorAgent',
+    'GitWorkflowAgent',
+    'TestRunnerAgent',
 ]
 
 # Version info
