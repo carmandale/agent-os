@@ -141,26 +141,30 @@ class SubagentDetector:
         """
         # Handle error cases gracefully
         if context is None:
-            return DetectionResult(
+            result = DetectionResult(
                 agent='general-purpose',
                 reason='No context provided, using general-purpose agent',
                 confidence=0.3
             ).to_dict()
+            result['warning'] = 'Error: No context provided'
+            return result
         
         if not isinstance(context, dict):
             return {
                 'agent': 'general-purpose',
                 'reason': 'Invalid context format, using general-purpose agent',
                 'confidence': 0.3,
-                'warning': 'Context should be a dictionary'
+                'warning': 'Error: Context should be a dictionary'
             }
         
         if not context:
-            return DetectionResult(
+            result = DetectionResult(
                 agent='general-purpose',
                 reason='Empty context, using general-purpose agent',
                 confidence=0.3
             ).to_dict()
+            result['warning'] = 'Error: Empty context'
+            return result
         
         # Analyze context for agent selection
         scores = self._calculate_agent_scores(context)
