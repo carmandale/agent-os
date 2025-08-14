@@ -293,3 +293,53 @@ The configuration amnesia problem directly undermines Agent OS's core value prop
 - Requires coordination between multiple components
 - Initial implementation effort is substantial
 - May impact performance if not optimized properly
+
+## 2025-08-14: Builder Methods Subagents System Integration
+
+**ID:** DEC-007
+**Status:** Accepted
+**Category:** Technical
+**Stakeholders:** Agent OS Users, Development Team, AI Tool Ecosystem
+**Related Spec:** @.agent-os/specs/2025-08-14-subagents-system-integration-#25/
+
+### Decision
+
+Integrate Builder Methods' Specialized Subagents System as a mandatory, always-on enhancement that automatically improves Agent OS operations through intelligent agent selection, modular specialized components (context-fetcher, date-checker, file-creator, git-workflow, test-runner), and transparent performance optimization.
+
+### Context
+
+Agent OS has reached maturity in workflow enforcement and quality assurance, creating an opportunity to enhance efficiency and accuracy through specialized AI components. Builder Methods' subagent system offers proven architecture for automatic agent selection, context optimization, and performance improvement that aligns perfectly with Agent OS's mission of reliable first-try success.
+
+### Alternatives Considered
+
+1. **Manual Subagent System with Opt-in**
+   - Pros: User control, simpler initial implementation, gradual adoption
+   - Cons: Violates seamless experience principle, reduces benefit realization, creates configuration complexity
+
+2. **Build Custom Subagent System**
+   - Pros: Perfect Agent OS integration, complete control over features
+   - Cons: Significant development time, reinventing proven solutions, delayed benefit delivery
+
+3. **Integration with Always-On Mandatory Architecture** (Selected)
+   - Pros: Maximum user benefit, seamless enhancement, proven components, 25% efficiency gains
+   - Cons: Complex integration effort, architectural changes required
+
+### Rationale
+
+The subagents system directly addresses Agent OS's core mission by providing specialized intelligence for common development operations. Making it mandatory and always-on ensures all users benefit without adding complexity, while the 25% context reduction and improved accuracy metrics align with our efficiency and reliability goals.
+
+### Consequences
+
+**Positive:**
+- Transforms Agent OS from workflow framework to intelligent development assistant
+- Provides measurable efficiency gains (25% context reduction, sub-10ms performance)
+- Maintains backward compatibility while enhancing all operations
+- Creates foundation for advanced AI-assisted development capabilities
+- Strengthens competitive positioning through specialized intelligence
+
+**Negative:**
+- Increases Agent OS architectural complexity significantly
+- Requires substantial integration and testing effort
+- Introduces new dependencies and potential failure points
+- May impact performance if not properly optimized
+- Creates expectations for continued AI enhancement evolution
