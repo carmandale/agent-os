@@ -190,8 +190,8 @@ class SubagentDetector:
         """Calculate scores for each agent based on context."""
         scores = {}
         
-        # Extract relevant text from context
-        prompt = str(context.get('prompt', '')).lower()
+        # Extract relevant text from context (handle both 'prompt' and 'message')
+        prompt = str(context.get('prompt', context.get('message', ''))).lower()
         operation = str(context.get('operation', '')).lower()
         combined_text = f"{prompt} {operation}"
         
@@ -251,7 +251,7 @@ class SubagentDetector:
     
     def _generate_reason(self, agent: str, context: Dict[str, Any]) -> str:
         """Generate a reason for the agent selection."""
-        prompt = str(context.get('prompt', ''))[:50]
+        prompt = str(context.get('prompt', context.get('message', '')))[:50]
         
         reasons = {
             'context-fetcher': f'Detected codebase search/analysis task',
