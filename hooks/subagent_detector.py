@@ -243,8 +243,9 @@ class SubagentDetector:
             scores[agent] = score
         
         # Ensure general-purpose has a baseline score
+        # Keep it low for truly ambiguous contexts
         if scores.get('general-purpose', 0) == 0:
-            scores['general-purpose'] = 0.5
+            scores['general-purpose'] = 0.1
         
         return scores
     
@@ -274,6 +275,10 @@ class SubagentDetector:
         if best_score == 0:
             return 0.3
         
+        # Very low scores indicate low confidence
+        if best_score <= 0.5:
+            return 0.3
+        
         # Get second-best score
         sorted_scores = sorted(scores.values(), reverse=True)
         if len(sorted_scores) > 1:
@@ -288,7 +293,7 @@ class SubagentDetector:
         
         # Single score or low score
         if best_score < 1:
-            return 0.3
+            return 0.35
         return min(0.9, 0.5 + (best_score / 10))
     
     def get_available_agents(self) -> List[str]:
