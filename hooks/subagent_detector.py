@@ -48,13 +48,15 @@ class SubagentDetector:
             'description': 'Specialized for codebase analysis and searching across multiple files',
             'triggers': [
                 'search', 'find', 'locate', 'grep', 'analyze codebase',
-                'look for', 'scan', 'explore', 'review code', 'examine'
+                'look for', 'scan', 'explore', 'review code', 'examine',
+                'analyze', 'code analysis'
             ],
             'patterns': [
                 r'search.*(?:for|through|in)',
                 r'find.*(?:all|every|instances|occurrences)',
                 r'(?:analyze|examine|review).*(?:code|codebase|files)',
-                r'look.*(?:for|through).*files?'
+                r'look.*(?:for|through).*files?',
+                r'analyze.*code'
             ]
         },
         'date-checker': {
@@ -272,9 +274,14 @@ class SubagentDetector:
             # Higher confidence if clear winner
             if best_score > second_best * 2:
                 return min(0.95, 0.5 + (best_score / 10))
-            else:
+            elif best_score > 0:
                 return min(0.75, 0.3 + (best_score / 10))
+            else:
+                return 0.3
         
+        # Single score or low score
+        if best_score < 1:
+            return 0.3
         return min(0.9, 0.5 + (best_score / 10))
     
     def get_available_agents(self) -> List[str]:
