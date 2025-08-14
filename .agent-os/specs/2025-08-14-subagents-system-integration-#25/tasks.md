@@ -25,13 +25,13 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 2.5 Ensure no interface changes visible to users
   - [x] 2.6 Verify all Task tool integration tests pass (9/11 passing)
 
-- [ ] 3. Create Always-On Architecture
-  - [ ] 3.1 Write tests for automatic activation system
-  - [ ] 3.2 Implement context analysis for automatic subagent detection
-  - [ ] 3.3 Create zero-configuration deployment system
-  - [ ] 3.4 Implement performance optimization (sub-10ms detection)
-  - [ ] 3.5 Add debug logging without user visibility
-  - [ ] 3.6 Verify all automatic operation tests pass
+- [x] 3. Create Always-On Architecture
+  - [x] 3.1 Write tests for automatic activation system
+  - [x] 3.2 Implement context analysis for automatic subagent detection
+  - [x] 3.3 Create zero-configuration deployment system
+  - [x] 3.4 Implement performance optimization (sub-10ms detection)
+  - [x] 3.5 Add debug logging without user visibility
+  - [x] 3.6 Verify all automatic operation tests pass
 
 - [ ] 4. Enhance Pre-flight Check System
   - [ ] 4.1 Write tests for pre-flight integration with hygiene checks
