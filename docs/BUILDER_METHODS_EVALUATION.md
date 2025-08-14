@@ -127,21 +127,25 @@ Features:
 
 ### Non-Negotiable Requirements
 
-1. **Subagents MUST be always-on**
-   - No opt-in required
-   - No configuration needed
-   - Automatic detection and usage
-   - Transparent to users
+1. **Subagents AUTO by default with controls**
+   - Default mode: `auto` (intelligent detection)
+   - Feature flag: `AOS_SUBAGENTS_MODE={off,auto,force}` 
+   - Security subagents: **opt-in only** (never auto-run)
+   - Fail-open fallback when detection fails
 
 2. **Backward Compatibility**
    - All existing workflows continue working
    - No breaking changes to current features
-   - Enhance, don't replace
+   - Feature flag gated with 10% canary rollout
+   - Snapshot regression tests for behavioral drift
+   - Explicit rollback criteria defined
 
 3. **Performance Standards**
-   - Subagent detection < 10ms
-   - No noticeable latency increase
-   - Efficient context usage
+   - Detection budget: **p50 < 20ms, p95 < 100ms**
+   - Clear cold vs warm start differentiation
+   - Result caching and memoization
+   - CI performance gates
+   - Published timing metrics
 
 ### Technical Integration Points
 
