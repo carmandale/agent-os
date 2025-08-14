@@ -60,6 +60,4 @@ The system automatically reduces context usage through intelligent subagent sele
 
 - Tasks: @.agent-os/specs/2025-08-14-subagents-system-integration-#25/tasks.md
 - Technical Specification: @.agent-os/specs/2025-08-14-subagents-system-integration-#25/sub-specs/technical-spec.md
-- Database Schema: @.agent-os/specs/2025-08-14-subagents-system-integration-#25/sub-specs/database-schema.md
-- API Specification: @.agent-os/specs/2025-08-14-subagents-system-integration-#25/sub-specs/api-spec.md
 - Tests Specification: @.agent-os/specs/2025-08-14-subagents-system-integration-#25/sub-specs/tests.md
