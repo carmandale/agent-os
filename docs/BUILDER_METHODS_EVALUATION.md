@@ -171,29 +171,34 @@ Features:
 ## Proposed Implementation Plan
 
 ### Phase 1: Core Subagent Integration (Week 1)
-1. Port all 5 subagents from Builder Methods
-2. Create automatic detection system
-3. Integrate with Task tool
-4. Make subagents mandatory and always-active
-5. Add telemetry for usage tracking
+1. Port all 5 subagents from Builder Methods (maintain upstream alignment)
+2. Create automatic detection system with feature flag (default: `auto`)
+3. Integrate with Task tool with fail-open fallback
+4. Implement `AOS_SUBAGENTS_MODE` environment variable
+5. Add telemetry with privacy controls and opt-out
+6. Security subagents marked as opt-in only
+7. Implement result caching/memoization for performance
 
 ### Phase 2: Pre-flight System (Week 2)
-1. Merge with hygiene checks
-2. Create comprehensive validation
-3. Add to all workflows
-4. Automatic remediation suggestions
+1. Merge with hygiene checks as **warnings by default**
+2. Create comprehensive validation with opt-in enforcement
+3. Add to workflows with non-destructive updates
+4. Automatic remediation suggestions with `aos doctor`
+5. Implement performance measurement and reporting
 
 ### Phase 3: Structural Improvements (Week 3)
-1. Reorganize instructions into core/meta
-2. Update all references
-3. Maintain backward compatibility
-4. Update documentation
+1. Reorganize instructions into core/meta with migration script
+2. Update references with preview/diff capability
+3. Maintain backward compatibility (no silent overwrites)
+4. Create upstream compatibility preset
+5. Add `aos update --sync-content` for controlled updates
 
 ### Phase 4: Testing & Refinement (Week 4)
-1. Comprehensive testing suite
-2. Performance optimization
-3. User acceptance testing
-4. Documentation updates
+1. Snapshot regression tests for core workflows
+2. Performance gates (p50 < 20ms, p95 < 100ms)
+3. Benchmark suite (N repos × M tasks)
+4. 10% canary rollout with monitoring
+5. Weekly metrics rollup and reporting
 
 ## Success Metrics
 
