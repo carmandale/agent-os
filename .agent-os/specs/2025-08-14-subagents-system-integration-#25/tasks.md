@@ -11,8 +11,8 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 1.1 Write tests for subagent detection system
   - [x] 1.2 Create SubagentDetector class with automatic agent selection
   - [x] 1.3 Port context-fetcher subagent with codebase analysis capabilities
-  - [ ] 1.4 Port date-checker subagent with accurate date determination
-  - [ ] 1.5 Port file-creator subagent with template generation
+  - [x] 1.4 Port date-checker subagent with accurate date determination
+  - [x] 1.5 Port file-creator subagent with template generation
   - [ ] 1.6 Port git-workflow subagent with complete git operations
   - [ ] 1.7 Port test-runner subagent with execution and reporting
   - [ ] 1.8 Verify all subagent tests pass
