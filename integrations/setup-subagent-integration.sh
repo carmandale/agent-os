@@ -42,12 +42,13 @@ detect_subagents() {
         return 1
     fi
     
-    # Key agents for Agent OS workflows
+    # Key agents for Agent OS workflows (Builder Methods architecture)
     declare -a KEY_AGENTS=(
-        "senior-software-engineer"
-        "qa-test-engineer" 
-        "prd-writer"
-        "systems-architect"
+        "context-fetcher"
+        "date-checker"
+        "file-creator"
+        "git-workflow"
+        "test-runner"
         "code-refactoring-expert"
         "security-threat-analyst"
         "performance-optimizer"
@@ -127,14 +128,14 @@ This enhanced version of execute-tasks.md includes subagent integration points.
 ## Subagent Integration Points
 
 ### Step 6.5: Implementation Quality Check
-If complex implementation tasks are detected, the senior-software-engineer subagent can be invoked for:
+If context retrieval is needed, the context-fetcher agent can be invoked for:
 - Architectural guidance
 - Code review
 - Technical mentorship
 
 ### Step 8.5: Comprehensive Quality Pipeline
 Multiple agents can be invoked for quality assurance:
-- qa-test-engineer: Comprehensive testing strategy
+- test-runner: Automated test execution across frameworks
 - code-refactoring-expert: Code quality improvement
 - security-threat-analyst: Security review
 - performance-optimizer: Performance validation
@@ -167,18 +168,18 @@ These commands automatically detect and use available subagents for improved out
 
 ## /plan-product-enhanced
 Execute product planning with subagent enhancements:
-- Uses prd-writer for professional-grade mission documentation
+- Uses file-creator for structured file generation
 - Leverages systems-architect for technical architecture validation
 
 ## /create-spec-enhanced  
 Create specifications with comprehensive subagent support:
 - Automated technical review with systems-architect
-- Comprehensive testing strategy with qa-test-engineer
+- Automated test execution with test-runner agent
 - Security analysis with security-threat-analyst (when applicable)
 
 ## /execute-tasks-enhanced
 Execute tasks with quality pipeline:
-- Complex implementation guidance from senior-software-engineer
+- Efficient context retrieval with context-fetcher agent
 - Automated quality checks with multiple specialists
 - Performance optimization when needed
 

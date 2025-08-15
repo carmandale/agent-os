@@ -45,6 +45,22 @@ for cmd in plan-product create-spec execute-tasks analyze-product hygiene-check;
     fi
 done
 
+# Download Claude Code agents for subagent architecture
+echo ""
+echo "📥 Downloading Claude Code agent definitions to ~/.claude/agents/"
+mkdir -p "$HOME/.claude/agents"
+
+# Agent definitions for Builder Methods subagent architecture
+agents=("context-fetcher" "date-checker" "file-creator" "git-workflow" "test-runner")
+for agent in "${agents[@]}"; do
+    if [ -f "$HOME/.claude/agents/${agent}.md" ]; then
+        echo "  ⚠️  ~/.claude/agents/${agent}.md already exists - skipping"
+    else
+        curl -s -o "$HOME/.claude/agents/${agent}.md" "${BASE_URL}/claude-code/agents/${agent}.md"
+        echo "  ✓ ~/.claude/agents/${agent}.md"
+    fi
+done
+
 # Download Claude Code user CLAUDE.md
 echo ""
 echo "📥 Downloading Claude Code configuration to ~/.claude/"
@@ -61,6 +77,7 @@ echo "✅ Agent OS Claude Code installation complete!"
 echo ""
 echo "📍 Files installed to:"
 echo "   ~/.claude/commands/        - Claude Code commands"
+echo "   ~/.claude/agents/          - Claude Code agent definitions"
 echo "   ~/.claude/CLAUDE.md        - Claude Code configuration"
 echo ""
 

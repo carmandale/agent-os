@@ -5,6 +5,33 @@ All notable changes to Agent OS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] - 2025-08-15
+
+### Changed
+- **BREAKING: Refactored to Builder Methods Subagent Architecture** (#27)
+  - Migrated from Python subagent modules to Claude Code native agent system
+  - Agents now defined as markdown files in `~/.claude/agents/`
+  - Instructions use `subagent=` attributes for automatic agent routing
+  - Removed 4,400+ lines of Python code in favor of 1,000 lines of markdown
+
+### Added
+- **Native Claude Code Agent Integration**
+  - Five Builder Methods agents installed to `~/.claude/agents/`
+  - Automatic agent invocation through instruction step attributes
+  - Seamless integration with Claude Code's Task tool
+
+### Removed
+- Python subagent implementation (`hooks/subagents/*.py`)
+- Python detection and wrapper systems
+- Manual override and user experience systems
+- All Python-based subagent tests
+
+### Improved
+- **Simplicity**: Native Claude Code integration vs custom Python wrapper
+- **Performance**: Direct agent invocation vs Python detection layer
+- **Maintainability**: 75% less code to maintain
+- **Compatibility**: Works with Claude Code's evolving agent system
+
 ## [2.3.0] - 2025-01-15
 
 ### Added
