@@ -27,14 +27,15 @@ The following features have been implemented:
   - Integration of Agent OS management with background tasks
   - Single aos command for all operations
   - Background task status in comprehensive reports
-- [x] **Builder Methods Subagents System** - 5 specialized AI agents for optimization `XL` ✅ **COMPLETE** (v2.3.0, Issue #25)
+- [x] **Builder Methods Subagents System** - Native Claude Code agent architecture `XL` ✅ **COMPLETE** (v2.4.0, Issues #25, #27)
+  - Refactored from Python to native Claude Code agents
   - context-fetcher: Codebase search and analysis
   - date-checker: Accurate date determination
   - file-creator: Template-based file generation
   - git-workflow: Git operations and GitHub integration
   - test-runner: Multi-framework test execution
-  - Sub-millisecond detection (0.01ms average)
-  - 25% context reduction through intelligent routing
+  - Uses Claude Code's built-in agent system via subagent= attributes
+  - 75% less code to maintain (markdown vs Python)
 
 ## Phase 0.5: Critical Quality Issues (✅ SUBSTANTIAL PROGRESS)
 

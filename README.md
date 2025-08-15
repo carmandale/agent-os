@@ -10,7 +10,7 @@
 
 This is an enhanced fork of the original [Agent OS by Builder Methods](https://github.com/buildermethods/agent-os). We're building on Brian Casel's excellent foundation to add:
 
-- **🤖 Specialized Subagents System**: 5 optimized AI agents for common tasks with 25% context reduction and sub-millisecond detection
+- **🤖 Native Claude Code Agents**: Builder Methods' 5 specialized agents integrated directly with Claude Code
 - **Background Task Management**: Run development tasks (builds, tests, servers) in background without blocking AI workflows
 - **GitHub Issues Workflow Enforcement**: Strict requirement for issue-based development with automated tracking
 - **Enhanced CLI Tools**: Unified `aos` command with comprehensive project management and task monitoring
@@ -74,16 +74,16 @@ curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup-curso
 
 ### Features
 
-#### 🤖 Specialized Subagents System (NEW!)
-- **5 Optimized AI Agents**: Specialized agents for common development tasks
-  - `context-fetcher`: Codebase search and analysis
-  - `date-checker`: Accurate date determination for specs
-  - `file-creator`: Template-based file generation
+#### 🤖 Native Claude Code Agents (v2.4.0)
+- **Builder Methods Architecture**: 5 specialized agents integrated with Claude Code
+  - `context-fetcher`: Intelligent codebase search and documentation retrieval
+  - `date-checker`: Accurate system date determination for specs
+  - `file-creator`: Template-based file generation from structured specs
   - `git-workflow`: Complete git operations and GitHub integration
-  - `test-runner`: Multi-framework test execution
-- **Performance**: Sub-millisecond detection (0.01ms average)
-- **Context Reduction**: 25% less token usage through intelligent routing
-- **Zero Configuration**: Works automatically without setup
+  - `test-runner`: Multi-framework test execution across languages
+- **Native Integration**: Uses Claude Code's built-in agent system via `subagent=` attributes
+- **Automatic Invocation**: Agents triggered automatically during workflow execution
+- **Zero Configuration**: Installed to `~/.claude/agents/` and work immediately
 
 #### 🚀 Background Task Management
 - **Non-blocking development**: Keep working while builds/tests run
