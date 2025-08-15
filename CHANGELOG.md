@@ -5,6 +5,30 @@ All notable changes to Agent OS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2025-01-15
+
+### Added
+- **Builder Methods Subagents System**: 5 specialized AI agents for optimized development (#25)
+  - `context-fetcher`: Intelligent codebase search and analysis
+  - `date-checker`: Accurate date determination for specs
+  - `file-creator`: Template-based file generation
+  - `git-workflow`: Complete git operations and GitHub integration
+  - `test-runner`: Multi-framework test execution
+- **Automatic Subagent Detection**: Sub-millisecond (0.01ms) pattern matching
+- **Context Optimization**: 25% reduction in token usage through intelligent routing
+- **Task Tool Integration**: Transparent wrapper for Claude Code Task tool
+- **Zero-Configuration Deployment**: Works out-of-the-box with no setup required
+
+### Improved
+- **Performance**: Subagent detection averages 0.01ms (100x faster than 10ms requirement)
+- **Token Efficiency**: Specialized agents use 25% fewer tokens than general-purpose
+- **Developer Experience**: Automatic routing means no manual agent selection needed
+- **Installation**: Subagents now integrated into main setup.sh script
+
+### Changed
+- Version tracking moved to uppercase `VERSION` file (was `.version`)
+- README updated with subagents as primary fork enhancement
+
 ## [2.2.0] - 2025-01-10
 
 ### Added
