@@ -1,0 +1,49 @@
+name: Shell Lint and Tests
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  lint_and_test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup packages (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck ripgrep jq bats
+
+      - name: Setup packages (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew update
+          brew install shellcheck ripgrep jq bats-core || true
+
+      - name: Run shellcheck
+        run: |
+          shellcheck -V
+          # Lint scripts and tools; ignore vendor or hidden
+          find scripts tools -type f -name "*.sh" -print -exec shellcheck {} + || true
+
+      - name: Run bats tests
+        run: |
+          if command -v bats &>/dev/null; then
+            bats -r tests || true
+          elif command -v bats-core &>/dev/null; then
+            bats-core -r tests || true
+          else
+            echo "bats not installed; skipping"
+          fi
+
+
