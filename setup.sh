@@ -105,18 +105,6 @@ fi
 echo ""
 echo "📥 Downloading instruction files to ~/.agent-os/instructions/"
 
-# plan-product.md (core mirror installer)
-if [ -f "$HOME/.agent-os/instructions/plan-product.md" ] && [ "$OVERWRITE_INSTRUCTIONS" = false ]; then
-    echo "  ⚠️  ~/.agent-os/instructions/plan-product.md already exists - skipping"
-else
-    curl -s -o "$HOME/.agent-os/instructions/plan-product.md" "${BASE_URL}/instructions/plan-product.md"
-    if [ -f "$HOME/.agent-os/instructions/plan-product.md" ] && [ "$OVERWRITE_INSTRUCTIONS" = true ]; then
-        echo "  ✓ ~/.agent-os/instructions/plan-product.md (overwritten)"
-    else
-        echo "  ✓ ~/.agent-os/instructions/plan-product.md"
-    fi
-fi
-
 # core mirrors
 for core_file in analyze-product.md create-spec.md execute-tasks.md plan-product.md; do
   src_path="${BASE_URL}/instructions/core/${core_file}"
@@ -157,41 +145,7 @@ else
     fi
 fi
 
-# create-spec.md
-if [ -f "$HOME/.agent-os/instructions/create-spec.md" ] && [ "$OVERWRITE_INSTRUCTIONS" = false ]; then
-  echo "  ⚠️  ~/.agent-os/instructions/create-spec.md already exists - skipping"
-else
-  curl -s -o "$HOME/.agent-os/instructions/create-spec.md" "${BASE_URL}/instructions/create-spec.md"
-  if [ -f "$HOME/.agent-os/instructions/create-spec.md" ] && [ "$OVERWRITE_INSTRUCTIONS" = true ]; then
-    echo "  ✓ ~/.agent-os/instructions/create-spec.md (overwritten)"
-  else
-    echo "  ✓ ~/.agent-os/instructions/create-spec.md"
-  fi
-fi
-
-# execute-tasks.md
-if [ -f "$HOME/.agent-os/instructions/execute-tasks.md" ] && [ "$OVERWRITE_INSTRUCTIONS" = false ]; then
-    echo "  ⚠️  ~/.agent-os/instructions/execute-tasks.md already exists - skipping"
-else
-    curl -s -o "$HOME/.agent-os/instructions/execute-tasks.md" "${BASE_URL}/instructions/execute-tasks.md"
-    if [ -f "$HOME/.agent-os/instructions/execute-tasks.md" ] && [ "$OVERWRITE_INSTRUCTIONS" = true ]; then
-        echo "  ✓ ~/.agent-os/instructions/execute-tasks.md (overwritten)"
-    else
-        echo "  ✓ ~/.agent-os/instructions/execute-tasks.md"
-    fi
-fi
-
-# analyze-product.md
-if [ -f "$HOME/.agent-os/instructions/analyze-product.md" ] && [ "$OVERWRITE_INSTRUCTIONS" = false ]; then
-    echo "  ⚠️  ~/.agent-os/instructions/analyze-product.md already exists - skipping"
-else
-    curl -s -o "$HOME/.agent-os/instructions/analyze-product.md" "${BASE_URL}/instructions/analyze-product.md"
-    if [ -f "$HOME/.agent-os/instructions/analyze-product.md" ] && [ "$OVERWRITE_INSTRUCTIONS" = true ]; then
-        echo "  ✓ ~/.agent-os/instructions/analyze-product.md (overwritten)"
-    else
-        echo "  ✓ ~/.agent-os/instructions/analyze-product.md"
-    fi
-fi
+## Note: Top-level instruction files are deprecated. Only core/* is installed.
 
 # Download script files
 echo ""
