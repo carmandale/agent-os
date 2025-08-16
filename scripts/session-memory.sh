@@ -41,8 +41,30 @@ case "${1:-}" in
     refresh_cache
     export_session_vars
     ;;
+  maybe-refresh-and-export)
+    # If cache missing or any source newer than cache, refresh
+    # Helper to get mtime portable across macOS/Linux
+    stat_mtime() {
+      if stat -f %m "$1" >/dev/null 2>&1; then stat -f %m "$1"; else stat -c %Y "$1"; fi
+    }
+    latest_src=0
+    for src in .env .env.local .agent-os/product/tech-stack.md start.sh; do
+      if [[ -f "$src" ]]; then
+        mt=$(stat_mtime "$src" || echo 0)
+        [[ "$mt" -gt "$latest_src" ]] && latest_src="$mt"
+      fi
+    done
+    cache_mtime=0
+    if [[ -f "$CACHE_FILE" ]]; then
+      cache_mtime=$(stat_mtime "$CACHE_FILE" || echo 0)
+    fi
+    if [[ ! -f "$CACHE_FILE" || "$latest_src" -gt "$cache_mtime" ]]; then
+      refresh_cache
+    fi
+    export_session_vars
+    ;;
   *)
-    echo "Usage: $0 {refresh|export|refresh-and-export}"
+    echo "Usage: $0 {refresh|export|refresh-and-export|maybe-refresh-and-export}"
     ;;
 esac
 
