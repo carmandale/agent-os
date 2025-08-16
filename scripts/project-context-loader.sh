@@ -79,13 +79,18 @@ else
     echo "⚠️ Missing start.sh startup script"
 fi
 
+# Refresh and export session memory
+if command -v jq >/dev/null 2>&1; then
+  bash scripts/session-memory.sh refresh-and-export || true
+fi
+
 echo ""
 echo "✅ **PROJECT CONFIGURATION CONFIRMED:**"
-echo "- **Python Package Manager:** $python_package_manager"
-echo "- **JavaScript Package Manager:** $javascript_package_manager"  
-echo "- **Frontend Port:** $frontend_port"
-echo "- **Backend Port:** $backend_port"
-echo "- **Startup Command:** $startup_command"
+echo "- **Python Package Manager:** ${AGENT_OS_PYPM:-$python_package_manager}"
+echo "- **JavaScript Package Manager:** ${AGENT_OS_JSPM:-$javascript_package_manager}"  
+echo "- **Frontend Port:** ${AGENT_OS_FRONTEND_PORT:-$frontend_port}"
+echo "- **Backend Port:** ${AGENT_OS_BACKEND_PORT:-$backend_port}"
+echo "- **Startup Command:** ${AGENT_OS_START_CMD:-$startup_command}"
 echo "- **E2E Testing:** $e2e_testing"
 echo "- **Project Structure:** $project_structure"
 echo ""
