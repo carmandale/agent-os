@@ -11,6 +11,7 @@ setup() {
   mkdir -p scripts
   cp "$BATS_TEST_DIRNAME/../scripts/intent-analyzer.sh" scripts/
   cp "$BATS_TEST_DIRNAME/../scripts/context-aware-wrapper.sh" scripts/
+  cp "$BATS_TEST_DIRNAME/../scripts/workspace-state.sh" scripts/
 }
 
 teardown() {
@@ -22,22 +23,22 @@ teardown() {
   echo test > foo
   git add foo
   # dirty state is fine for maintenance
-  run bash scripts/context-aware-wrapper.sh --intent-text "fix failing tests" --action-type write
+  run env AGENT_OS_STATE_TTL=0 bash scripts/context-aware-wrapper.sh --intent-text "fix failing tests" --action-type write
   [ "$status" -eq 0 ]
   [[ "$output" =~ ALLOW ]]
 }
 
 @test "new work blocked when dirty" {
   echo test2 >> foo
-  run bash scripts/context-aware-wrapper.sh --intent-text "implement new feature" --action-type write
+  run env AGENT_OS_STATE_TTL=0 bash scripts/context-aware-wrapper.sh --intent-text "implement new feature" --action-type write
   [ "$status" -ne 0 ]
   [[ "$output" =~ BLOCK ]]
 }
 
 @test "ambiguous allows read-only but blocks write" {
-  run bash scripts/context-aware-wrapper.sh --intent-text "update authentication" --action-type read
+  run env AGENT_OS_STATE_TTL=0 bash scripts/context-aware-wrapper.sh --intent-text "update authentication" --action-type read
   [ "$status" -eq 0 ]
-  run bash scripts/context-aware-wrapper.sh --intent-text "update authentication" --action-type write
+  run env AGENT_OS_STATE_TTL=0 bash scripts/context-aware-wrapper.sh --intent-text "update authentication" --action-type write
   [ "$status" -ne 0 ]
 }
 
