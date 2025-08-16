@@ -6,6 +6,12 @@ version: 1.0
 encoding: UTF-8
 ---
 
+# Pre-Flight
+
+<pre_flight_check>
+  EXECUTE: @~/.agent-os/instructions/meta/pre-flight.md
+</pre_flight_check>
+
 # Analyze Current Product & Install Agent OS
 
 <ai_meta>
@@ -41,7 +47,7 @@ encoding: UTF-8
 <prerequisites>
   - Existing product codebase
   - Write access to project root
-  - Access to @~/.agent-os/instructions/plan-product.md
+  - Access to @~/.agent-os/instructions/core/plan-product.md
 </prerequisites>
 
 <process_flow>
@@ -85,7 +91,7 @@ encoding: UTF-8
 
 </step>
 
-<step number="1" name="analyze_existing_codebase">
+<step number="1" subagent="context-fetcher" name="analyze_existing_codebase">
 
 ### Step 1: Analyze Existing Codebase
 
@@ -147,6 +153,7 @@ encoding: UTF-8
 </reality_check>
 
 <instructions>
+  SUBAGENT: Use the context-fetcher subagent for this step
   ACTION: Thoroughly analyze the existing codebase
   DOCUMENT: Current technologies, features, and patterns
   IDENTIFY: Architectural decisions already made
@@ -157,7 +164,7 @@ encoding: UTF-8
 
 </step>
 
-<step number="2" name="organizational_standards_comparison">
+<step number="2" subagent="context-fetcher" name="organizational_standards_comparison">
 
 ### Step 2: Organizational Standards Comparison
 
@@ -238,6 +245,7 @@ encoding: UTF-8
 </exception_documentation>
 
 <instructions>
+  SUBAGENT: Use the context-fetcher subagent for this step
   ACTION: Compare project reality against organizational standards
   DETECT: Mismatches between standards, reality, and documentation
   REPORT: All discrepancies in structured format
@@ -248,7 +256,7 @@ encoding: UTF-8
 
 </step>
 
-<step number="3" name="gather_product_context">
+<step number="3" subagent="context-fetcher" name="gather_product_context">
 
 ### Step 3: Gather Product Context
 
@@ -274,6 +282,7 @@ encoding: UTF-8
 </context_questions>
 
 <instructions>
+  SUBAGENT: Use the context-fetcher subagent for this step
   ACTION: Ask user for product context
   COMBINE: Merge user input with codebase analysis
   PREPARE: Information for plan-product.md execution
@@ -286,7 +295,7 @@ encoding: UTF-8
 ### Step 4: Execute Plan-Product with Context
 
 <step_metadata>
-  <uses>@~/.agent-os/instructions/plan-product.md</uses>
+  <uses>@~/.agent-os/instructions/core/plan-product.md</uses>
   <modifies>standard flow for existing products</modifies>
 </step_metadata>
 
@@ -298,7 +307,7 @@ encoding: UTF-8
 </execution_parameters>
 
 <execution_prompt>
-  @~/.agent-os/instructions/plan-product.md
+  @~/.agent-os/instructions/core/plan-product.md
 
   I'm installing Agent OS into an existing product. Here's what I've gathered:
 
@@ -321,7 +330,7 @@ encoding: UTF-8
 
 </step>
 
-<step number="5" name="customize_generated_files">
+<step number="5" subagent="file-creator" name="customize_generated_files">
 
 ### Step 5: Customize Generated Documentation
 
@@ -385,6 +394,7 @@ encoding: UTF-8
 </roadmap_template>
 
 <instructions>
+  SUBAGENT: Use the file-creator subagent for this step
   ACTION: Update generated files to reflect reality
   MODIFY: Roadmap to show completed work
   VERIFY: Tech stack matches actual implementation
@@ -446,7 +456,7 @@ encoding: UTF-8
   3. See the Agent OS README for usage instructions: https://github.com/carmandale/agent-os
   4. Start using Agent OS for your next feature:
      ```
-     @~/.agent-os/instructions/create-spec.md
+     @~/.agent-os/instructions/core/create-spec.md
      ```
 
   Your codebase is now Agent OS-enabled with organizational alignment! 🚀
