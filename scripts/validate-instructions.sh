@@ -46,6 +46,20 @@ if ! rg -n "@~/.agent-os/instructions/meta/pre-flight.md" "$ROOT_DIR/instruction
   echo "❌ core/* does not reference meta/pre-flight.md"; CODE=1
 fi
 
+# Enforce No-Quick-Fixes markers
+if ! rg -n "No\-Quick\-Fixes" "$ROOT_DIR/CLAUDE.md" >/dev/null 2>&1; then
+  echo "❌ CLAUDE.md missing No-Quick-Fixes Policy"; CODE=1
+fi
+if ! rg -n "<quick_fix_gate>" "$ROOT_DIR/instructions/core/execute-task.md" >/dev/null 2>&1; then
+  echo "❌ execute-task.md missing <quick_fix_gate> enforcement"; CODE=1
+fi
+if ! rg -n "<roadmap_spec_first>" "$ROOT_DIR/instructions/core/(plan-product|create-spec).md" -U >/dev/null 2>&1; then
+  echo "❌ plan-product.md/create-spec.md missing roadmap/spec-first policy"; CODE=1
+fi
+if ! rg -n "<no_default_fallbacks>" "$ROOT_DIR/instructions/core/(plan-product|create-spec).md" -U >/dev/null 2>&1; then
+  echo "❌ plan-product.md/create-spec.md missing no-default-fallbacks policy"; CODE=1
+fi
+
 if [[ $CODE -eq 0 ]]; then
   echo "✅ Instruction schema checks passed"
 fi

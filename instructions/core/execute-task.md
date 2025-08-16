@@ -173,6 +173,17 @@ Update tasks.md immediately after completing the task.
   <performance_review subagent="performance-optimizer">
     <trigger>performance-critical paths</trigger>
   </performance_review>
+  <quick_fix_gate>
+    <policy>No‑Quick‑Fixes: roadmap/spec‑first, no hidden fallbacks</policy>
+    <if_shortcut_proposed>
+      <require>
+        - explicit_user_approval_phrase
+        - scope_and_timebox
+        - rollback_plan_and_tracking_issue
+        - tests_that_expose_limitation
+      </require>
+    </if_shortcut_proposed>
+  </quick_fix_gate>
 </conditional_steps>
 
 </process_flow>

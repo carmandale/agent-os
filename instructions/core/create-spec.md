@@ -44,6 +44,11 @@ encoding: UTF-8
   - Creates spec-specific documentation
 </context>
 
+<policy>
+  <roadmap_spec_first>Prefer planned infrastructure and architecture over expedient workarounds</roadmap_spec_first>
+  <no_default_fallbacks>Do not add default fallbacks that mask missing proper integrations</no_default_fallbacks>
+</policy>
+
 <prerequisites>
   - Product documentation exists in .agent-os/product/
   - Access to:
