@@ -1,0 +1,36 @@
+name: Evidence Guard
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ripgrep jq
+
+      - name: Ensure enforcer is executable
+        run: chmod +x scripts/testing-enforcer.sh
+
+      - name: Fetch PR body
+        id: pr
+        run: |
+          PR_API_URL="${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}"
+          body=$(curl -s -H "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json" "$PR_API_URL" | jq -r .body)
+          printf "%s" "$body" > pr_body.txt
+
+      - name: Enforce evidence on completion claims
+        run: |
+          ./scripts/testing-enforcer.sh --file pr_body.txt
+
+
