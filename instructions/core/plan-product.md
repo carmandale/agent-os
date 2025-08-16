@@ -618,6 +618,16 @@ When asked to work on this codebase:
 - Always adhere to established patterns, code style, and best practices documented above.
 </content_template>
 
+<evidence_requirements>
+  <critical>Anti-fabrication policy for this file</critical>
+  <rules>
+    - ALWAYS show real command output when referencing commands
+    - When comparing or analyzing files, paste actual excerpts
+    - If a file/path is missing, include the real error message
+    - When steps specify subagent="...", actually invoke that subagent
+  </rules>
+</evidence_requirements>
+
 <merge_behavior>
   <if_file_exists>
     <check_for_section>"## Agent OS Documentation"</check_for_section>
