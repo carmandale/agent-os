@@ -20,19 +20,15 @@ done
 # Defaults
 ACTION_TYPE=${ACTION_TYPE:-read}
 
-# Helper: workspace dirty?
-is_dirty() {
-  [[ -n "$(git status --porcelain 2>/dev/null || true)" ]]
-}
-
-# Helper: open PRs?
-has_open_prs() {
-  if command -v gh >/dev/null 2>&1; then
-    local count
-    count=$(gh pr list --json number 2>/dev/null | jq 'length' 2>/dev/null || echo 0)
-    [[ ${count:-0} -gt 0 ]]
-  else
-    return 1
+# Helper: read cached workspace state
+read_state() {
+  local json
+  json=$(bash scripts/workspace-state.sh 2>/dev/null || echo '{"dirty":false,"open_prs":0}')
+  DIRTY=$(echo "$json" | jq -r '.dirty' 2>/dev/null || echo "")
+  OPEN_PRS=$(echo "$json" | jq -r '.open_prs' 2>/dev/null || echo 0)
+  if [[ -z "$DIRTY" ]]; then
+    # Fallback: direct git status if jq unavailable
+    [[ -n "$(git status --porcelain 2>/dev/null || true)" ]] && DIRTY=true || DIRTY=false
   fi
 }
 
@@ -49,7 +45,8 @@ case "$INTENT" in
     echo "ALLOW"; exit 0 ;;
   NEW)
     # For new work, require clean workspace
-    if is_dirty || has_open_prs; then
+    read_state
+    if [[ "$DIRTY" == "true" || ${OPEN_PRS:-0} -gt 0 ]]; then
       echo "BLOCK: New work requires clean workspace (commit/merge/close outstanding work)."; exit 1
     else
       echo "ALLOW"; exit 0
