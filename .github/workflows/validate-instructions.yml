@@ -1,0 +1,26 @@
+name: Validate Instructions
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install ripgrep (rg)
+        run: sudo apt-get update && sudo apt-get install -y ripgrep
+
+      - name: Ensure validator is executable
+        run: chmod +x scripts/validate-instructions.sh
+
+      - name: Run validator
+        run: ./scripts/validate-instructions.sh
+
+
