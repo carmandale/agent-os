@@ -168,8 +168,8 @@ When asked to work on Agent OS:
 
 1. **First**, check @.agent-os/product/roadmap.md for current priorities
 2. **Then**, follow the appropriate instruction file:
-   - For new features: @.agent-os/instructions/create-spec.md
-   - For tasks execution: @.agent-os/instructions/execute-tasks.md
+   - For new features: @.agent-os/instructions/core/create-spec.md
+   - For tasks execution: @.agent-os/instructions/core/execute-tasks.md
 3. **Always**, adhere to the standards in the files listed above
 
 ### Important Notes
