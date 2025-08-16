@@ -43,6 +43,11 @@ encoding: UTF-8
   - Output used by AI agents throughout development
 </context>
 
+<policy>
+  <roadmap_spec_first>Prefer planned infrastructure and architecture over expedient workarounds</roadmap_spec_first>
+  <no_default_fallbacks>Do not add default fallbacks that mask missing proper integrations</no_default_fallbacks>
+</policy>
+
 <prerequisites>
   - Write access to project root
   - Git initialized (recommended)

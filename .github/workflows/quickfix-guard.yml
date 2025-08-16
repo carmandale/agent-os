@@ -1,0 +1,44 @@
+name: Quick Fix Guard
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install ripgrep (rg)
+        run: sudo apt-get update && sudo apt-get install -y ripgrep
+
+      - name: Scan for risky quick-fix patterns
+        run: |
+          set -e
+          echo "Scanning for risky patterns..."
+          rg -n "(?i)quick\s*fix|temporary workaround|temp workaround|hack(?!athon)|workaround only" || true
+          rg -n "localStorage" || true
+          rg -n "TODO:?\s*remove after" || true
+
+      - name: Enforce override requirement if patterns found
+        run: |
+          set -e
+          # If any risky pattern is present, require PR body to contain an override block and linked issue
+          if rg -n "(?i)quick\s*fix|temporary workaround|temp workaround|hack(?!athon)|workaround only|localStorage|TODO:?\s*remove after" -U >/dev/null; then
+            echo "Risky patterns detected. Checking PR metadata..."
+            # Use GitHub API via env to fetch PR body
+            PR_API_URL="${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}"
+            body=$(curl -s -H "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json" "$PR_API_URL" | jq -r .body)
+            echo "PR body length: ${#body}"
+            echo "$body" | rg -q "(?s)Quick\-Fix Override:.*Issue:\s*#\d+" || { echo "❌ Missing Quick-Fix Override block with linked issue in PR body"; exit 1; }
+            echo "✅ Override present"
+          else
+            echo "No risky patterns detected."
+          fi
+
+

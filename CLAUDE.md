@@ -138,6 +138,15 @@ When working on Agent OS itself:
 - Making up differences or improvements without concrete evidence
 - Ignoring explicit instructions about using specific subagents or tools
 
+## CRITICAL: No‑Quick‑Fixes Policy
+
+- Roadmap/Spec‑first: Prefer planned infrastructure and architecture over expedient workarounds
+- Shortcuts require explicit user opt‑in with:
+  - Scope/time‑box and rollback plan
+  - Tracking issue link
+  - Tests that expose the limitation (so it’s visible and not silently passing)
+- Do not add default fallbacks that mask missing proper integrations
+
 Example verification:
 ```bash
 # After modifying setup.sh
