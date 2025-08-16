@@ -118,6 +118,26 @@ When working on Agent OS itself:
 3. **Prove functionality** - Test changes with real Agent OS workflows
 4. **Document evidence** - Include command outputs in PR descriptions
 
+## CRITICAL: Verification Requirements (Anti‑fabrication)
+
+### NEVER simulate or fabricate results
+- When asked to analyze or compare files, you MUST show actual file contents or excerpts
+- When running ANY command, you MUST show the complete, actual terminal output
+- If a file doesn't exist, show the real error message from the system
+- If instructed to use subagents, you MUST actually invoke them, not simulate
+
+### Required workflow
+1. One command at a time — show full output before proceeding
+2. Verify file existence with `ls -la` (or equivalent) before reading/analyzing
+3. Use explicit tools for comparisons (e.g., `diff`, `git diff`) and paste excerpts
+4. Record evidence in the conversation or PR description
+
+### Forbidden behaviors
+- Claiming to have run commands without showing output
+- Summarizing file contents without showing actual data
+- Making up differences or improvements without concrete evidence
+- Ignoring explicit instructions about using specific subagents or tools
+
 Example verification:
 ```bash
 # After modifying setup.sh
