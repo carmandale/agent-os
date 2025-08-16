@@ -121,7 +121,7 @@ test_workflow_suggestions() {
     start_test_suite "Workflow Suggestions"
     
     # Test spec creation suggestions
-    local spec_conv="Following @~/.agent-os/instructions/create-spec.md"
+    local spec_conv="Following @~/.agent-os/instructions/core/create-spec.md"
     local suggestion
     suggestion=$(get_workflow_suggestions "$spec_conv")
     
@@ -130,7 +130,7 @@ test_workflow_suggestions() {
         "execute-tasks"
     
     # Test task execution suggestions
-    local task_conv="Following @~/.agent-os/instructions/execute-tasks.md"
+    local task_conv="Following @~/.agent-os/instructions/core/execute-tasks.md"
     suggestion=$(get_workflow_suggestions "$task_conv")
     
     assert_contains "Provides task execution guidance" \

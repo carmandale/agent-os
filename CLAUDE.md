@@ -1,28 +1,150 @@
 # CLAUDE.md
 
-> Agent OS Project Documentation
-> This is the Agent OS framework itself - the meta-product that enables AI-assisted development workflows.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Agent OS Documentation
+## Project Context
 
-### Product Context
+This is **Agent OS** - the framework itself that enables AI-assisted development workflows. Uniquely, Agent OS also uses itself for its own development (eating its own dog food). This means:
+- It IS the Agent OS framework that other projects depend on
+- It ALSO uses Agent OS workflows for its own development
+- Changes here affect both the framework AND how it develops itself
+
+### Agent OS Documentation (Self-Usage)
+
+#### Product Context
 - **Mission & Vision:** @.agent-os/product/mission.md
 - **Technical Architecture:** @.agent-os/product/tech-stack.md
 - **Development Roadmap:** @.agent-os/product/roadmap.md
 - **Decision History:** @.agent-os/product/decisions.md
 
-### Development Standards
+#### Development Standards
 - **Code Style:** @~/.agent-os/standards/code-style.md
 - **Best Practices:** @~/.agent-os/standards/best-practices.md
 
-### Project Management
+#### Project Management
 - **Active Specs:** @.agent-os/specs/
-- **Spec Planning:** Use `@~/.agent-os/instructions/create-spec.md`
-- **Tasks Execution:** Use `@~/.agent-os/instructions/execute-tasks.md`
+- **Spec Planning:** Use `@~/.agent-os/instructions/core/create-spec.md`
+- **Tasks Execution:** Use `@~/.agent-os/instructions/core/execute-tasks.md`
+
+## Build and Test Commands
+
+```bash
+# Installation and Setup
+./setup.sh                          # Install Agent OS base system
+./setup.sh --overwrite-instructions # Update instruction files
+./setup.sh --overwrite-standards    # Update standards files
+./setup-claude-code.sh              # Install Claude Code commands
+./update-local-install.sh           # Update local installation from repo
+
+# Health Check
+./check-agent-os.sh                 # Verify Agent OS installation
+
+# Testing
+./test-workflow-detection.sh        # Test workflow detection system
+python validate_subagents.py        # Validate subagent definitions
+
+# Development Tools
+aos status                          # Check Agent OS installation status
+aos update                          # Update Agent OS components
+aos run "command"                   # Run command in background
+aos tasks                           # List background tasks
+aos logs <task-id>                  # View task logs
+```
+
+## Architecture Overview
+
+### Core Directory Structure
+- **`instructions/`** - Core workflow instruction files (plan-product.md, create-spec.md, execute-tasks.md, analyze-product.md)
+- **`workflow-modules/`** - Modular workflow components (step-1 through step-4)
+- **`standards/`** - Default development standards templates
+- **`claude-code/agents/`** - Native Claude Code agent definitions (Builder Methods architecture)
+- **`hooks/`** - Claude Code hooks for workflow enforcement
+- **`tools/`** - CLI tools including aos command
+- **`scripts/`** - Dynamic workflow validation scripts
+
+### Subagent System (v2.4.0)
+Agent OS uses Builder Methods' native Claude Code agent architecture with 5 specialized agents:
+- **context-fetcher** - Codebase search and documentation retrieval
+- **date-checker** - Accurate date determination for specs
+- **file-creator** - Template-based file generation
+- **git-workflow** - Git operations and GitHub integration  
+- **test-runner** - Multi-framework test execution
+
+Agents are triggered via `subagent="agent-name"` XML attributes in instruction files.
+
+### Installation Flow
+1. **User Level**: `~/.agent-os/` - Global standards and instructions
+2. **Project Level**: `.agent-os/` - Project-specific overrides
+3. **Claude Agents**: `~/.claude/agents/` - Subagent definitions
+
+### Key Design Principles
+- **Shell-based**: All core functionality in bash scripts for universal compatibility
+- **Markdown-driven**: Instructions and documentation in markdown format
+- **Tool-agnostic**: Works with Claude Code, Cursor, or any AI assistant
+- **Git-first**: All workflows require GitHub issues and proper branching
+
+## Critical Implementation Notes
+
+### When Modifying Shell Scripts
+- Must work on macOS and Linux (use portable bash)
+- Use `curl` for downloads (universally available)
+- Preserve user customizations with --overwrite flags
+- Test on clean systems without dependencies
+
+### When Updating Instruction Files
+- Maintain XML structure for parsing by AI assistants
+- Include `subagent=` attributes for automatic delegation
+- Add explicit "SUBAGENT: Use the X subagent" instructions
+- Follow the exact template patterns (they're parsed programmatically)
+
+### When Working with Subagents
+- Agent definitions use YAML frontmatter with name, description, tools
+- Agents must be in `~/.claude/agents/` to be recognized
+- Update both XML attributes AND instruction text for invocation
+- Test with `validate_subagents.py` after changes
+
+### Version Management
+- Version tracked in `VERSION` file
+- Follow semantic versioning (MAJOR.MINOR.PATCH)
+- Update roadmap.md when completing features
+- Document decisions in decisions.md
+
+## Evidence-Based Development Protocol
+
+When working on Agent OS itself:
+
+1. **Show actual command output** - Never claim "tests pass" without showing output
+2. **Verify file operations** - After creating/modifying files, show with `ls -la` or `cat`
+3. **Prove functionality** - Test changes with real Agent OS workflows
+4. **Document evidence** - Include command outputs in PR descriptions
+
+Example verification:
+```bash
+# After modifying setup.sh
+./setup.sh --overwrite-instructions  # Show full output
+ls -la ~/.agent-os/instructions/     # Verify files installed
+grep "SUBAGENT:" ~/.agent-os/instructions/plan-product.md  # Verify content
+```
+
+## Meta-Development Considerations
+
+When making changes to Agent OS:
+- **User Impact**: How will this affect existing Agent OS installations?
+- **Backward Compatibility**: Will existing workflows still work?
+- **Cross-Platform**: Test on both macOS and Linux environments
+- **Documentation**: Update README.md, relevant instruction files, and roadmap
+- **Installation**: Ensure setup.sh properly installs new components
+
+## Current Development Focus
+
+Check `.agent-os/product/roadmap.md` for active development priorities. Key areas:
+- Phase 0.5: Critical quality enforcement (Issues #6-9, #22)
+- Verification protocol implementation
+- Enhanced evidence-based execution
 
 ## Workflow Instructions
 
-When asked to work on this codebase:
+When asked to work on Agent OS:
 
 1. **First**, check @.agent-os/product/roadmap.md for current priorities
 2. **Then**, follow the appropriate instruction file:
@@ -30,18 +152,22 @@ When asked to work on this codebase:
    - For tasks execution: @.agent-os/instructions/execute-tasks.md
 3. **Always**, adhere to the standards in the files listed above
 
-## Important Notes
-
+### Important Notes
 - Product-specific files in `.agent-os/product/` override any global standards
 - User's specific instructions override (or amend) instructions found in `.agent-os/specs/...`
-- Always adhere to established patterns, code style, and best practices documented above.
+- Always adhere to established patterns, code style, and best practices documented above
 
-## Meta-Context
+## Workflow Enforcement
 
-This project IS Agent OS - you are working on the framework itself. When making changes:
+All work MUST follow this flow:
+1. Create/reference GitHub issue
+2. Create feature branch from issue
+3. Follow TDD approach (tests first)
+4. Verify with actual output (not claims)
+5. Create PR with evidence of working functionality
+6. Update roadmap if feature completed
 
-- Consider how changes affect users of Agent OS
-- Test changes with real workflow scenarios  
-- Update documentation to reflect new capabilities
-- Maintain backward compatibility with existing installations
-- Remember that shell scripts must work across different Unix-like systems
+Never mark work complete without:
+- Showing test output
+- Demonstrating functionality
+- Creating proper PR with issue reference

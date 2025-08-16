@@ -1,0 +1,3 @@
+[submodule "docs/BUILDER_METHODDS_agent-os"]
+	path = docs/BUILDER_METHODDS_agent-os
+	url = https://example.com/placeholder.git

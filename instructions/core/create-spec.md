@@ -7,6 +7,12 @@ lastUpdated: 2025-07-26
 encoding: UTF-8
 ---
 
+# Pre-Flight
+
+<pre_flight_check>
+  EXECUTE: @~/.agent-os/instructions/meta/pre-flight.md
+</pre_flight_check>
+
 # Spec Creation Rules
 
 <ai_meta>
@@ -49,7 +55,7 @@ encoding: UTF-8
 
 <process_flow>
 
-<step number="0" name="workspace_hygiene_check">
+<step number="0" subagent="context-fetcher" name="workspace_hygiene_check">
 
 ### Step 0: Workspace Hygiene Check
 
@@ -100,6 +106,7 @@ encoding: UTF-8
 </hygiene_prompt>
 
 <instructions>
+  SUBAGENT: Use the context-fetcher subagent for this step
   ACTION: Check all hygiene criteria before spec creation
   BLOCK: If any criteria fail, stop execution
   GUIDE: Provide specific cleanup actions needed
@@ -108,7 +115,7 @@ encoding: UTF-8
 
 </step>
 
-<step number="1" name="spec_initiation">
+<step number="1" subagent="context-fetcher" name="spec_initiation">
 
 ### Step 1: Spec Initiation
 
@@ -139,6 +146,7 @@ encoding: UTF-8
 </option_b_flow>
 
 <instructions>
+  SUBAGENT: Use the context-fetcher subagent for this step
   ACTION: Identify spec initiation method
   ROUTE: Follow appropriate flow based on trigger
   WAIT: Ensure user agreement before proceeding
@@ -146,7 +154,7 @@ encoding: UTF-8
 
 </step>
 
-<step number="2" name="context_gathering">
+<step number="2" subagent="context-fetcher" name="context_gathering">
 
 ### Step 2: Context Gathering
 
@@ -166,6 +174,7 @@ encoding: UTF-8
 </context_analysis>
 
 <instructions>
+  SUBAGENT: Use the context-fetcher subagent for this step
   ACTION: Read all three product documents
   ANALYZE: Spec alignment with each document
   NOTE: Consider implications for implementation
@@ -173,7 +182,7 @@ encoding: UTF-8
 
 </step>
 
-<step number="3" name="requirements_clarification">
+<step number="3" subagent="context-fetcher" name="requirements_clarification">
 
 ### Step 3: Requirements Clarification
 
@@ -213,6 +222,7 @@ encoding: UTF-8
 </question_template>
 
 <instructions>
+  SUBAGENT: Use the context-fetcher subagent for this step
   ACTION: Evaluate need for clarification
   ASK: Numbered questions if needed
   PROCEED: Only with clear requirements
@@ -220,7 +230,7 @@ encoding: UTF-8
 
 </step>
 
-<step number="4" name="date_determination">
+<step number="4" subagent="date-checker" name="date_determination">
 
 ### Step 4: Date Determination
 
@@ -273,6 +283,7 @@ encoding: UTF-8
 </error_handling>
 
 <instructions>
+  SUBAGENT: Use the date-checker subagent for this step
   ACTION: Determine accurate date using file system
   FALLBACK: Ask user if file system method fails
   VALIDATE: Ensure YYYY-MM-DD format
@@ -281,7 +292,7 @@ encoding: UTF-8
 
 </step>
 
-<step number="5" name="github_issue_requirement">
+<step number="5" subagent="git-workflow" name="github_issue_requirement">
 
 ### Step 5: GitHub Issue Requirement
 
@@ -304,6 +315,7 @@ encoding: UTF-8
 </issue_requirement>
 
 <instructions>
+  SUBAGENT: Use the git-workflow subagent for this step
   ACTION: Ensure GitHub issue exists and get issue number
   REQUIRE: Issue number before proceeding
   STORE: Issue number for next step
@@ -311,7 +323,7 @@ encoding: UTF-8
 
 </step>
 
-<step number="6" name="spec_folder_creation">
+<step number="6" subagent="file-creator" name="spec_folder_creation">
 
 ### Step 6: Spec Folder Creation
 
@@ -340,6 +352,7 @@ encoding: UTF-8
 </example_names>
 
 <instructions>
+  SUBAGENT: Use the file-creator subagent for this step
   ACTION: Create spec folder using stored date and issue number
   FORMAT: Use kebab-case for spec name with issue number suffix
   LIMIT: Maximum 5 words in name
@@ -348,7 +361,7 @@ encoding: UTF-8
 
 </step>
 
-<step number="7" name="create_spec_md">
+<step number="7" subagent="file-creator" name="create_spec_md">
 
 ### Step 7: Create spec.md
 
@@ -447,6 +460,7 @@ encoding: UTF-8
 </section>
 
 <instructions>
+  SUBAGENT: Use the file-creator subagent for this step
   ACTION: Create spec.md with all sections
   FILL: Use spec details from steps 1-3
   MAINTAIN: Clear, concise descriptions
@@ -454,9 +468,9 @@ encoding: UTF-8
 
 </step>
 
-<step number="7" name="create_technical_spec">
+<step number="8" subagent="file-creator" name="create_technical_spec">
 
-### Step 7: Create Technical Specification
+### Step 8: Create Technical Specification
 
 <step_metadata>
   <creates>
@@ -520,6 +534,7 @@ encoding: UTF-8
 </example_template>
 
 <instructions>
+  SUBAGENT: Use the file-creator subagent for this step
   ACTION: Create sub-specs folder and technical-spec.md
   DOCUMENT: All technical decisions and requirements
   JUSTIFY: Any new dependencies
@@ -527,9 +542,9 @@ encoding: UTF-8
 
 </step>
 
-<step number="8" name="create_database_schema">
+<step number="9" subagent="file-creator" name="create_database_schema">
 
-### Step 8: Create Database Schema (Conditional)
+### Step 9: Create Database Schema (Conditional)
 
 <step_metadata>
   <creates>
@@ -576,6 +591,7 @@ encoding: UTF-8
 </schema_sections>
 
 <instructions>
+  SUBAGENT: Use the file-creator subagent for this step
   ACTION: Check if database changes needed
   CREATE: database-schema.md only if required
   INCLUDE: Complete SQL/migration specifications
@@ -583,9 +599,9 @@ encoding: UTF-8
 
 </step>
 
-<step number="9" name="create_api_spec">
+<step number="10" subagent="file-creator" name="create_api_spec">
 
-### Step 9: Create API Specification (Conditional)
+### Step 10: Create API Specification (Conditional)
 
 <step_metadata>
   <creates>
@@ -642,6 +658,7 @@ encoding: UTF-8
 </endpoint_template>
 
 <instructions>
+  SUBAGENT: Use the file-creator subagent for this step
   ACTION: Check if API changes needed
   CREATE: api-spec.md only if required
   DOCUMENT: All endpoints and controllers
@@ -649,9 +666,9 @@ encoding: UTF-8
 
 </step>
 
-<step number="10" name="create_tests_spec">
+<step number="11" subagent="file-creator" name="create_tests_spec">
 
-### Step 10: Create Tests Specification
+### Step 11: Create Tests Specification
 
 <step_metadata>
   <creates>
@@ -713,6 +730,7 @@ encoding: UTF-8
 </test_template>
 
 <instructions>
+  SUBAGENT: Use the file-creator subagent for this step
   ACTION: Create comprehensive test specification
   ENSURE: All new functionality has test coverage
   SPECIFY: Mock requirements for external services
@@ -720,9 +738,9 @@ encoding: UTF-8
 
 </step>
 
-<step number="11" name="user_review">
+<step number="12" name="user_review">
 
-### Step 11: User Review
+### Step 12: User Review
 
 <step_metadata>
   <action>request user review</action>
@@ -750,15 +768,15 @@ encoding: UTF-8
 
 </step>
 
-<step number="12" name="create_tasks">
+<step number="13" subagent="file-creator" name="create_tasks">
 
-### Step 12: Create tasks.md
+### Step 13: Create tasks.md
 
 <step_metadata>
   <creates>
     - file: tasks.md
   </creates>
-  <depends_on>user approval from step 11</depends_on>
+  <depends_on>user approval from step 12</depends_on>
 </step_metadata>
 
 <file_template>
@@ -808,6 +826,7 @@ encoding: UTF-8
 </ordering_principles>
 
 <instructions>
+  SUBAGENT: Use the file-creator subagent for this step
   ACTION: Create task breakdown following TDD
   STRUCTURE: Major tasks with subtasks
   ORDER: Consider dependencies
@@ -815,9 +834,9 @@ encoding: UTF-8
 
 </step>
 
-<step number="13" name="update_cross_references">
+<step number="14" subagent="file-creator" name="update_cross_references">
 
-### Step 13: Documentation Cross-References
+### Step 14: Documentation Cross-References
 
 <step_metadata>
   <updates>
@@ -843,6 +862,7 @@ encoding: UTF-8
 </reference_format>
 
 <instructions>
+  SUBAGENT: Use the file-creator subagent for this step
   ACTION: Update spec.md with references
   FORMAT: Use @ prefix for all paths
   INCLUDE: Only files actually created
@@ -850,9 +870,9 @@ encoding: UTF-8
 
 </step>
 
-<step number="14" name="decision_documentation">
+<step number="15" subagent="context-fetcher" name="decision_documentation">
 
-### Step 14: Decision Documentation
+### Step 15: Decision Documentation
 
 <step_metadata>
   <evaluates>strategic impact</evaluates>
@@ -909,6 +929,7 @@ encoding: UTF-8
 </decision_template>
 
 <instructions>
+  SUBAGENT: Use the context-fetcher subagent for this step
   ACTION: Analyze spec for strategic decisions
   IDENTIFY: Up to 3 key decisions if any
   REQUEST: User approval before updating
@@ -917,9 +938,9 @@ encoding: UTF-8
 
 </step>
 
-<step number="15" name="execution_readiness">
+<step number="16" name="execution_readiness">
 
-### Step 15: Execution Readiness Check
+### Step 16: Execution Readiness Check
 
 <step_metadata>
   <evaluates>readiness to begin implementation</evaluates>
@@ -941,14 +962,14 @@ encoding: UTF-8
   **Task 1:** [FIRST_TASK_TITLE]
   [BRIEF_DESCRIPTION_OF_TASK_1_AND_SUBTASKS]
 
-  Would you like me to proceed with implementing Task 1? I will follow the execution guidelines in @~/.agent-os/instructions/execute-tasks.md and focus only on this first task and its subtasks unless you specify otherwise.
+  Would you like me to proceed with implementing Task 1? I will follow the execution guidelines in @~/.agent-os/instructions/core/execute-tasks.md and focus only on this first task and its subtasks unless you specify otherwise.
 
   Type 'yes' to proceed with Task 1, or let me know if you'd like to review or modify the plan first."
 </execution_prompt>
 
 <execution_flow>
   IF user_confirms_yes:
-    REFERENCE: @~/.agent-os/instructions/execute-tasks.md
+    REFERENCE: @~/.agent-os/instructions/core/execute-tasks.md
     FOCUS: Only Task 1 and its subtasks
     CONSTRAINT: Do not proceed to additional tasks without explicit user request
   ELSE:

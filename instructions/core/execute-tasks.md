@@ -5,6 +5,12 @@ argument-hint: [task-number] or next
 version: 2.0.0
 ---
 
+# Pre-Flight
+
+<pre_flight_check>
+  EXECUTE: @~/.agent-os/instructions/meta/pre-flight.md
+</pre_flight_check>
+
 # Task Execution Rules
 
 > Lightweight orchestrator using Claude Code best practices
@@ -43,6 +49,17 @@ Execute workspace validation and project context loading:
 - Read spec documentation for complete context
 - Create detailed implementation plan and get user approval
 - Execute following TDD approach with coding standards
+
+#### Per-Task Delegation
+
+LOAD @~/.agent-os/instructions/core/execute-task.md ONCE
+
+FOR each selected parent task:
+  EXECUTE @~/.agent-os/instructions/core/execute-task.md with:
+    - parent_task_number
+    - all associated subtasks
+  UPDATE tasks.md status
+END FOR
 
 ### Phase 3: Quality Assurance  
 

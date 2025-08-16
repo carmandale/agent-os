@@ -6,6 +6,12 @@ version: 4.0
 encoding: UTF-8
 ---
 
+# Pre-Flight
+
+<pre_flight_check>
+  EXECUTE: @~/.agent-os/instructions/meta/pre-flight.md
+</pre_flight_check>
+
 # Product Planning Rules
 
 <ai_meta>
@@ -46,7 +52,7 @@ encoding: UTF-8
 
 <process_flow>
 
-<step number="1" name="gather_user_input">
+<step number="1" subagent="context-fetcher" name="gather_user_input">
 
 ### Step 1: Gather User Input
 
@@ -79,6 +85,7 @@ encoding: UTF-8
 </error_template>
 
 <instructions>
+  SUBAGENT: Use the context-fetcher subagent for this step
   ACTION: Collect all required inputs from user
   VALIDATION: Ensure all 4 inputs provided before proceeding
   FALLBACK: Check configuration files for tech stack defaults
@@ -121,7 +128,7 @@ encoding: UTF-8
 
 </step>
 
-<step number="3" name="create_mission_md">
+<step number="3" subagent="file-creator" name="create_mission_md">
 
 ### Step 3: Create mission.md
 
@@ -239,6 +246,7 @@ encoding: UTF-8
 </section>
 
 <instructions>
+  SUBAGENT: Use the file-creator subagent for this step
   ACTION: Create mission.md using all section templates
   FILL: Use data from Step 1 user inputs
   FORMAT: Maintain exact template structure
@@ -246,7 +254,7 @@ encoding: UTF-8
 
 </step>
 
-<step number="4" name="create_tech_stack_md">
+<step number="4" subagent="file-creator" name="create_tech_stack_md">
 
 ### Step 4: Create tech-stack.md
 
@@ -403,6 +411,7 @@ encoding: UTF-8
 </tech_stack_template>
 
 <instructions>
+  SUBAGENT: Use the file-creator subagent for this step
   ACTION: Document all tech stack choices using complete template
   RESOLUTION: Check user input first, then config files
   REQUEST: Ask for any missing items using template
@@ -411,7 +420,7 @@ encoding: UTF-8
 
 </step>
 
-<step number="5" name="create_roadmap_md">
+<step number="5" subagent="file-creator" name="create_roadmap_md">
 
 ### Step 5: Create roadmap.md
 
@@ -471,6 +480,7 @@ encoding: UTF-8
 </effort_scale>
 
 <instructions>
+  SUBAGENT: Use the file-creator subagent for this step
   ACTION: Create 5 development phases
   PRIORITIZE: Based on dependencies and mission importance
   ESTIMATE: Use effort_scale for all features
@@ -479,7 +489,7 @@ encoding: UTF-8
 
 </step>
 
-<step number="6" name="create_decisions_md">
+<step number="6" subagent="file-creator" name="create_decisions_md">
 
 ### Step 6: Create decisions.md
 
@@ -546,6 +556,7 @@ encoding: UTF-8
 </initial_decision_template>
 
 <instructions>
+  SUBAGENT: Use the file-creator subagent for this step
   ACTION: Create decisions.md with initial planning decision
   DOCUMENT: Key choices from user inputs
   ESTABLISH: Override authority for future conflicts
@@ -553,7 +564,7 @@ encoding: UTF-8
 
 </step>
 
-<step number="7" name="create_or_update_claude_md">
+<step number="7" subagent="file-creator" name="create_or_update_claude_md">
 
 ### Step 7: Create or Update CLAUDE.md
 
@@ -587,8 +598,8 @@ encoding: UTF-8
 
 ### Project Management
 - **Active Specs:** @.agent-os/specs/
-- **Spec Planning:** Use `@~/.agent-os/instructions/create-spec.md`
-- **Tasks Execution:** Use `@~/.agent-os/instructions/execute-tasks.md`
+- **Spec Planning:** Use `@~/.agent-os/instructions/core/create-spec.md`
+- **Tasks Execution:** Use `@~/.agent-os/instructions/core/execute-tasks.md`
 
 ## Workflow Instructions
 
@@ -627,6 +638,7 @@ When asked to work on this codebase:
 </merge_behavior>
 
 <instructions>
+  SUBAGENT: Use the file-creator subagent for this step
   ACTION: Check if CLAUDE.md exists in project root
   MERGE: Replace "Agent OS Documentation" section if it exists
   APPEND: Add section to end if file exists but section doesn't
@@ -636,7 +648,7 @@ When asked to work on this codebase:
 
 </step>
 
-<step number="8" name="create_startup_scripts_and_environment">
+<step number="8" subagent="file-creator" name="create_startup_scripts_and_environment">
 
 ### Step 8: Create Startup Scripts and Environment Files
 
@@ -834,6 +846,7 @@ yarn dev &
 </gitignore_update>
 
 <instructions>
+  SUBAGENT: Use the file-creator subagent for this step
   ACTION: Detect project type and create appropriate startup files
   REQUIRE: Environment files for all web projects
   MANDATE: Executable dev.sh script for easy startup

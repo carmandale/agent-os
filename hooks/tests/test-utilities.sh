@@ -188,7 +188,7 @@ I'll help you implement the user authentication feature. Let me first read the s
 
 Looking at @.agent-os/specs/2025-01-01-user-auth-#123/spec.md, I can see the requirements.
 
-Following @~/.agent-os/instructions/execute-tasks.md, I'll start with the first task.
+Following @~/.agent-os/instructions/core/execute-tasks.md, I'll start with the first task.
 
 Quality checks passed! All tests are passing and the feature is working correctly.
 EOF
@@ -206,7 +206,7 @@ EOF
 
 get_sample_high_risk_conversation() {
     cat << 'EOF'
-I'm following @~/.agent-os/instructions/execute-tasks.md for this implementation.
+I'm following @~/.agent-os/instructions/core/execute-tasks.md for this implementation.
 
 ✅ Quality Assurance Completed:
 - All tests passing
