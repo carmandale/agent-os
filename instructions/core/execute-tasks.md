@@ -31,11 +31,13 @@ version: 2.0.0
     - Tests: list any test files and their status (or state "Not found")
     - Deployment configs: Dockerfile/docker-compose/start scripts if present
     - Active issue: quote the EXACT requirements from the issue body
+    - Verification scripts: list any `check_*`, `status_*`, `monitor_*` scripts (if found) and run them; paste exact command and full output; for any logs referenced, show `ls -la` timestamps to prove recency
   </checklist>
   <evidence_requirements>
     - Provide code excerpts with file paths (method signatures, route decorators, schema definitions)
     - For lists, provide directories with brief notes; for claims, show snippets
     - If an item is missing, write "Not found" (do NOT assume)
+    - For any claim about "current" state, show the command you ran and its actual output first (e.g., `ps aux | grep ...`, `ls -la <file>`)
   </evidence_requirements>
   <completion_marker>
     - Output must end with: DISCOVERY_COMPLETE: yes
@@ -70,6 +72,25 @@ Execute workspace validation and project context loading:
 
 **Import detailed workflow steps:**
 @~/.agent-os/workflow-modules/step-1-hygiene-and-setup.md
+
+### Phase 1.5: Deep Reality Check (Dev/Test/Prod)
+
+<deep_reality_check>
+  <instructions>
+    - Build a table for Dev / Test / Prod with columns:
+      - Config sources consulted (files/env)
+      - Effective DB URL/driver (mask credentials)
+      - Fallbacks/defaults detected
+      - Migrations head vs current
+      - Where/how connections are created (file:line)
+    - Paste quoted file excerpts with file:line ranges for each row (evidence before conclusions)
+    - You may run `/update-documentation --deep --dry-run` to aid discovery, but you must still paste the table and citations
+  </instructions>
+  <block>
+    - Block only on contradictions (e.g., claims of PostgreSQL while only SQLite signals exist) or missing citations for conclusions
+    - If sources do not exist yet for a new project, record "Not applicable" and proceed
+  </block>
+</deep_reality_check>
 
 ### Phase 2: Planning and Implementation
 
@@ -133,6 +154,14 @@ END FOR
 **Evidence Requirements for Completion:**
 - PR description must include an Evidence/Test Results/Verification section with real outputs (tests, curl, screenshots) per repo guard
 - Link to code citations for implemented changes
+ - Include a "Verification Scripts" subsection listing any `check_*`/`status_*` scripts run with their outputs and relevant timestamps for any logs referenced
+ - Include a "Documentation Updates" subsection, and if requested, paste output from `/update-documentation --deep --dry-run`
+
+<evidence_only_fallback>
+  If the assistant is corrected twice in this PR for making claims without evidence, switch to Evidence‑Only Mode:
+  - Paste commands and outputs only; no analysis until the user confirms
+  - Completion remains blocked until evidence sections are present
+</evidence_only_fallback>
 
 ## Execution Standards
 
