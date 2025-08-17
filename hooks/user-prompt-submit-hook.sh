@@ -74,7 +74,23 @@ main() {
     log_hook "User prompt submit hook triggered"
     log_hook "User message length: ${#user_message}"
     
-    # Check for testing reminders first
+    # First, delegate proceed/block decision to the Python enforcer (project-aware)
+    # Build minimal JSON payload with prompt and cwd (prefer CLAUDE_PROJECT_DIR)
+    local enforcer_json
+    enforcer_json=$(env CLAUDE_PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$PWD}" \
+        jq -n --arg prompt "$user_message" --arg cwd "${CLAUDE_PROJECT_DIR:-$PWD}" '{prompt:$prompt, cwd:$cwd}')
+
+    local enforcer_out
+    if enforcer_out=$(printf '%s' "$enforcer_json" | python3 "$HOOKS_DIR/workflow-enforcement-hook.py" userprompt 2>/dev/null); then
+        # If enforcer returns a structured decision, pass it through verbatim so Claude honors it
+        if echo "$enforcer_out" | grep -q '"decision"'; then
+            echo "$enforcer_out"
+            log_hook "Delegated decision from enforcer: $(echo "$enforcer_out" | tr -d '\n' | cut -c1-200)"
+            return 0
+        fi
+    fi
+
+    # Check for testing reminders next (advisory)
     local reminder
     reminder=$(inject_reminder "$user_message")
     
