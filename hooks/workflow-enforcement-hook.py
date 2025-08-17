@@ -190,6 +190,7 @@ def handle_pretool(input_data):
         # Always allow git/gh operations (to resolve hygiene)
         if command.startswith("git ") or command.startswith("gh "):
             log_debug(f"Allowing git/gh command: {command}")
+            print(json.dumps({"decision": "approve", "reason": "git/gh operation"}))
             sys.exit(0)
 
         # Read-only allowlist (keep minimal to avoid write bypass)
@@ -201,6 +202,7 @@ def handle_pretool(input_data):
         # If clearly read-only, allow
         if any(command.startswith(p) for p in readonly_prefixes) and not is_write_bash(command):
             log_debug(f"Allowing read-only command: {command}")
+            print(json.dumps({"decision": "approve", "reason": "read-only command"}))
             sys.exit(0)
 
         # Classify write and gate based on intent and hygiene
@@ -209,28 +211,30 @@ def handle_pretool(input_data):
         # Docs-only exception: allow writes to docs/markdown files
         if is_write and is_docs_only_command(command):
             log_debug(f"Allowing docs-only write: {command}")
+            print(json.dumps({"decision": "approve", "reason": "docs-only write"}))
             sys.exit(0)
 
         # For maintenance intent, allow writes (to fix), else enforce hygiene/spec
         if is_write:
             if intent == "MAINTENANCE":
                 log_debug(f"Allowing maintenance write: {command}")
+                print(json.dumps({"decision": "approve", "reason": "maintenance write"}))
                 sys.exit(0)
             # NEW or AMBIGUOUS => enforce hygiene
             issues = check_workflow_status(root)
             if not has_active_spec(root):
-                print("⚠️ No active spec detected (.agent-os/specs).\n\nRun /create-spec to define scope before starting new work.", file=sys.stderr)
-                sys.exit(2)
+                reason = "No active spec detected (.agent-os/specs). Run /create-spec first."
+                print(json.dumps({"decision": "deny", "reason": reason}))
+                sys.exit(0)
             if issues:
-                message = "⚠️ Agent OS workflow guidance needed:\n\n"
-                for issue in issues:
-                    message += f"• {issue}\n"
-                message += "\nComplete git integration workflow first."
-                print(message, file=sys.stderr)
-                sys.exit(2)
+                reason = "; ".join(issues)
+                print(json.dumps({"decision": "deny", "reason": reason}))
+                sys.exit(0)
+            print(json.dumps({"decision": "approve", "reason": "new work with clean workspace and active spec"}))
             sys.exit(0)
         
         # Default: unknown read action; allow if not detected as write
+        print(json.dumps({"decision": "approve", "reason": "non-write bash"}))
         sys.exit(0)
     
     # Only check for tools that indicate new work
@@ -247,19 +251,24 @@ def handle_pretool(input_data):
         if file_path:
             lower = file_path.lower()
             if lower.endswith(".md") or lower.endswith(".mdc") or lower.startswith("docs/") or os.path.basename(lower) == "claude.md":
+                print(json.dumps({"decision": "approve", "reason": "docs-only write"}))
                 sys.exit(0)
 
         if intent == "MAINTENANCE":
+            print(json.dumps({"decision": "approve", "reason": "maintenance write"}))
             sys.exit(0)
 
         issues = check_workflow_status(root)
         if not has_active_spec(root):
-            print("⚠️ No active spec detected (.agent-os/specs).\n\nRun /create-spec to define scope before starting new work.", file=sys.stderr)
-            sys.exit(2)
+            reason = "No active spec detected (.agent-os/specs). Run /create-spec first."
+            print(json.dumps({"decision": "deny", "reason": reason}))
+            sys.exit(0)
         if issues:
-            message = "⚠️ Agent OS workflow guidance needed:\n\n" + "\n".join(f"• {i}" for i in issues)
-            print(message, file=sys.stderr)
-            sys.exit(2)
+            reason = "; ".join(issues)
+            print(json.dumps({"decision": "deny", "reason": reason}))
+            sys.exit(0)
+        print(json.dumps({"decision": "approve", "reason": "new work with clean workspace and active spec"}))
+        sys.exit(0)
     
     sys.exit(0)
 
