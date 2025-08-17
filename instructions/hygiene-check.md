@@ -94,6 +94,39 @@ encoding: UTF-8
 
 </step>
 
+<step number="6" name="documentation_drift_report">
+
+### Step 6: Documentation Drift (Non-blocking)
+
+<step_metadata>
+  <checks>diff-driven documentation needs</checks>
+  <reports>expected updates for CHANGELOG/README/docs/product</reports>
+  <non_blocking>true</non_blocking>
+</step_metadata>
+
+<drift_checks>
+  <diff_list>git diff --name-only HEAD</diff_list>
+  <mapping>
+    <changelog>if scripts/tools/instructions/hooks changed → CHANGELOG.md</changelog>
+    <readme>if tools/setup/README/CLAUDE changed → README.md, CLAUDE.md</readme>
+    <product>if instructions/product changed → .agent-os/product/{roadmap.md,decisions.md}</product>
+    <docs>if instructions/workflow-modules changed → docs/**</docs>
+  </mapping>
+</drift_checks>
+
+<drift_report_template>
+  ## 📝 Documentation Drift
+
+  [IF_NONE]
+  No doc updates inferred from recent diffs.
+
+  [IF_SOME]
+  The following docs likely require updates:
+  - [LIST_TARGETS]
+  Recommended: run `/update-documentation --dry-run` to view proposals.
+</drift_report_template>
+
+</step>
 <step number="2" name="github_status_assessment">
 
 ### Step 2: GitHub Issues & PRs Assessment

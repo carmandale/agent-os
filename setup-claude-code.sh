@@ -36,7 +36,7 @@ echo ""
 echo "📥 Downloading Claude Code command files to ~/.claude/commands/"
 
 # Commands
-for cmd in plan-product create-spec execute-tasks analyze-product hygiene-check; do
+for cmd in plan-product create-spec execute-tasks analyze-product hygiene-check update-documentation; do
     if [ -f "$HOME/.claude/commands/${cmd}.md" ]; then
         echo "  ⚠️  ~/.claude/commands/${cmd}.md already exists - skipping"
     else

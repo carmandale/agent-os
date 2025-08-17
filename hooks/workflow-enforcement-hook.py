@@ -285,12 +285,23 @@ def handle_posttool(input_data):
     
     log_debug(f"PostToolUse called for tool: {tool_name}")
     
-    # Check if Agent OS files were modified
-    if tool_name in ["Write", "Edit", "MultiEdit"]:
-        file_path = tool_input.get("file_path", "")
-        if ".agent-os/" in file_path or "CLAUDE.md" in file_path:
-            log_debug(f"Agent OS file modified: {file_path}")
-            # Could auto-commit here if needed
+    # If PR-completion flows detected, ensure docs are current
+    try:
+        # Run updater in dry-run to detect pending docs (exit 2 means proposals exist)
+        result = subprocess.run([
+            os.path.expanduser("~/.agent-os/scripts/update-documentation.sh"),
+            "--dry-run"
+        ], capture_output=True, text=True, timeout=10)
+        if result.returncode == 2:
+            msg = (
+                "⚠️ Documentation updates required.\n\n"
+                "Please run `/update-documentation --dry-run` to review proposals.\n"
+                "Include updates in your PR under 'Documentation Updates'."
+            )
+            print(msg, file=sys.stderr)
+            sys.exit(2)
+    except Exception as e:
+        log_debug(f"Doc updater check failed: {e}")
     
     sys.exit(0)
 
