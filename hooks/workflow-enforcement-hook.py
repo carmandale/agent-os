@@ -309,8 +309,13 @@ def handle_userprompt(input_data):
     issues = check_workflow_status(root)
     if issues:
         message = "⚠️ Cannot proceed: workflow issues detected.\n\n" + "\n".join(f"• {i}" for i in issues)
-        print(message, file=sys.stderr)
-        sys.exit(2)
+        # For userprompt, return structured JSON to block explicitly
+        output = {
+            "decision": "block",
+            "hookSpecificOutput": {"additionalContext": message}
+        }
+        print(json.dumps(output))
+        sys.exit(0)
     sys.exit(0)
 
 
