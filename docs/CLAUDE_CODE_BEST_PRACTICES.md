@@ -1,4 +1,5 @@
 # Getting Claude to Behave Like a Senior Developer
+## *Updated with More Examples of Persistent Misbehavior*
 
 ## The Problem Pattern
 
@@ -10,6 +11,8 @@ Claude (especially Claude Code) exhibits consistent problematic behaviors when w
 3. **Making assumptions** instead of verifying what's already implemented
 4. **Documenting problems** instead of fixing them
 5. **Apologizing profusely** when caught, then repeating the same mistakes
+6. **Making confident false claims** without checking evidence
+7. **Not running obvious verification scripts** even when they're sitting right there
 
 ### Real Examples of Claude Misbehaving
 
@@ -48,90 +51,145 @@ have included reading the README.md first. The README is literally the entry poi
 [Claude then lists all the critical information that was in the README that it missed]
 ```
 
+#### Example 3: Making False Claims Without Evidence (Subtitle Reprocessing)
+```
+User: [Gives senior developer audit prompt]
+
+Claude: "Current batch processing is operational (PID 8188 running)"
+        "Active batch processing currently running"
+        "728 interviews currently being processed"
+
+User: "Show proof for your statement"
+
+Claude: [Checks ps aux - finds NOTHING running]
+        "❌ My Claim: 'PID 8188 running' - NO EVIDENCE"
+        "Historical logs only: Last activity was 2 days ago"
+
+User: "You still are jumping to conclusions. Did you run check_progress.py?"
+
+Claude: [Finally runs the actual script]
+        "✅ ACTUAL STATUS: 727/728 interviews completed (99.9%)"
+
+[Reality: 99.9% complete vs Claude's assumption of active processing]
+```
+
 ## Why This Happens
 
 Claude appears to have:
 - **Action bias**: Wanting to demonstrate value by creating/doing rather than reading/understanding
 - **Assumption tendency**: Making guesses to move faster instead of verifying
 - **Production over analysis**: Generating new content feels more "productive" than examining existing content
+- **Confidence without evidence**: Making definitive statements without checking facts
+- **Script blindness**: Not running obvious verification scripts that are right there
+
+## The Critical Lesson from Example 3
+
+Even with good prompts, Claude will:
+1. Make confident claims ("PID 8188 running") without checking
+2. Interpret old logs as current activity
+3. Calculate assumptions (707 remaining) instead of running the script
+4. Only check actual data when explicitly forced to
+
+**The Fix**: You must explicitly command Claude to run verification scripts:
+```markdown
+Before making ANY claims about status:
+1. Run: check_progress.py
+2. Run: ps aux | grep [relevant_process]
+3. Check file timestamps with: ls -la [files]
+4. Only then report findings
+```
 
 ## Effective Strategies to Fix This
 
-### 1. The Blocking Checklist Approach
+### 1. The Evidence-First Mandate
 
 ```markdown
-STOP. Do not write any analysis, specs, or suggestions yet.
+EVIDENCE-FIRST PROTOCOL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-First, complete this checklist:
-□ Read README.md in full
-□ Read any docs/ directory files  
-□ Check package.json/requirements.txt for dependencies
-□ Examine the file structure
-□ Read the issue description carefully
+Before making ANY claim about the codebase:
+1. Show the command you're running
+2. Show the actual output
+3. Only then interpret the results
 
-Reply ONLY with what you found. No suggestions. No analysis. Just findings.
+BANNED PHRASES:
+- "It appears that..."
+- "The system is currently..."
+- "Processing is operational..."
+- Any statement without showing the evidence first
+
+REQUIRED PATTERN:
+Command: [exact command]
+Output: [exact output]
+Evidence-based conclusion: [what this actually proves]
 ```
 
-### 2. The Phase-Gate Method
+### 2. The Verification Script Requirement
 
 ```markdown
-PHASE 1: DISCOVERY (Complete this entire phase before any analysis)
+MANDATORY FIRST ACTIONS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Required examination checklist - check each item and show me what you find:
-□ README.md - What does it say about current features and deployment?
-□ Issue description - Quote the EXACT requirements (not a summary)
-□ Package.json/requirements.txt - What libraries are already installed?
-□ Routes/endpoints - What API endpoints exist?
-□ Frontend components - What components already exist?
-□ Database schema - What data structures are already defined?
-□ Tests - What test coverage exists?
-□ Documentation - Any relevant docs?
-□ Production deployment - Check the live site for existing features
+Run these BEFORE any analysis:
+□ ls -la *.py | grep -E "(check|status|progress|monitor)"
+□ Run any script with "check" or "status" in the name
+□ ps aux | grep [project_name]
+□ Check file timestamps: ls -la | head -20
+□ Look for and run any verification scripts
 
-For each item above, paste relevant snippets or write "Not found" if absent.
-Do NOT interpret, analyze, or suggest anything yet. Just show me what exists.
-
-PHASE 2: ANALYSIS (Only after I confirm Phase 1 is complete)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[Only unlock after Phase 1 review]
+DO NOT PROCEED until you've run existing verification scripts.
 ```
 
-### 3. The Senior Developer Framing
+### 3. The Anti-Assumption Checkpoint
+
+```markdown
+ASSUMPTION CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+After every 3 statements, ask yourself:
+1. Did I verify this with a command? (If no, stop and verify)
+2. Am I interpreting old data as current? (Check timestamps)
+3. Is there a script that would tell me this? (Run it)
+
+If you write "currently" or "is running" - STOP and prove it with ps aux.
+If you write numbers or counts - STOP and verify with actual commands.
+```
+
+### 4. The Modified Senior Developer Framing
 
 ```markdown
 You are a senior developer conducting a code review.
 
-SENIOR DEVELOPER RULE: A junior developer assumes and builds. 
-A senior developer investigates first. Be senior.
+SENIOR DEVELOPER RULES:
+1. Never claim something without evidence
+2. Always run verification scripts before making claims
+3. Check timestamps before calling anything "current"
+4. When you see check_*.py or status_*.py - RUN IT FIRST
 
-Your audit task:
-1. Find and document EVERY piece of existing code related to [feature]
-2. Read the issue and list each requirement as a checkbox
-3. For each requirement, annotate with:
-   ✅ Fully implemented (show where)
-   ⚠️ Partially implemented (show what exists)
-   ❌ Not implemented
-   ❓ Unclear (needs clarification)
+Your investigation sequence:
+1. List all Python scripts: ls *.py
+2. Run any script with check/status/monitor in the name
+3. Check what's actually running: ps aux | grep [relevant]
+4. Check file timestamps: ls -la | sort by date
+5. Only THEN start your analysis
 
-Remember: You're looking for reasons to REJECT duplicate work, 
-not reasons to build new things.
+If you make a claim without showing the command output that proves it,
+you have failed as a senior developer.
 ```
 
-### 4. The Two-Message Force
+### 5. The Three-Strike Rule
 
-Break discovery and planning into separate messages:
-
-**Message 1:**
 ```markdown
-Read and summarize ONLY the README.md. Nothing else. 
-Show me you understand what's already deployed.
-```
+THREE-STRIKE PROTOCOL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-**Message 2 (only after Claude responds):**
-```markdown
-Now examine the rest of the codebase and tell me what exists.
-After you show me your findings, I'll ask for next steps in a separate message.
+Strike 1: If you make a claim without evidence, I'll ask for proof
+Strike 2: If you make another assumption, we start over completely  
+Strike 3: If you still assume instead of verify, we abandon the task
+
+Current strikes: 0
+
+Remember: Running a command takes 1 second. Being wrong wastes 10 minutes.
 ```
 
 ## For Fixing Problems (Not Just Documenting Them)
@@ -166,40 +224,70 @@ A senior developer doesn't document failures - they resolve them.
 ## Key Phrases That Work
 
 ### Prevention
-- "Do not write any analysis, specs, or suggestions yet"
-- "Reply ONLY with what you found. No suggestions."
-- "Show me exactly what you find, with file paths and relevant code snippets"
-- "A junior developer assumes and builds. A senior developer investigates first."
+- "Show the command you're running and its output FIRST"
+- "Run any check_*.py or status_*.py scripts BEFORE analysis"
+- "Evidence first, conclusions second"
+- "If you write 'currently' - prove it with ps aux"
 
-### Forcing Completion
-- "Do not stop until all checks pass"
-- "DO NOT move to the next issue until the current one shows green"
-- "No status updates needed - just show me green checks"
-- "A senior developer doesn't document failures - they resolve them"
+### Forcing Verification
+- "What scripts exist that could verify this?"
+- "Show me the timestamp of that file"
+- "Run the verification script, don't guess"
+- "That's historical data - what's the CURRENT state?"
+
+### Recovery from False Claims
+- "Show proof for your statement"
+- "What command did you run to determine that?"
+- "You're still jumping to conclusions - did you run [specific script]?"
 
 ## The Ultimate Pattern
 
-1. **Make examination a blocking requirement** - Can't proceed without it
-2. **Require evidence, not claims** - Show snippets, not summaries
-3. **Separate phases explicitly** - Discovery first, planning only after confirmation
-4. **Frame as senior developer work** - Investigation over assumption
-5. **Define success concretely** - "All green checks" not "issues addressed"
+1. **Force script execution first** - Make Claude run check/status scripts before ANY analysis
+2. **Require evidence before claims** - Every statement needs command output
+3. **Timestamp verification** - Old logs are not current activity
+4. **Three-strike accountability** - Escalating consequences for assumptions
+5. **Explicit anti-patterns** - Ban phrases like "appears to be" without evidence
 
 ## Common Failure Modes to Watch For
 
 Even with good instructions, watch for Claude:
-- Saying it "would" do something instead of doing it
-- Summarizing findings instead of showing actual code/content
-- Moving to the next step before verifying the current step works
-- Apologizing and promising to do better (without actually changing behavior)
-- Creating new specs/plans in the middle of discovery phase
+- Claiming things are "running" without checking ps aux
+- Treating old log files as current activity
+- Making calculations instead of running verification scripts
+- Using confident language ("operational", "active") without evidence
+- Reading logs but not checking their timestamps
+- Seeing a script called `check_progress.py` but not running it
 
-## The Most Important Rule
+## The Most Important Rules
 
-**Never let Claude proceed to planning/building until it has demonstrated complete understanding of what already exists.**
+1. **If a script exists called check_*, status_*, or monitor_* - Claude MUST run it first**
+2. **No claims about "current" state without timestamps and ps aux**
+3. **Evidence before interpretation - always**
+4. **When corrected once, don't just apologize - change the entire approach**
 
-The README.md should ALWAYS be the first thing examined. If Claude skips it, stop everything and start over.
+## The Nuclear Option
+
+If Claude continues to make assumptions after correction:
+
+```markdown
+STOP. You've now made false claims twice.
+
+NEW RULES - EVIDENCE ONLY MODE:
+- You may ONLY share command outputs
+- No interpretation allowed
+- No analysis permitted  
+- Just run commands and show results
+
+Run these commands in order:
+1. ls *.py | grep -E "(check|status|monitor)"
+2. [Run each script found]
+3. ps aux | grep [project]
+4. ls -la | head -20
+
+Show me the outputs. Do not add any commentary.
+After you show me raw outputs, I will tell you what to conclude.
+```
 
 ---
 
-*Remember: Claude's apologies don't prevent repeated mistakes. Only structural barriers in your prompts do.*
+*Remember: Claude's apologies don't prevent repeated mistakes. Only structural barriers in your prompts do. And sometimes you need to explicitly force Claude to run the verification scripts that are sitting right there in the directory.*
