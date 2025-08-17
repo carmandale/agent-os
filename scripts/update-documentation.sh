@@ -5,12 +5,14 @@ set -euo pipefail
 
 MODE="dry-run"
 CREATE_MISSING=0
+DEEP=0
 
 for arg in "$@"; do
   case "$arg" in
     --dry-run) MODE="dry-run" ;;
     --diff-only) MODE="diff-only" ;;
     --create-missing) CREATE_MISSING=1 ;;
+    --deep) DEEP=1 ;;
   esac
 done
 
@@ -25,6 +27,38 @@ if [[ -z "$changed" ]]; then
   exit 0
 fi
 echo "$changed" | sed 's/^/- /'
+
+# Optional deep evidence-first audit
+if [[ $DEEP -eq 1 ]]; then
+  echo ""
+  echo "# Deep Evidence Audit (Dev/Test/Prod)"
+  evidence_files=(
+    "backend/app/config.py"
+    "backend/app/database.py"
+    "alembic/env.py" "alembic/versions" "migrations" "migrations/versions"
+    "docker-compose.yml" "docker-compose.yaml" "Dockerfile" "Dockerfile.prod"
+    "render.yaml" "vercel.json" "nixpacks.toml" "Procfile"
+    ".env.example" ".env" "start.sh" "start-production.sh"
+    "docs/POSTGRES_SETUP.md" "README.md" "CLAUDE.md"
+  )
+  POSTGRES_HITS=0; SQLITE_HITS=0
+  for f in "${evidence_files[@]}"; do
+    if [[ -f "$f" ]]; then
+      # Show limited excerpts with line numbers for postgres/sqlite
+      pg=$(grep -nEi "postgres|psycopg|DATABASE_URL.*postgres" "$f" 2>/dev/null | head -5 || true)
+      sq=$(grep -nEi "sqlite|\.db\b|sqlite3" "$f" 2>/dev/null | head -5 || true)
+      if [[ -n "$pg" ]]; then
+        POSTGRES_HITS=$((POSTGRES_HITS+1))
+        echo "\n- $f (postgres-related):"; echo "$pg" | sed 's/^/  /'
+      fi
+      if [[ -n "$sq" ]]; then
+        SQLITE_HITS=$((SQLITE_HITS+1))
+        echo "\n- $f (sqlite-related):"; echo "$sq" | sed 's/^/  /'
+      fi
+    fi
+  done
+  echo "\nSummary: postgres-signals=$POSTGRES_HITS, sqlite-signals=$SQLITE_HITS"
+fi
 
 needs_changelog=0; needs_readme=0; needs_product=0; needs_docs=0
 echo "$changed" | grep -qE "^(scripts/|tools/|setup\.sh|setup-claude-code\.sh|setup-cursor\.sh|hooks/|instructions/|workflow-modules/)" && needs_changelog=1
@@ -77,8 +111,15 @@ if [[ ${#missing[@]} -gt 0 ]]; then
 fi
 
 if [[ "$MODE" == "dry-run" ]]; then
-  # Fail (exit 2) if proposals exist to signal CI/Hook without writing
+  # Fail (exit 2) if proposals exist or deep audit found contradictions
   if [[ ${#proposals[@]} -gt 0 ]]; then exit 2; fi
+  if [[ $DEEP -eq 1 ]]; then
+    # If deep scan suggests sqlite text present alongside postgres signals, flag proposals
+    if [[ $POSTGRES_HITS -gt 0 && $SQLITE_HITS -gt 0 ]]; then
+      echo "\nDeep audit detected possible doc/config mismatch (postgres + sqlite signals)."
+      exit 2
+    fi
+  fi
   exit 0
 fi
 
