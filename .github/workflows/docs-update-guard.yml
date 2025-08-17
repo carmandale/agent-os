@@ -1,0 +1,22 @@
+name: Docs Update Guard
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  docs_guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run documentation updater in deep check mode
+        run: |
+          chmod +x scripts/update-documentation.sh
+          ./scripts/update-documentation.sh --dry-run --deep || (
+            echo "❌ Documentation updates required. See proposals above." && exit 1
+          )
+
