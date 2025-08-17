@@ -290,7 +290,8 @@ def handle_posttool(input_data):
         # Run updater in dry-run to detect pending docs (exit 2 means proposals exist)
         result = subprocess.run([
             os.path.expanduser("~/.agent-os/scripts/update-documentation.sh"),
-            "--dry-run"
+            "--dry-run",
+            "--deep"
         ], capture_output=True, text=True, timeout=10)
         if result.returncode == 2:
             msg = (
