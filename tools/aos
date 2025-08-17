@@ -29,6 +29,43 @@ print_status() {
     esac
 }
 
+# Integrity helpers (checksum comparison against upstream)
+hash_file() {
+    local path="$1"
+    if [ -f "$path" ]; then
+        shasum -a 256 "$path" 2>/dev/null | awk '{print $1}'
+    fi
+}
+
+hash_remote_relative() {
+    local rel="$1"
+    curl -sSL "$AGENT_OS_RAW_URL/$rel" 2>/dev/null | shasum -a 256 | awk '{print $1}'
+}
+
+check_integrity_pair() {
+    local local_path="$1"
+    local remote_rel="$2"
+    local name="$3"
+    local lh rh
+    if [ ! -f "$local_path" ]; then
+        print_status "error" "$name missing ($local_path)"
+        return 1
+    fi
+    lh=$(hash_file "$local_path")
+    rh=$(hash_remote_relative "$remote_rel")
+    if [ -z "$rh" ]; then
+        print_status "warning" "Upstream reference unavailable for $name ($remote_rel)"
+        return 1
+    fi
+    if [ "$lh" = "$rh" ]; then
+        print_status "success" "$name matches upstream"
+        return 0
+    else
+        print_status "warning" "$name differs from upstream"
+        return 1
+    fi
+}
+
 # Check if Agent OS is installed globally
 check_global_installation() {
     if [ -d "$HOME/.agent-os/instructions" ] && [ -d "$HOME/.agent-os/standards" ]; then
@@ -312,6 +349,20 @@ check_comprehensive_status() {
         [ -d "$HOME/.agent-os/standards" ] && print_status "success" "Standards installed" || print_status "error" "Standards missing"
         [ -d "$HOME/.agent-os/workflow-modules" ] && print_status "success" "Workflow modules installed" || print_status "error" "Workflow modules missing"
         [ -d "$HOME/.agent-os/hooks" ] && print_status "success" "Hooks installed" || print_status "error" "Hooks missing"
+
+        # File integrity (compare to upstream main)
+        echo ""
+        echo "Integrity (checksums vs upstream):"
+        local integrity_ok=true
+        check_integrity_pair "$HOME/.agent-os/tools/aos" "tools/aos" "CLI (aos)" || integrity_ok=false
+        check_integrity_pair "$HOME/.agent-os/tools/agentos-alias.sh" "tools/agentos-alias.sh" "Alias script" || integrity_ok=false
+        check_integrity_pair "$HOME/.agent-os/scripts/update-documentation.sh" "scripts/update-documentation.sh" "Doc updater script" || integrity_ok=false
+        check_integrity_pair "$HOME/.claude/commands/update-documentation.md" "commands/update-documentation.md" "Doc updater command" || integrity_ok=false
+        if [ "$integrity_ok" = true ]; then
+            print_status "success" "Integrity OK"
+        else
+            print_status "warning" "Integrity issues detected (mismatch or missing files). Run setup to sync."
+        fi
     else
         print_status "error" "Not installed"
         echo "Run: curl -sSL $AGENT_OS_RAW_URL/setup.sh | bash"
