@@ -61,7 +61,12 @@ if [[ $DEEP -eq 1 ]]; then
 fi
 
 needs_changelog=0; needs_readme=0; needs_product=0; needs_docs=0
+# Heuristic 1: core Agent OS files likely require CHANGELOG
 echo "$changed" | grep -qE "^(scripts/|tools/|setup\.sh|setup-claude-code\.sh|setup-cursor\.sh|hooks/|instructions/|workflow-modules/)" && needs_changelog=1
+# Heuristic 2: any non-doc change anywhere should update CHANGELOG (generalize for other repos)
+if echo "$changed" | grep -vqE "^(docs/|\.agent-os/product/|\.github/|CHANGELOG\.md$)"; then
+  needs_changelog=1
+fi
 echo "$changed" | grep -qE "^(tools/|setup\.sh|README\.md|CLAUDE\.md)" && needs_readme=1
 echo "$changed" | grep -qE "^(instructions/|workflow-modules/)" && needs_docs=1
 echo "$changed" | grep -qE "^(\.agent-os/product/|instructions/core/execute-tasks\.md|instructions/core/execute-task\.md)" && needs_product=1
@@ -107,6 +112,12 @@ if [[ ${#missing[@]} -gt 0 ]]; then
       } > "$f"
       echo "Created $f"
     done
+  else
+    # Enforce CHANGELOG presence when changes require it
+    if printf '%s\n' "${missing[@]}" | grep -q '^CHANGELOG.md$'; then
+      echo "CHANGELOG.md is required for documenting changes."
+      exit 2
+    fi
   fi
 fi
 
