@@ -36,15 +36,45 @@ def log_debug(message):
             f.write(f"[{datetime.now().isoformat()}] {message}\n")
 
 
-def check_git_status():
-    """Check if there are uncommitted changes."""
+def resolve_workspace_root(input_data: dict | None = None) -> str:
+    """Best-effort resolution of the target project directory for checks."""
+    # Prefer explicit fields from hook payload
+    try:
+        if input_data:
+            # Common fields that may be present
+            for key in ["cwd", "workspaceDir", "workspace", "projectRoot", "rootDir"]:
+                val = input_data.get(key)
+                if isinstance(val, str) and val.strip():
+                    return val
+            tool_input = input_data.get("tool_input", {}) or {}
+            for key in ["cwd", "workspaceDir", "projectRoot", "rootDir"]:
+                val = tool_input.get(key)
+                if isinstance(val, str) and val.strip():
+                    return val
+            # Derive from file path if present
+            for key in ["file_path", "path"]:
+                p = tool_input.get(key)
+                if isinstance(p, str) and p.strip():
+                    return os.path.dirname(p)
+    except Exception as e:
+        log_debug(f"resolve_workspace_root payload parse failed: {e}")
+    # Fallback to environment hint
+    env_dir = os.environ.get("CLAUDE_PROJECT_DIR", "").strip()
+    if env_dir:
+        return env_dir
+    # Last resort: current working directory
+    return os.getcwd()
+
+
+def check_git_status(cwd: str) -> bool:
+    """Check if there are uncommitted changes in given workspace."""
     try:
         result = subprocess.run(
             ["git", "status", "--porcelain"],
             capture_output=True,
             text=True,
             timeout=5,
-            cwd=os.getcwd()
+            cwd=cwd
         )
         return bool(result.stdout.strip())
     except Exception as e:
@@ -52,17 +82,18 @@ def check_git_status():
         return False
 
 
-def check_open_prs():
-    """Check for open PRs in the current repo."""
+def check_open_prs(cwd: str) -> bool:
+    """Check for open PRs in the given repo."""
     try:
         result = subprocess.run(
             ["gh", "pr", "list", "--state", "open", "--json", "number"],
             capture_output=True,
             text=True,
-            timeout=5
+            timeout=5,
+            cwd=cwd
         )
         if result.returncode == 0:
-            prs = json.loads(result.stdout)
+            prs = json.loads(result.stdout or "[]")
             return len(prs) > 0
         return False
     except Exception as e:
@@ -70,16 +101,16 @@ def check_open_prs():
         return False
 
 
-def check_workflow_status():
-    """Analyze workflow status and return issues."""
+def check_workflow_status(cwd: str) -> list[str]:
+    """Analyze workflow status and return issues for given workspace."""
     issues = []
     
     # Check for uncommitted changes
-    if check_git_status():
+    if check_git_status(cwd):
         issues.append("Uncommitted changes detected")
     
     # Check for open PRs
-    if check_open_prs():
+    if check_open_prs(cwd):
         issues.append("Open pull requests need review/merge")
     
     return issues
@@ -127,14 +158,15 @@ def is_docs_only_command(command: str) -> bool:
     return (".md" in lowered or ".mdc" in lowered or "docs/" in lowered or "claude.md" in lowered)
 
 
-def has_active_spec():
-    """Detect if there is a current spec context (.agent-os/specs/*)."""
+def has_active_spec(cwd: str) -> bool:
+    """Detect if there is a current spec context (.agent-os/specs/*) in workspace."""
     try:
         result = subprocess.run(
             ["bash", "-lc", "ls -1 .agent-os/specs 2>/dev/null | wc -l"],
             capture_output=True,
             text=True,
-            timeout=3
+            timeout=3,
+            cwd=cwd
         )
         count = int(result.stdout.strip() or "0")
         return count > 0
@@ -153,6 +185,7 @@ def handle_pretool(input_data):
     # Special handling for Bash commands
     if tool_name == "Bash":
         command = tool_input.get("command", "").strip()
+        root = resolve_workspace_root(input_data)
         
         # Always allow git/gh operations (to resolve hygiene)
         if command.startswith("git ") or command.startswith("gh "):
@@ -184,8 +217,8 @@ def handle_pretool(input_data):
                 log_debug(f"Allowing maintenance write: {command}")
                 sys.exit(0)
             # NEW or AMBIGUOUS => enforce hygiene
-            issues = check_workflow_status()
-            if not has_active_spec():
+            issues = check_workflow_status(root)
+            if not has_active_spec(root):
                 print("⚠️ No active spec detected (.agent-os/specs).\n\nRun /create-spec to define scope before starting new work.", file=sys.stderr)
                 sys.exit(2)
             if issues:
@@ -206,6 +239,7 @@ def handle_pretool(input_data):
     
     # Check workflow status for other tools
     else:
+        root = resolve_workspace_root(input_data)
         intent = get_user_intent(tool_input.get("description", ""))
         
         # Docs-only exception for Write/Edit/MultiEdit: allow if editing docs
@@ -218,8 +252,8 @@ def handle_pretool(input_data):
         if intent == "MAINTENANCE":
             sys.exit(0)
 
-        issues = check_workflow_status()
-        if not has_active_spec():
+        issues = check_workflow_status(root)
+        if not has_active_spec(root):
             print("⚠️ No active spec detected (.agent-os/specs).\n\nRun /create-spec to define scope before starting new work.", file=sys.stderr)
             sys.exit(2)
         if issues:
@@ -267,11 +301,12 @@ def handle_userprompt(input_data):
         sys.exit(0)
 
     # Proceed attempts are blocked if hygiene issues exist (unless maintenance intent)
+    root = resolve_workspace_root(input_data)
     intent = get_user_intent(prompt)
     if intent == "MAINTENANCE":
         sys.exit(0)
 
-    issues = check_workflow_status()
+    issues = check_workflow_status(root)
     if issues:
         message = "⚠️ Cannot proceed: workflow issues detected.\n\n" + "\n".join(f"• {i}" for i in issues)
         print(message, file=sys.stderr)
@@ -289,11 +324,12 @@ def handle_posttool(input_data):
     # If PR-completion flows detected, ensure docs are current
     try:
         # Run updater in dry-run to detect pending docs (exit 2 means proposals exist)
+        root = resolve_workspace_root(input_data)
         result = subprocess.run([
             os.path.expanduser("~/.agent-os/scripts/update-documentation.sh"),
             "--dry-run",
             "--deep"
-        ], capture_output=True, text=True, timeout=30)
+        ], capture_output=True, text=True, timeout=30, cwd=root)
         if result.returncode == 2:
             msg = (
                 "⚠️ Documentation updates required.\n\n"
