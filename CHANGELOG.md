@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Instruction Structure & Orchestrator**
   - `instructions/core/` and `instructions/meta/` restored as source of truth with XML tags
   - `instructions/core/execute-tasks.md` adds Phase 0 Repository Discovery Gate and PR evidence requirements
+  - Added Phase 1.5 Deep Reality Check (Dev/Test/Prod) with citations; Phase 0 verification scripts pre-check; Phase 4 PR evidence-only fallback after repeated violations (PR #45)
 
 ### Changed
 - **Versioning**: Canonical version file is `~/.agent-os/VERSION` (uppercase); CLI and docs updated

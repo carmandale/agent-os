@@ -137,6 +137,15 @@ Why these changes: to stop fabricated success claims, prevent shortcuts that div
 
 Docs, installation, useage, & best practices 👉 [It's all here](https://buildermethods.com/agent-os)
 
+#### Core Slash Commands (Claude Code)
+
+```bash
+# Documentation updater (discovery-first; evidence-only)
+/update-documentation --dry-run         # standard proposals
+/update-documentation --deep --dry-run  # deep evidence audit (Dev/Test/Prod)
+# Install via: curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup-claude-code.sh | bash
+```
+
 ---
 
 ### Created by Brian Casel @ Builder Methods

@@ -166,6 +166,11 @@ curl -s -o "$HOME/.agent-os/scripts/task-validator.sh" "${BASE_URL}/scripts/task
 chmod +x "$HOME/.agent-os/scripts/task-validator.sh"
 echo "  ✓ ~/.agent-os/scripts/task-validator.sh"
 
+# update-documentation.sh (deterministic docs updater)
+curl -s -o "$HOME/.agent-os/scripts/update-documentation.sh" "${BASE_URL}/scripts/update-documentation.sh"
+chmod +x "$HOME/.agent-os/scripts/update-documentation.sh"
+echo "  ✓ ~/.agent-os/scripts/update-documentation.sh"
+
 # config-resolver.py
 curl -s -o "$HOME/.agent-os/scripts/config-resolver.py" "${BASE_URL}/scripts/config-resolver.py"
 echo "  ✓ ~/.agent-os/scripts/config-resolver.py"
