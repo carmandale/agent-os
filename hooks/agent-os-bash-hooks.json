@@ -12,6 +12,24 @@
             "command": "~/.agent-os/hooks/pre-bash-hook.sh"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit|Update",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/.agent-os/hooks/workflow-enforcement-hook.py pretool"
+          }
+        ]
+      },
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/.agent-os/hooks/workflow-enforcement-hook.py pretool-task"
+          }
+        ]
       }
     ],
     "PostToolUse": [
