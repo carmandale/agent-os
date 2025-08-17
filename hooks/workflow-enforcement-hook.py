@@ -24,7 +24,7 @@ PROCEED_PATTERNS = [
 ]
 
 # Tools that indicate starting new work
-NEW_WORK_TOOLS = ["Write", "Edit", "MultiEdit"]
+NEW_WORK_TOOLS = ["Write", "Edit", "MultiEdit", "Task"]
 
 
 def log_debug(message):
@@ -85,6 +85,48 @@ def check_workflow_status():
     return issues
 
 
+def get_user_intent(prompt_text: str = "") -> str:
+    """Return MAINTENANCE | NEW | AMBIGUOUS using intent analyzer, with env fallback."""
+    # Env override
+    env_intent = os.environ.get("AGENT_OS_INTENT", "").strip().upper()
+    if env_intent in {"MAINTENANCE", "NEW", "AMBIGUOUS"}:
+        return env_intent
+    # Use prompt if provided
+    text = prompt_text or os.environ.get("CLAUDE_USER_PROMPT", "")
+    try:
+        result = subprocess.run(
+            [os.path.expanduser("~/.agent-os/scripts/intent-analyzer.sh"), "--text", text],
+            capture_output=True,
+            text=True,
+            timeout=3
+        )
+        val = (result.stdout or "").strip().upper()
+        return val if val in {"MAINTENANCE", "NEW", "AMBIGUOUS"} else "AMBIGUOUS"
+    except Exception as e:
+        log_debug(f"Intent analyzer failed: {e}")
+        return "AMBIGUOUS"
+
+
+def is_write_bash(command: str) -> bool:
+    """Heuristic to detect write-capable bash commands."""
+    c = command
+    # Obvious write commands
+    write_prefixes = ["cp ", "mv ", "rm ", "touch ", "chmod ", "chown ", "tee ", "patch ", "git apply ",
+                      "npm ", "yarn ", "pnpm ", "pip ", "uv ", "docker ", "echo "]
+    if any(c.startswith(p) for p in write_prefixes):
+        return True
+    # Redirections / in-place edits
+    if ">>" in c or ">" in c or "sed -i" in c or "awk -i" in c:
+        return True
+    return False
+
+
+def is_docs_only_command(command: str) -> bool:
+    """Rough detection if a bash write targets docs/markdown only."""
+    lowered = command.lower()
+    return (".md" in lowered or ".mdc" in lowered or "docs/" in lowered or "claude.md" in lowered)
+
+
 def has_active_spec():
     """Detect if there is a current spec context (.agent-os/specs/*)."""
     try:
@@ -112,71 +154,51 @@ def handle_pretool(input_data):
     if tool_name == "Bash":
         command = tool_input.get("command", "").strip()
         
-        # Allow workflow and investigation commands
-        allowed_commands = [
-            "git ", "gh ", "cd ",  # Workflow commands
-            "ls ", "ls", "cat ", "head ", "tail ", "grep ", "find ",  # File investigation
-            "ps ", "netstat", "lsof ", "echo ", "env", "which ", "pwd",  # System investigation
-            "wc ", "sort ", "uniq ", "awk ", "sed ",  # Text processing (read-only usage)
-            "chmod ", "mv ", "rm ", "cp ", "touch "  # File operations often needed with git
+        # Always allow git/gh operations (to resolve hygiene)
+        if command.startswith("git ") or command.startswith("gh "):
+            log_debug(f"Allowing git/gh command: {command}")
+            sys.exit(0)
+
+        # Read-only allowlist (keep minimal to avoid write bypass)
+        readonly_prefixes = [
+            "cd ", "ls ", "ls", "cat ", "head ", "tail ", "grep ", "rg ", "find ",
+            "ps ", "netstat", "lsof ", "echo ", "env", "which ", "pwd",
+            "wc ", "sort ", "uniq ", "awk ", "sed "
         ]
-        
-        # Check if command contains git operations (even in compound commands)
-        is_git_command = "git " in command or "gh " in command
-        is_allowed_command = any(command.startswith(cmd) for cmd in allowed_commands) or is_git_command
-        
-        if is_allowed_command:
-            log_debug(f"Allowing command: {command}")
+        # If clearly read-only, allow
+        if any(command.startswith(p) for p in readonly_prefixes) and not is_write_bash(command):
+            log_debug(f"Allowing read-only command: {command}")
+            sys.exit(0)
+
+        # Classify write and gate based on intent and hygiene
+        is_write = is_write_bash(command)
+        intent = get_user_intent()
+        # Docs-only exception: allow writes to docs/markdown files
+        if is_write and is_docs_only_command(command):
+            log_debug(f"Allowing docs-only write: {command}")
+            sys.exit(0)
+
+        # For maintenance intent, allow writes (to fix), else enforce hygiene/spec
+        if is_write:
+            if intent == "MAINTENANCE":
+                log_debug(f"Allowing maintenance write: {command}")
+                sys.exit(0)
+            # NEW or AMBIGUOUS => enforce hygiene
+            issues = check_workflow_status()
+            if not has_active_spec():
+                print("⚠️ No active spec detected (.agent-os/specs).\n\nRun /create-spec to define scope before starting new work.", file=sys.stderr)
+                sys.exit(2)
+            if issues:
+                message = "⚠️ Agent OS workflow guidance needed:\n\n"
+                for issue in issues:
+                    message += f"• {issue}\n"
+                message += "\nComplete git integration workflow first."
+                print(message, file=sys.stderr)
+                sys.exit(2)
             sys.exit(0)
         
-        # Check workflow status for non-git bash commands
-        issues = check_workflow_status()
-        
-        # If there are uncommitted changes but the command includes git operations,
-        # allow it (they're trying to fix the issue)
-        if issues and "Uncommitted changes" in str(issues) and is_git_command:
-            log_debug(f"Allowing git command to resolve uncommitted changes: {command}")
-            sys.exit(0)
-        
-        if issues:
-            message = "⚠️ Agent OS workflow guidance needed:\n\n"
-            
-            # Show current issues
-            for issue in issues:
-                message += f"• {issue}\n"
-            
-            # Add workflow reminder
-            message += "\n🔄 **AGENT OS WORKFLOW - FOLLOW EXACTLY:**\n"
-            message += "1. CHECK: git status (must be clean)\n"
-            message += "2. ISSUE: Create or reference GitHub issue\n"
-            message += "3. BRANCH: git checkout -b feature-name-#123\n"
-            message += "4. WORK: Make changes, test them IN BROWSER/REALITY\n"
-            message += "5. COMMIT: git add . && git commit -m 'type: message #123'\n"
-            message += "6. PR: gh pr create\n\n"
-            
-            # Provide specific guidance based on the issue
-            if "Open pull requests" in str(issues):
-                message += "📋 **NEXT STEP**: Review and merge your open PR:\n"
-                message += "• gh pr view [number]\n"
-                message += "• Ask user for merge approval\n"
-                message += "• gh pr merge [number]\n"
-                message += "• git checkout main && git pull"
-            elif "Uncommitted changes" in str(issues):
-                message += "\n📋 **NEXT STEP**: You have uncommitted changes\n"
-                message += "• git status - See what changed\n"
-                message += "• git diff - Review changes\n"
-                message += "• TEST your changes in browser/reality\n"
-                message += "• git add . && git commit -m 'type: description #NUM'\n\n"
-                message += "⚠️ NEVER claim work is complete without testing!"
-            else:
-                message += "\nComplete git integration workflow first:\n"
-                message += "1. git add & commit with issue reference\n"
-                message += "2. git push & create PR\n"
-                message += "3. Complete merge process\n"
-                message += "4. Update issue status"
-            
-            print(message, file=sys.stderr)
-            sys.exit(2)
+        # Default: unknown read action; allow if not detected as write
+        sys.exit(0)
     
     # Only check for tools that indicate new work
     elif tool_name not in NEW_WORK_TOOLS:
@@ -184,56 +206,26 @@ def handle_pretool(input_data):
     
     # Check workflow status for other tools
     else:
+        intent = get_user_intent(tool_input.get("description", ""))
+        
+        # Docs-only exception for Write/Edit/MultiEdit: allow if editing docs
+        file_path = tool_input.get("file_path", "") or tool_input.get("path", "")
+        if file_path:
+            lower = file_path.lower()
+            if lower.endswith(".md") or lower.endswith(".mdc") or lower.startswith("docs/") or os.path.basename(lower) == "claude.md":
+                sys.exit(0)
+
+        if intent == "MAINTENANCE":
+            sys.exit(0)
+
         issues = check_workflow_status()
-        # Enforce spec creation for new work when no active spec exists
         if not has_active_spec():
-            message = (
-                "⚠️ No active spec detected (.agent-os/specs).\n\n"
-                "Run /create-spec to define scope before starting new work."
-            )
+            print("⚠️ No active spec detected (.agent-os/specs).\n\nRun /create-spec to define scope before starting new work.", file=sys.stderr)
+            sys.exit(2)
+        if issues:
+            message = "⚠️ Agent OS workflow guidance needed:\n\n" + "\n".join(f"• {i}" for i in issues)
             print(message, file=sys.stderr)
             sys.exit(2)
-        
-        if issues:
-            # Block tool usage with feedback
-            message = "⚠️ Agent OS workflow guidance needed:\n\n"
-            
-            # Show current issues
-            for issue in issues:
-                message += f"• {issue}\n"
-            
-            # Add workflow reminder
-            message += "\n🔄 **AGENT OS WORKFLOW - FOLLOW EXACTLY:**\n"
-            message += "1. CHECK: git status (must be clean)\n"
-            message += "2. ISSUE: Create or reference GitHub issue\n"
-            message += "3. BRANCH: git checkout -b feature-name-#123\n"
-            message += "4. WORK: Make changes, test them IN BROWSER/REALITY\n"
-            message += "5. COMMIT: git add . && git commit -m 'type: message #123'\n"
-            message += "6. PR: gh pr create\n\n"
-            
-            # Provide specific guidance based on the issue
-            if "Open pull requests" in str(issues):
-                message += "📋 **NEXT STEP**: Review and merge your open PR:\n"
-                message += "• gh pr view [number]\n"
-                message += "• Ask user for merge approval\n"
-                message += "• gh pr merge [number]\n"
-                message += "• git checkout main && git pull"
-            elif "Uncommitted changes" in str(issues):
-                message += "\n📋 **NEXT STEP**: You have uncommitted changes\n"
-                message += "• git status - See what changed\n"
-                message += "• git diff - Review changes\n"
-                message += "• TEST your changes in browser/reality\n"
-                message += "• git add . && git commit -m 'type: description #NUM'\n\n"
-                message += "⚠️ NEVER claim work is complete without testing!"
-            else:
-                message += "\nComplete git integration workflow first:\n"
-                message += "1. git add & commit with issue reference\n"
-                message += "2. git push & create PR\n"
-                message += "3. Complete merge process\n"
-                message += "4. Update issue status"
-            
-            print(message, file=sys.stderr)
-            sys.exit(2)  # Block with feedback to Claude
     
     sys.exit(0)
 
@@ -273,32 +265,17 @@ def handle_userprompt(input_data):
     
     if not is_proceed_attempt:
         sys.exit(0)
-    
-    # Check workflow status
+
+    # Proceed attempts are blocked if hygiene issues exist (unless maintenance intent)
+    intent = get_user_intent(prompt)
+    if intent == "MAINTENANCE":
+        sys.exit(0)
+
     issues = check_workflow_status()
-    
     if issues:
-        # Add context about incomplete workflow
-        context = "\n⚠️ **Agent OS Workflow Status Check**\n\n"
-        context += "Before proceeding to new work:\n"
-        for issue in issues:
-            context += f"• {issue}\n"
-        context += "\n**Required Actions:**\n"
-        context += "1. Commit all changes with issue reference\n"
-        context += "2. Create/update pull request\n"
-        context += "3. Complete merge workflow\n"
-        context += "4. Close related GitHub issues\n"
-        context += "\nComplete these steps before starting new tasks.\n"
-        
-        # Return JSON to add context
-        output = {
-            "decision": "allow",
-            "hookSpecificOutput": {
-                "additionalContext": context
-            }
-        }
-        print(json.dumps(output))
-    
+        message = "⚠️ Cannot proceed: workflow issues detected.\n\n" + "\n".join(f"• {i}" for i in issues)
+        print(message, file=sys.stderr)
+        sys.exit(2)
     sys.exit(0)
 
 
@@ -316,7 +293,7 @@ def handle_posttool(input_data):
             os.path.expanduser("~/.agent-os/scripts/update-documentation.sh"),
             "--dry-run",
             "--deep"
-        ], capture_output=True, text=True, timeout=10)
+        ], capture_output=True, text=True, timeout=30)
         if result.returncode == 2:
             msg = (
                 "⚠️ Documentation updates required.\n\n"
