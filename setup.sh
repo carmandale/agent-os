@@ -166,6 +166,45 @@ curl -s -o "$HOME/.agent-os/scripts/task-validator.sh" "${BASE_URL}/scripts/task
 chmod +x "$HOME/.agent-os/scripts/task-validator.sh"
 echo "  ✓ ~/.agent-os/scripts/task-validator.sh"
 
+# config-resolver.py
+curl -s -o "$HOME/.agent-os/scripts/config-resolver.py" "${BASE_URL}/scripts/config-resolver.py"
+echo "  ✓ ~/.agent-os/scripts/config-resolver.py"
+
+# session-memory.sh
+curl -s -o "$HOME/.agent-os/scripts/session-memory.sh" "${BASE_URL}/scripts/session-memory.sh"
+chmod +x "$HOME/.agent-os/scripts/session-memory.sh"
+echo "  ✓ ~/.agent-os/scripts/session-memory.sh"
+
+# config-validator.sh
+curl -s -o "$HOME/.agent-os/scripts/config-validator.sh" "${BASE_URL}/scripts/config-validator.sh"
+chmod +x "$HOME/.agent-os/scripts/config-validator.sh"
+echo "  ✓ ~/.agent-os/scripts/config-validator.sh"
+
+# pre-command-guard.sh
+curl -s -o "$HOME/.agent-os/scripts/pre-command-guard.sh" "${BASE_URL}/scripts/pre-command-guard.sh"
+chmod +x "$HOME/.agent-os/scripts/pre-command-guard.sh"
+echo "  ✓ ~/.agent-os/scripts/pre-command-guard.sh"
+
+# intent-analyzer.sh
+curl -s -o "$HOME/.agent-os/scripts/intent-analyzer.sh" "${BASE_URL}/scripts/intent-analyzer.sh"
+chmod +x "$HOME/.agent-os/scripts/intent-analyzer.sh"
+echo "  ✓ ~/.agent-os/scripts/intent-analyzer.sh"
+
+# workspace-state.sh
+curl -s -o "$HOME/.agent-os/scripts/workspace-state.sh" "${BASE_URL}/scripts/workspace-state.sh"
+chmod +x "$HOME/.agent-os/scripts/workspace-state.sh"
+echo "  ✓ ~/.agent-os/scripts/workspace-state.sh"
+
+# context-aware-wrapper.sh
+curl -s -o "$HOME/.agent-os/scripts/context-aware-wrapper.sh" "${BASE_URL}/scripts/context-aware-wrapper.sh"
+chmod +x "$HOME/.agent-os/scripts/context-aware-wrapper.sh"
+echo "  ✓ ~/.agent-os/scripts/context-aware-wrapper.sh"
+
+# testing-enforcer.sh
+curl -s -o "$HOME/.agent-os/scripts/testing-enforcer.sh" "${BASE_URL}/scripts/testing-enforcer.sh"
+chmod +x "$HOME/.agent-os/scripts/testing-enforcer.sh"
+echo "  ✓ ~/.agent-os/scripts/testing-enforcer.sh"
+
 # Download workflow modules
 echo ""
 echo "📥 Downloading workflow modules to ~/.agent-os/workflow-modules/"
