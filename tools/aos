@@ -66,6 +66,25 @@ check_integrity_pair() {
     fi
 }
 
+# Silent integrity boolean (no prints). Returns "true" or "false"
+integrity_is_ok_silent() {
+    local ok=true
+    # CLI
+    local lh rh
+    lh=$(hash_file "$HOME/.agent-os/tools/aos"); rh=$(hash_remote_relative "tools/aos");
+    { [ -n "$lh" ] && [ -n "$rh" ] && [ "$lh" = "$rh" ]; } || ok=false
+    # Alias
+    lh=$(hash_file "$HOME/.agent-os/tools/agentos-alias.sh"); rh=$(hash_remote_relative "tools/agentos-alias.sh");
+    { [ -n "$lh" ] && [ -n "$rh" ] && [ "$lh" = "$rh" ]; } || ok=false
+    # Doc updater script
+    lh=$(hash_file "$HOME/.agent-os/scripts/update-documentation.sh"); rh=$(hash_remote_relative "scripts/update-documentation.sh");
+    { [ -n "$lh" ] && [ -n "$rh" ] && [ "$lh" = "$rh" ]; } || ok=false
+    # Doc updater command
+    lh=$(hash_file "$HOME/.claude/commands/update-documentation.md"); rh=$(hash_remote_relative "commands/update-documentation.md");
+    { [ -n "$lh" ] && [ -n "$rh" ] && [ "$lh" = "$rh" ]; } || ok=false
+    if [ "$ok" = true ]; then echo true; else echo false; fi
+}
+
 # Check if Agent OS is installed globally
 check_global_installation() {
     if [ -d "$HOME/.agent-os/instructions" ] && [ -d "$HOME/.agent-os/standards" ]; then
@@ -536,8 +555,11 @@ main_menu() {
     if check_global_installation; then
         global_ok=true
         local update_status=$(check_for_updates)
-        if [ "$update_status" != "current" ] && [ "$update_status" != "main" ] && [ ! -z "$update_status" ]; then
+        local integrity_ok=$(integrity_is_ok_silent)
+        if [ "$update_status" != "current" ] && [ "$update_status" != "main" ] && [ -n "$update_status" ]; then
             print_status "warning" "Agent OS update available: $update_status"
+        elif [ "$integrity_ok" != "true" ]; then
+            print_status "warning" "Installed files differ from upstream (run 'aos status' for details)"
         else
             print_status "success" "Agent OS is up to date"
         fi
