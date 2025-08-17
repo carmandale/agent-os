@@ -85,6 +85,48 @@ integrity_is_ok_silent() {
     if [ "$ok" = true ]; then echo true; else echo false; fi
 }
 
+# Repair integrity by syncing mismatched or missing files from upstream
+repair_integrity() {
+    local repaired=0
+    local failed=0
+    # List of: local_path|remote_rel|exec_flag
+    local items=(
+        "$HOME/.agent-os/tools/aos|tools/aos|exec"
+        "$HOME/.agent-os/tools/agentos-alias.sh|tools/agentos-alias.sh|exec"
+        "$HOME/.agent-os/scripts/update-documentation.sh|scripts/update-documentation.sh|exec"
+        "$HOME/.claude/commands/update-documentation.md|commands/update-documentation.md|noexec"
+    )
+    for it in "${items[@]}"; do
+        IFS='|' read -r local_path remote_rel exec_flag <<< "$it"
+        local need_sync=false
+        if [ ! -f "$local_path" ]; then
+            need_sync=true
+        else
+            local lh rh
+            lh=$(hash_file "$local_path")
+            rh=$(hash_remote_relative "$remote_rel")
+            if [ -z "$rh" ] || [ "$lh" != "$rh" ]; then
+                need_sync=true
+            fi
+        fi
+        if [ "$need_sync" = true ]; then
+            mkdir -p "$(dirname "$local_path")"
+            if curl -s -o "$local_path" "$AGENT_OS_RAW_URL/$remote_rel"; then
+                [ "$exec_flag" = "exec" ] && chmod +x "$local_path" || true
+                repaired=$((repaired+1))
+                print_status "success" "Synced $(basename "$local_path")"
+            else
+                failed=$((failed+1))
+                print_status "error" "Failed to sync $remote_rel"
+            fi
+        fi
+    done
+    if [ $failed -gt 0 ]; then
+        return 1
+    fi
+    return 0
+}
+
 # Check if Agent OS is installed globally
 check_global_installation() {
     if [ -d "$HOME/.agent-os/instructions" ] && [ -d "$HOME/.agent-os/standards" ]; then
@@ -291,12 +333,37 @@ smart_update() {
     fi
 
     print_status "check" "Checking for updates..."
-    
+
     local update_status=$(check_for_updates)
-    
+    local integrity_ok=$(integrity_is_ok_silent)
+
     if [ "$update_status" = "current" ]; then
-        print_status "success" "Agent OS is already up to date!"
-        return 0
+        if [ "$integrity_ok" != "true" ]; then
+            print_status "warning" "Installed files differ from upstream."
+            local response=""
+            if [ "$non_interactive" = true ]; then
+                response="y"
+                print_status "info" "Repairing integrity (non-interactive)..."
+            else
+                echo -n "Repair mismatched files now? [y/N]: "
+                read -r response
+            fi
+            if [[ "$response" =~ ^[Yy]$ ]]; then
+                if repair_integrity; then
+                    print_status "success" "Integrity repair complete."
+                    return 0
+                else
+                    print_status "error" "Integrity repair encountered errors."
+                    return 1
+                fi
+            else
+                print_status "info" "Skipped integrity repair."
+                return 0
+            fi
+        else
+            print_status "success" "Agent OS is already up to date!"
+            return 0
+        fi
     elif [ "$update_status" = "not installed" ]; then
         print_status "error" "Agent OS is not installed. Run 'aos init' first."
         return 1
