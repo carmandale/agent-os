@@ -85,6 +85,22 @@ def check_workflow_status():
     return issues
 
 
+def has_active_spec():
+    """Detect if there is a current spec context (.agent-os/specs/*)."""
+    try:
+        result = subprocess.run(
+            ["bash", "-lc", "ls -1 .agent-os/specs 2>/dev/null | wc -l"],
+            capture_output=True,
+            text=True,
+            timeout=3
+        )
+        count = int(result.stdout.strip() or "0")
+        return count > 0
+    except Exception as e:
+        log_debug(f"Spec detection failed: {e}")
+        return False
+
+
 def handle_pretool(input_data):
     """Handle PreToolUse hook - block new work until workflow complete."""
     tool_name = input_data.get("tool_name", "")
@@ -169,6 +185,14 @@ def handle_pretool(input_data):
     # Check workflow status for other tools
     else:
         issues = check_workflow_status()
+        # Enforce spec creation for new work when no active spec exists
+        if not has_active_spec():
+            message = (
+                "⚠️ No active spec detected (.agent-os/specs).\n\n"
+                "Run /create-spec to define scope before starting new work."
+            )
+            print(message, file=sys.stderr)
+            sys.exit(2)
         
         if issues:
             # Block tool usage with feedback
