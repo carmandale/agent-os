@@ -166,6 +166,22 @@ Update tasks.md immediately after completing the task.
 
 </step>
 
+<step number="8" name="documentation_sync">
+
+### Step 8: Documentation Sync (Read-only by default)
+
+Run the core slash command to surface evidence-backed documentation updates.
+
+<instructions>
+  ACTION: `/update-documentation --dry-run`
+  RESULT: Show proposed doc updates based on real diffs (no fabrication)
+  OPTION: If user approves and evidence exists, rerun with `--create-missing` to scaffold required docs
+  NOTE: Do not write without explicit approval
+  EVIDENCE: Include output in PR under "Documentation Updates"
+  </instructions>
+
+</step>
+
 <conditional_steps>
   <security_review subagent="security-threat-analyst">
     <trigger>auth, user data, input handling</trigger>
