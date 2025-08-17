@@ -136,6 +136,63 @@ GitHub dominance in professional development makes it a safe standardization cho
 - Requires additional setup for GitHub CLI
 - More overhead for simple changes
 
+## 2025-08-17: Verification, No-Quick-Fixes, Config Memory, and Context-Aware Enforcement
+
+**ID:** DEC-008  
+**Status:** Accepted  
+**Category:** Process/Technical  
+**Stakeholders:** Product Owner, Development Team, Agent OS Users  
+**Related Issues/PRs:** #8, #9, #12, #22, PRs #34, #35, #36, #37, #38, #39
+
+### Decision
+
+Adopt the following guardrails and systems as core Agent OS requirements:
+1) Evidence-Based Development (anti-fabrication) with CI Evidence Guard.  
+2) No-Quick-Fixes policy with CI Quick Fix Guard and instruction-level quick-fix gate.  
+3) Project Configuration Memory (ports, package managers, startup commands) with resolver + session cache + pre-command validation.  
+4) Context-Aware Workflow Enforcement distinguishing maintenance from new work, permitting maintenance on dirty workspaces and blocking new work until hygiene is clean.
+
+### Context
+
+Repeated failures were traced to unverified completion claims, roadmap-bypassing shortcuts, and configuration amnesia in long sessions. This eroded trust and caused rework. Guardrails are required to ensure reliable, professional outcomes.
+
+### Alternatives Considered
+
+1. Rely on reminders and documentation.  
+   - Pros: Simple.  
+   - Cons: Ignored in practice, not enforceable.
+2. Partial enforcement (only docs or only CI).  
+   - Pros: Lower effort.  
+   - Cons: Gaps remain, behavior drifts.
+3. Comprehensive multi-layer enforcement (Selected).  
+   - Pros: Robust, measurable, reduces drift.
+
+### Rationale
+
+- Evidence and testing prevent fabricated success.  
+- Quick-fix prevention keeps work aligned to the roadmap.  
+- Config memory maintains consistency mid-session.  
+- Context-aware enforcement supports maintenance without blocking while protecting new feature hygiene.
+
+### Consequences
+
+**Positive:**
+- Higher reliability and trust.  
+- Fewer reworks; cleaner PRs with proof.  
+- Consistent use of configured tools/ports.  
+- Better developer experience for maintenance tasks.
+
+**Negative:**
+- Stricter workflows slow perceived progress.  
+- Additional CI checks and scripts increase complexity.
+
+### Implementation Summary
+
+- CI: `evidence-guard.yml`, `quickfix-guard.yml`.  
+- Scripts: `testing-enforcer.sh`, `config-resolver.py`, `session-memory.sh`, `config-validator.sh`, `pre-command-guard.sh`, `intent-analyzer.sh`, `workspace-state.sh`, `context-aware-wrapper.sh`.  
+- Instructions: XML-tagged `core/` files; Phase 0 Repository Discovery Gate in `execute-tasks.md`; quick-fix gate in `execute-task.md`.  
+- Versioning: canonical `~/.agent-os/VERSION`.
+
 ## 2025-07-29: Claude Code Hooks for Workflow Enforcement
 
 **ID:** DEC-004

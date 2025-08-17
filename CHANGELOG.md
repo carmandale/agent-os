@@ -5,6 +5,35 @@ All notable changes to Agent OS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0] - 2025-08-17
+
+### Added
+- **Evidence-Based Development (Anti-Fabrication)** (#35)
+  - Evidence Guard CI workflow requires an "Evidence/Test Results/Verification" section in PRs
+  - `scripts/testing-enforcer.sh` scans PR bodies for completion claims and enforces proof
+- **No-Quick-Fixes Policy**
+  - Quick Fix Guard CI workflow flags shortcut PRs without explicit approval/scope
+  - `<quick_fix_gate>` added to `instructions/core/execute-task.md`
+- **Context-Aware Workflow Enforcement** (#22, #38, #39)
+  - `scripts/intent-analyzer.sh`, `scripts/context-aware-wrapper.sh`
+  - `scripts/workspace-state.sh` with TTL-cached git/PR state
+  - Allows maintenance on dirty workspaces; blocks new work until hygiene is clean
+- **Project Configuration Memory** (#12, #36, #37)
+  - `scripts/config-resolver.py`, `scripts/session-memory.sh`
+  - `scripts/config-validator.sh`, `scripts/pre-command-guard.sh`
+  - Resolves ports/package managers/startup commands with precedence and cache
+- **Instruction Structure & Orchestrator**
+  - `instructions/core/` and `instructions/meta/` restored as source of truth with XML tags
+  - `instructions/core/execute-tasks.md` adds Phase 0 Repository Discovery Gate and PR evidence requirements
+
+### Changed
+- **Versioning**: Canonical version file is `~/.agent-os/VERSION` (uppercase); CLI and docs updated
+- **CLI**: Setup version variable set to `4.0.0`; `aos status` continues version checks against remote
+- **README**: Added “What’s New in v4.0.0” summarizing the guardrails and rationale
+
+### Notes
+- Why: stop fabricated completion claims, prevent roadmap-bypassing shortcuts, maintain config consistency mid-session, and enforce senior-style discovery before building; these guardrails improve reliability and trust.
+
 ## [2.4.0] - 2025-08-15
 
 ### Changed

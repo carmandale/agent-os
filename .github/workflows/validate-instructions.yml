@@ -13,6 +13,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Validate CHANGELOG updated
+        run: |
+          if ! git diff --name-only HEAD^ HEAD | grep -q '^CHANGELOG.md$'; then
+            echo 'ℹ️ CHANGELOG.md not updated in this commit. If this PR changes behavior or docs, please update CHANGELOG.'
+          fi
 
       - name: Install ripgrep (rg)
         run: sudo apt-get update && sudo apt-get install -y ripgrep

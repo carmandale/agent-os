@@ -4,6 +4,8 @@ Date: 2025-08-11
 
 This report documents the current state of the Agent OS installation, execution paths, identified problems, and a cleanup and verification plan. Per the audit instructions, no fixes were performed; only observation and documentation.
 
+> Update Note (2025-08-17): As of v4.0.0, the canonical version file is `~/.agent-os/VERSION` (uppercase). The installer removes legacy `~/.agent-os/.version`. Other items in this report reflect the historical state at the time of audit.
+
 ### 1) Current State Inventory
 
 #### 1.1 Files discovered (aos-related)
@@ -178,6 +180,7 @@ Supporting code observations:
    - Desired State: Non-interactive flag to auto-accept, or separate command for unattended updates
    - Impact: Automated update flows (CI/devcontainers/scripts) may hang
    - Fix Required: Add `--yes`/`--non-interactive` to `aos-v4 update` path.
+   - Status (2025-08-17): `aos update` supports `--yes/--non-interactive`.
 
 5. Problem: Project vs Global messaging is ambiguous
    - Current State: `status` reports issues like “Claude commands not configured” / “Cursor rules outdated”; menu text says “Project setup needs updates” without specific remediation mapping in CLI

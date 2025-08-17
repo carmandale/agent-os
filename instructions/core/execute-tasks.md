@@ -11,6 +11,38 @@ version: 2.0.0
   EXECUTE: @~/.agent-os/instructions/meta/pre-flight.md
 </pre_flight_check>
 
+# Phase 0: Repository Discovery Gate (BLOCKING)
+
+> Be a senior developer: investigate before building. This phase is mandatory and blocks planning/implementation until completed with evidence.
+
+<discovery_gate>
+  <rules>
+    - STOP. Do not write analysis, specs, or suggestions yet
+    - Reply ONLY with findings + code citations/snippets; no opinions
+    - Use precise file paths and quote exact lines where possible
+  </rules>
+  <checklist>
+    - README.md: show relevant excerpts that describe current features/deployment
+    - docs/: list files present (if any) and quote relevant sections
+    - Dependencies: summarize from package.json/requirements.txt/pyproject
+    - Backend routes/endpoints: list existing endpoints (show file and excerpt)
+    - Frontend components/pages: list key components (paths) that exist
+    - Database schema/migrations: show existing models/migrations snippets
+    - Tests: list any test files and their status (or state "Not found")
+    - Deployment configs: Dockerfile/docker-compose/start scripts if present
+    - Active issue: quote the EXACT requirements from the issue body
+  </checklist>
+  <evidence_requirements>
+    - Provide code excerpts with file paths (method signatures, route decorators, schema definitions)
+    - For lists, provide directories with brief notes; for claims, show snippets
+    - If an item is missing, write "Not found" (do NOT assume)
+  </evidence_requirements>
+  <completion_marker>
+    - Output must end with: DISCOVERY_COMPLETE: yes
+  </completion_marker>
+  <block>If DISCOVERY_COMPLETE marker or required evidence is missing, DO NOT proceed to Phase 1</block>
+</discovery_gate>
+
 # Task Execution Rules
 
 > Lightweight orchestrator using Claude Code best practices
@@ -28,7 +60,7 @@ Execute spec tasks systematically following the Agent OS TDD workflow with compr
 
 ## Dynamic Workflow Execution
 
-### Phase 1: Hygiene and Setup
+### Phase 1: Hygiene and Setup (runs only after Phase 0 discovery complete)
 
 Execute workspace validation and project context loading:
 
@@ -43,6 +75,11 @@ Execute workspace validation and project context loading:
 
 **Import planning and execution workflow:**
 @~/.agent-os/workflow-modules/step-2-planning-and-execution.md
+
+**Senior Developer Guardrails:**
+- Do not propose new work that duplicates existing implementation discovered in Phase 0
+- Map each planned step to findings: ✅ already implemented (reference), ⚠️ extend/modify (reference), ❌ new
+- If conflicts arise between plan and findings, revise plan to align with reality
 
 **Task Assignment Logic:**
 - User specifies exact task(s) OR find next uncompleted parent task
@@ -73,6 +110,14 @@ END FOR
 - Complete functionality validation (browser/API testing)
 - **CRITICAL:** Quality passing ≠ completion (must proceed to git integration)
 
+**Resolution Mandate:**
+- For every identified failure, follow this loop until green:
+  1) Show exact error/log output
+  2) Apply fix
+  3) Re-run the command/tests and paste actual passing output
+  4) Only then proceed to the next failure
+- Do not summarize what you "would" do; show evidence that it works now
+
 ### Phase 4: Git Integration and Completion
 
 **Import git workflow and completion:**
@@ -84,6 +129,10 @@ END FOR
 - Update roadmap if applicable  
 - Execute autonomous merge preparation with subagent validation
 - Complete workspace cleanup and branch management
+
+**Evidence Requirements for Completion:**
+- PR description must include an Evidence/Test Results/Verification section with real outputs (tests, curl, screenshots) per repo guard
+- Link to code citations for implemented changes
 
 ## Execution Standards
 

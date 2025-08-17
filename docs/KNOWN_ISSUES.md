@@ -73,3 +73,17 @@ Use aos-v4 which handles arguments correctly, or run setup.sh directly:
 ```bash
 bash setup.sh --overwrite-instructions --overwrite-standards
 ```
+
+## Version File Standardization (v4.0.0)
+
+### Context
+Historically both `~/.agent-os/.version` and `~/.agent-os/VERSION` existed, leading to confusion.
+
+### Current Standard
+- Canonical file: `~/.agent-os/VERSION` (uppercase, no `v` prefix)
+- The installer removes legacy `~/.agent-os/.version` if present.
+
+### Verify
+```bash
+cat ~/.agent-os/VERSION
+```

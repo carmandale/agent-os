@@ -55,7 +55,7 @@ curl -s -o ~/.agent-os/instructions/execute-tasks.md \
 
 ## Update Detection
 
-### Check Current Version
+### Check Current Version (Canonical)
 ```bash
 # Check Agent OS installation health
 ~/.agent-os/scripts/check-agent-os.sh

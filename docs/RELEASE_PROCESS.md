@@ -93,11 +93,11 @@ See [CHANGELOG.md](CHANGELOG.md) for complete details.
 
 ### 4. Update Installation Scripts
 
-After creating a release, update the setup scripts to track the version:
+After creating a release, ensure the setup script writes the canonical version file (uppercase, no `v` prefix):
 
 ```bash
 # In setup.sh, add version tracking
-echo "v2.1.0" > "$HOME/.agent-os/.version"
+echo "2.1.0" > "$HOME/.agent-os/VERSION"
 ```
 
 ### 5. Test Release
@@ -109,8 +109,8 @@ curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup.sh | 
 # Test update from previous version
 aos update
 
-# Verify version
-cat ~/.agent-os/.version
+# Verify version (canonical)
+cat ~/.agent-os/VERSION
 ```
 
 ## Release Checklist
@@ -154,8 +154,8 @@ For urgent fixes:
 
 Users can check their version:
 ```bash
-# Check installed version
-cat ~/.agent-os/.version
+# Check installed version (canonical)
+cat ~/.agent-os/VERSION
 
 # Check for updates
 ~/.agent-os/scripts/check-updates.sh

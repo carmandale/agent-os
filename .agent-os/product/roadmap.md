@@ -1,7 +1,7 @@
 # Product Roadmap
 
-> Last Updated: 2025-08-10
-> Version: 1.2.0
+> Last Updated: 2025-08-17
+> Version: 1.2.1
 > Status: Active Development
 
 ## Phase 0: Core Framework (✅ COMPLETE)
@@ -44,27 +44,29 @@ The following features have been implemented:
 
 ### Critical Issues to Fix
 
-- [x] **Issue #22:** Context-Aware Workflow Enforcement - Smart maintenance vs new work detection `XL` ⚠️ **PAUSED** (Critical fixes required)
-  - ✅ **Task 1 Complete:** Intent Analysis Engine (PR #23 merged)
-  - ✅ **Task 2 Complete:** Context-Aware Hook Wrapper (PR #24 merged) 
-  - ⚠️ **Critical Issues Identified:** Interactive input hangs Claude Code, performance 5x too slow
-  - 🔧 **Phase 0 Required:** Critical bug fixes before integration
+- [x] **Issue #22:** Context-Aware Workflow Enforcement - Smart maintenance vs new work detection `XL` ✅ **Phase 0 implemented** (wrapper + TTL cache)
+  - ✅ Intent Analysis Engine (PR #23)
+  - ✅ Context-Aware Wrapper (PR #24)
+  - ✅ Workspace state TTL cache + wrapper integration (PR #39)
+  - ⚠️ Remaining: fix interactive input() hang; add timeouts/circuit breakers; expand read-only whitelist; p95 < 100ms target
 - [ ] **Issue #9:** Enforce actual testing before completion claims - No more broken "complete" features `L`
-- [ ] **Issue #8:** Require verification proof in all completion summaries - Show test output `M`
+  - ✅ CI policy: Evidence Guard requires proof in PRs (PR #35)
+  - ⏳ Repo/tooling enforcement of actual test runs (future work)
+- [x] **Issue #8:** Require verification proof in all completion summaries - Show test output `M` ✅ **DONE** (Evidence Guard)
 - [ ] **Issue #7:** Enhance PR creation with code review documentation - Build trust in PRs `M`
 - [ ] **Issue #6:** Task status synchronization gap - Fix trust in task tracking `L`
 
 ### Must Complete Before Phase 1
 
-- [ ] **Issue #22 Phase 0:** Complete critical fixes for context-aware enforcement
+- [ ] **Issue #22 Phase 0 (remaining):**
   - [ ] Fix interactive input() bug that hangs Claude Code
-  - [ ] Optimize performance from 500ms to <100ms requirement
-  - [ ] Add circuit breakers for external service failures
+  - [ ] Optimize performance to p95 < 100ms (current: improved via TTL caching)
+  - [ ] Add circuit breakers/timeouts for external failures
   - [ ] Create comprehensive Claude Code integration tests
 - [ ] Update workflow modules to enforce "test before complete" pattern
-- [ ] Add hooks to block false completion claims
+- [ ] Add hooks/tooling to verify actual test execution (beyond PR text evidence)
 - [ ] Create verification templates for different work types
-- [ ] Implement "proof of work" requirements
+- [ ] Implement "proof of work" requirements (standardized artifacts)
 
 ## Phase 1: Enhanced Reliability (4-6 weeks)
 

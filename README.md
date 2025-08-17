@@ -102,6 +102,35 @@ curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup-curso
 - **Reality Checking**: Validation of task status against actual implementation
 - **Testing Requirements**: Mandatory verification before completion claims
 
+### What's New in v4.0.0
+
+- **Evidence-Based Development (Anti-Fabrication)**
+  - Evidence Guard CI (`.github/workflows/evidence-guard.yml`) blocks PRs that claim completion without an "Evidence/Test Results/Verification" section.
+  - `scripts/testing-enforcer.sh` scans PR bodies for completion language and requires concrete proof (test output, screenshots, command results).
+
+- **No-Quick-Fixes Policy Enforcement**
+  - Quick Fix Guard CI (`.github/workflows/quickfix-guard.yml`) flags PRs that attempt shortcuts without explicit approval and scope.
+  - `instructions/core/execute-task.md` includes a `<quick_fix_gate>` to prevent roadmap-bypassing work.
+
+- **Context-Aware Workflow Enforcement (Spec #22)**
+  - `scripts/intent-analyzer.sh` classifies intent (maintenance vs new work).
+  - `scripts/workspace-state.sh` provides TTL-cached git/PR state.
+  - `scripts/context-aware-wrapper.sh` allows maintenance with a dirty workspace, blocks new work until hygiene is clean; supports override via `AGENT_OS_NEW_WORK=1`.
+
+- **Project Configuration Memory (Spec #12)**
+  - `scripts/config-resolver.py` resolves ports/package managers from `.agent-os/product/tech-stack.md`, `.env`, `.env.local`, `start.sh` with precedence.
+  - `scripts/session-memory.sh` caches and exports config with TTL/mtime invalidation.
+  - `scripts/config-validator.sh` and `scripts/pre-command-guard.sh` validate upcoming commands against project config.
+
+- **Instruction Structure & Orchestrator Updates**
+  - Reintroduced `instructions/core/` and `instructions/meta/` as single source of truth; XML tag structure for machine-readable execution.
+  - `instructions/core/execute-tasks.md` now includes a mandatory Phase 0 Repository Discovery Gate and stricter quality/PR evidence requirements; single-task flow is handled by `instructions/core/execute-task.md`.
+
+- **CLI Versioning & Status**
+  - Canonical version file is `~/.agent-os/VERSION` (uppercase). `aos status` compares local vs remote and reports currency.
+
+Why these changes: to stop fabricated success claims, prevent shortcuts that diverge from the roadmap, maintain consistent project config mid-session, and enforce senior-style discovery before building. These guardrails significantly improve reliability and trust.
+
 ---
 
 ### Documentation & Installation
