@@ -96,7 +96,7 @@ check_recent_prs() {
       
       if [[ ${#undocumented_prs[@]} -gt 0 ]]; then
         echo "## Recent PRs not in CHANGELOG:"
-        printf '- PR #%s\n' "${undocumented_prs[@]}"
+        printf -- '- PR #%s\n' "${undocumented_prs[@]}"
         return 1
       fi
     fi
@@ -154,7 +154,7 @@ if [[ $DEEP -eq 1 ]]; then
   
   if [[ ${#broken_refs[@]} -gt 0 ]]; then
     echo "Found broken references:"
-    printf '%s\n' "${broken_refs[@]}" | sed 's/^/- /'
+    printf -- '%s\n' "${broken_refs[@]}" | sed 's/^/- /'
   else
     echo "All file references valid"
   fi
@@ -262,13 +262,13 @@ if [[ ${#proposals[@]} -eq 0 ]]; then
   exit 0
 fi
 
-printf '%s\n' "${proposals[@]}" | sort -u | sed 's/^/- /'
+printf -- '%s\n' "${proposals[@]}" | sort -u | sed 's/^/- /'
 
 # Check for missing required documentation
 missing=()
 for target in CHANGELOG.md README.md CLAUDE.md \
               .agent-os/product/roadmap.md .agent-os/product/decisions.md; do
-  if printf '%s\n' "${proposals[@]}" | grep -q "$target"; then
+  if printf -- '%s\n' "${proposals[@]}" | grep -q "$target"; then
     [[ ! -f "$target" ]] && missing+=("$target")
   fi
 done
@@ -276,7 +276,7 @@ done
 if [[ ${#missing[@]} -gt 0 ]]; then
   echo ""
   echo "# Missing Required Documentation"
-  printf '%s\n' "${missing[@]}" | sed 's/^/- /'
+  printf -- '%s\n' "${missing[@]}" | sed 's/^/- /'
   
   if [[ $CREATE_MISSING -eq 1 && "$MODE" != "diff-only" ]]; then
     echo ""
@@ -298,7 +298,7 @@ if [[ ${#missing[@]} -gt 0 ]]; then
     done
   else
     # Exit with error if required documentation is missing
-    if printf '%s\n' "${missing[@]}" | grep -q '^CHANGELOG.md$'; then
+    if printf -- '%s\n' "${missing[@]}" | grep -q '^CHANGELOG.md$'; then
       echo ""
       echo "ERROR: CHANGELOG.md is required for documenting changes."
       exit 2
