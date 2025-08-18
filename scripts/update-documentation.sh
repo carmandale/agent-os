@@ -307,6 +307,13 @@ if [[ ${#missing[@]} -gt 0 ]]; then
 fi
 
 # Handle different modes
+if [[ "$MODE" == "diff-only" ]]; then
+  echo ""
+  echo "# Git Diff Statistics"
+  git --no-pager diff --stat HEAD
+  exit 0
+fi
+
 if [[ "$MODE" == "dry-run" ]]; then
   # Exit with error code if documentation updates are needed
   if [[ ${#proposals[@]} -gt 0 ]]; then 
@@ -314,13 +321,6 @@ if [[ "$MODE" == "dry-run" ]]; then
     echo "Documentation updates required. Run without --dry-run to see details."
     exit 2
   fi
-  exit 0
-fi
-
-if [[ "$MODE" == "diff-only" ]]; then
-  echo ""
-  echo "# Git Diff Statistics"
-  git --no-pager diff --stat HEAD
   exit 0
 fi
 
