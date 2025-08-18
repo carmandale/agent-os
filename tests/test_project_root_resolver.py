@@ -70,7 +70,7 @@ class TestProjectRootResolver(unittest.TestCase):
         result = resolver.resolve()
         
         # Should fall back to current directory
-        self.assertEqual(result, self.test_dir)
+        self.assertEqual(os.path.realpath(result), os.path.realpath(self.test_dir))
     
     def test_priority_2_hook_payload_workspace_dir(self):
         """Test resolution from hook payload workspaceDir field."""
