@@ -32,6 +32,14 @@ if [[ -z "$changed" ]]; then
 fi
 echo "$changed" | sed 's/^/- /'
 
+# If diff-only mode, skip all checks and just show diff
+if [[ "$MODE" == "diff-only" ]]; then
+  echo ""
+  echo "# Git Diff Statistics"
+  git --no-pager diff --stat HEAD
+  exit 0
+fi
+
 # Function to check if CHANGELOG has recent entries (last 30 days)
 check_changelog_recent() {
   if [[ ! -f CHANGELOG.md ]]; then
