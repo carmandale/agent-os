@@ -315,13 +315,6 @@ if [[ ${#missing[@]} -gt 0 ]]; then
 fi
 
 # Handle different modes
-if [[ "$MODE" == "diff-only" ]]; then
-  echo ""
-  echo "# Git Diff Statistics"
-  git --no-pager diff --stat HEAD
-  exit 0
-fi
-
 if [[ "$MODE" == "dry-run" ]]; then
   # Exit with error code if documentation updates are needed
   if [[ ${#proposals[@]} -gt 0 ]]; then 
