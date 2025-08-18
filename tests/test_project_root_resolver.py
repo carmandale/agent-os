@@ -53,7 +53,8 @@ class TestProjectRootResolver(unittest.TestCase):
         resolver = ProjectRootResolver()
         result = resolver.resolve()
         
-        self.assertEqual(result, project_dir)
+        # Normalize paths for comparison (macOS /private prefix)
+        self.assertEqual(os.path.realpath(result), os.path.realpath(project_dir))
     
     def test_priority_1_env_variable_invalid(self):
         """Test that invalid CLAUDE_PROJECT_DIR is ignored."""
