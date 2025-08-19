@@ -429,7 +429,7 @@ class TestProjectRootResolverCLI(unittest.TestCase):
         try:
             main()
             output = captured.getvalue().strip()
-            self.assertEqual(output, project_dir)
+            self.assertEqual(os.path.realpath(output), os.path.realpath(project_dir))
         finally:
             sys.stdout = sys.__stdout__
     
