@@ -86,7 +86,7 @@ class TestProjectRootResolver(unittest.TestCase):
         resolver = ProjectRootResolver()
         result = resolver.resolve(hook_payload=payload)
         
-        self.assertEqual(result, project_dir)
+        self.assertEqual(os.path.realpath(result), os.path.realpath(project_dir))
     
     def test_priority_2_hook_payload_project_root(self):
         """Test resolution from hook payload projectRoot field."""
@@ -102,7 +102,7 @@ class TestProjectRootResolver(unittest.TestCase):
         resolver = ProjectRootResolver()
         result = resolver.resolve(hook_payload=payload)
         
-        self.assertEqual(result, project_dir)
+        self.assertEqual(os.path.realpath(result), os.path.realpath(project_dir))
     
     def test_priority_2_hook_payload_root_dir(self):
         """Test resolution from hook payload rootDir field."""
@@ -118,7 +118,7 @@ class TestProjectRootResolver(unittest.TestCase):
         resolver = ProjectRootResolver()
         result = resolver.resolve(hook_payload=payload)
         
-        self.assertEqual(result, project_dir)
+        self.assertEqual(os.path.realpath(result), os.path.realpath(project_dir))
     
     def test_priority_3_file_path_ascent_agent_os(self):
         """Test ascending from file path to find .agent-os directory."""
@@ -136,7 +136,7 @@ class TestProjectRootResolver(unittest.TestCase):
         resolver = ProjectRootResolver()
         result = resolver.resolve(file_path=file_path)
         
-        self.assertEqual(result, project_dir)
+        self.assertEqual(os.path.realpath(result), os.path.realpath(project_dir))
     
     def test_priority_3_file_path_ascent_git(self):
         """Test ascending from file path to find .git directory."""
@@ -154,7 +154,7 @@ class TestProjectRootResolver(unittest.TestCase):
         resolver = ProjectRootResolver()
         result = resolver.resolve(file_path=file_path)
         
-        self.assertEqual(result, project_dir)
+        self.assertEqual(os.path.realpath(result), os.path.realpath(project_dir))
     
     def test_priority_3_cwd_ascent_agent_os(self):
         """Test ascending from current directory to find .agent-os."""
@@ -173,7 +173,7 @@ class TestProjectRootResolver(unittest.TestCase):
         resolver = ProjectRootResolver()
         result = resolver.resolve()
         
-        self.assertEqual(result, project_dir)
+        self.assertEqual(os.path.realpath(result), os.path.realpath(project_dir))
     
     @patch('subprocess.run')
     def test_priority_3_git_rev_parse(self, mock_run):
@@ -194,7 +194,7 @@ class TestProjectRootResolver(unittest.TestCase):
         resolver = ProjectRootResolver()
         result = resolver.resolve(use_git_fallback=True)
         
-        self.assertEqual(result, project_dir)
+        self.assertEqual(os.path.realpath(result), os.path.realpath(project_dir))
         mock_run.assert_called_once()
     
     def test_priority_4_fallback_to_cwd(self):
@@ -209,7 +209,7 @@ class TestProjectRootResolver(unittest.TestCase):
         resolver = ProjectRootResolver()
         result = resolver.resolve()
         
-        self.assertEqual(result, plain_dir)
+        self.assertEqual(os.path.realpath(result), os.path.realpath(plain_dir))
     
     def test_agent_os_preferred_over_git(self):
         """Test that .agent-os is preferred over .git when both exist."""
@@ -230,7 +230,7 @@ class TestProjectRootResolver(unittest.TestCase):
         resolver = ProjectRootResolver()
         result = resolver.resolve()
         
-        self.assertEqual(result, project_dir)
+        self.assertEqual(os.path.realpath(result), os.path.realpath(project_dir))
         # Verify it found .agent-os, not just any marker
         self.assertTrue(os.path.exists(os.path.join(result, '.agent-os')))
     
@@ -254,7 +254,7 @@ class TestProjectRootResolver(unittest.TestCase):
         result2 = resolver.resolve()
         
         self.assertEqual(result1, result2)
-        self.assertEqual(result2, project_dir)
+        self.assertEqual(os.path.realpath(result2), os.path.realpath(project_dir))
     
     def test_cache_invalidation(self):
         """Test that cache can be invalidated."""
@@ -276,8 +276,8 @@ class TestProjectRootResolver(unittest.TestCase):
         
         result2 = resolver.resolve()
         
-        self.assertEqual(result1, project_dir1)
-        self.assertEqual(result2, project_dir2)
+        self.assertEqual(os.path.realpath(result1), os.path.realpath(project_dir1))
+        self.assertEqual(os.path.realpath(result2), os.path.realpath(project_dir2))
     
     def test_symlink_handling(self):
         """Test that symlinks are resolved correctly."""
@@ -321,7 +321,7 @@ class TestProjectRootResolver(unittest.TestCase):
             result = resolver.resolve()
             
             # Should fall back to current directory
-            self.assertEqual(result, restricted_dir)
+            self.assertEqual(os.path.realpath(result), os.path.realpath(restricted_dir))
     
     def test_deep_nesting(self):
         """Test resolution from deeply nested directories."""
@@ -343,7 +343,7 @@ class TestProjectRootResolver(unittest.TestCase):
         resolver = ProjectRootResolver()
         result = resolver.resolve()
         
-        self.assertEqual(result, project_dir)
+        self.assertEqual(os.path.realpath(result), os.path.realpath(project_dir))
 
 
 class TestProjectRootResolverCLI(unittest.TestCase):
@@ -377,7 +377,7 @@ class TestProjectRootResolverCLI(unittest.TestCase):
         try:
             main()
             output = captured.getvalue().strip()
-            self.assertEqual(output, self.test_dir)
+            self.assertEqual(os.path.realpath(output), os.path.realpath(self.test_dir))
         finally:
             sys.stdout = sys.__stdout__
     
@@ -385,6 +385,7 @@ class TestProjectRootResolverCLI(unittest.TestCase):
     def test_cli_with_hook_payload(self):
         """Test CLI with hook payload argument."""
         from scripts.project_root_resolver import main
+        import sys
         
         test_path = os.path.join(self.test_dir, 'workspace')
         agent_os = os.path.join(test_path, '.agent-os')
@@ -401,7 +402,7 @@ class TestProjectRootResolverCLI(unittest.TestCase):
         try:
             main()
             output = captured.getvalue().strip()
-            self.assertEqual(output, test_path)
+            self.assertEqual(os.path.realpath(output), os.path.realpath(test_path))
         finally:
             sys.stdout = sys.__stdout__
     
@@ -409,6 +410,7 @@ class TestProjectRootResolverCLI(unittest.TestCase):
     def test_cli_with_file_path(self):
         """Test CLI with file path argument."""
         from scripts.project_root_resolver import main
+        import sys
         
         project_dir = os.path.join(self.test_dir, 'project')
         agent_os = os.path.join(project_dir, '.agent-os')
