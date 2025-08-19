@@ -164,9 +164,15 @@ class ProjectRootResolver:
     
     def _resolve_by_ascent(self, start_path: str) -> Optional[str]:
         """Ascend from start path to find project markers."""
-        # If start_path is a file, start from its directory
+        # If start_path is a file (or doesn't exist but looks like a file), start from its directory
         if os.path.isfile(start_path):
             current = os.path.dirname(start_path)
+        elif not os.path.exists(start_path):
+            # If path doesn't exist, assume it's a file path and use its directory
+            current = os.path.dirname(start_path)
+            # If the directory doesn't exist either, this path is invalid
+            if not os.path.exists(current):
+                return None
         else:
             current = start_path
         
