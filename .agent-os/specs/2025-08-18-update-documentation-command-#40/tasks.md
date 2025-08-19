@@ -24,13 +24,13 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 3.2 Update setup scripts to install the command
   - [x] 3.3 Test command integration
 
-- [ ] 4. Update instruction files and hooks
-  - [ ] 4.1 Update instructions/core/execute-tasks.md Phase 4
-  - [ ] 4.2 Update instructions/core/execute-task.md
-  - [ ] 4.3 Update hooks/workflow-enforcement-hook.py
+- [x] 4. Update instruction files and hooks
+  - [x] 4.1 Update instructions/core/execute-tasks.md Phase 4
+  - [x] 4.2 Update instructions/core/execute-task.md
+  - [x] 4.3 Update hooks/workflow-enforcement-hook.py
 
-- [ ] 5. Update documentation and CI
-  - [ ] 5.1 Update README.md with command details
-  - [ ] 5.2 Update CLAUDE.md with command usage
-  - [ ] 5.3 Update CHANGELOG.md
-  - [ ] 5.4 Create CI guard workflow
+- [x] 5. Update documentation and CI
+  - [x] 5.1 Update README.md with command details
+  - [x] 5.2 Update CLAUDE.md with command usage
+  - [x] 5.3 Update CHANGELOG.md
+  - [x] 5.4 Create CI guard workflow (already exists as docs-update-guard.yml)
