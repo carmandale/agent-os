@@ -140,9 +140,21 @@ Docs, installation, useage, & best practices 👉 [It's all here](https://builde
 #### Core Slash Commands (Claude Code)
 
 ```bash
-# Documentation updater (discovery-first; evidence-only)
-/update-documentation --dry-run         # standard proposals
-/update-documentation --deep --dry-run  # deep evidence audit (Dev/Test/Prod)
+# Documentation updater - detects drift and provides actionable recommendations
+/update-documentation               # Default: dry-run mode for safe operation
+/update-documentation --dry-run     # Quick health check of recent activity
+/update-documentation --deep        # Comprehensive audit of all Agent OS docs
+/update-documentation --diff-only   # Show only git diff without analysis
+/update-documentation --create-missing  # Create minimal scaffolds for missing docs
+
+# Features:
+# - Detects missing CHANGELOG entries for recent commits
+# - Identifies open issues without corresponding specs
+# - Validates file references in documentation
+# - Cross-references specs with GitHub issues
+# - Checks roadmap completion status
+# - Evidence-based operation only (no fabrication)
+
 # Install via: curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup-claude-code.sh | bash
 ```
 

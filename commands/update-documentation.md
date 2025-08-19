@@ -1,6 +1,6 @@
 ---
-allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(grep:*), Bash(sed:*), Bash(awk:*), Bash(~/.agent-os/scripts/update-documentation.sh:*)
-description: Update project documentation deterministically based on real diffs (discovery-first; evidence only)
+allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(gh issue:*), Bash(gh pr:*), Bash(jq:*), Bash(~/.agent-os/scripts/update-documentation.sh:*)
+description: Detect documentation drift and provide actionable recommendations for Agent OS projects
 argument-hint: [--dry-run|--diff-only|--create-missing|--deep]
 ---
 
@@ -11,17 +11,25 @@ argument-hint: [--dry-run|--diff-only|--create-missing|--deep]
 
 ## Task
 
-Run the documentation updater in the requested mode and include only evidence-backed proposals. Do not fabricate or summarize without showing real data.
+Run the documentation health check to detect drift and provide actionable recommendations. All findings are evidence-based with no fabrication.
 
-### Proposed updates
+### Documentation Health Report
 
-!`~/.agent-os/scripts/update-documentation.sh --dry-run $ARGUMENTS`
+!`~/.agent-os/scripts/update-documentation.sh $ARGUMENTS`
 
-If flags are provided, pass them through; otherwise default to `--dry-run`.
+If no flags are provided, default to `--dry-run` for safe operation.
+
+## Available Modes
+
+- **Normal Mode (default)**: Quick health check focusing on recent activity and common drift patterns
+- **--deep**: Comprehensive audit of all Agent OS documentation relationships and completeness
+- **--diff-only**: Show only git diff statistics without documentation analysis
+- **--create-missing**: Create minimal scaffolds for missing required documentation (use with caution)
 
 ## Notes
 
-- This is a core user-level command. It calls the shared updater installed at `~/.agent-os/scripts/update-documentation.sh`.
-- Use `--deep` to run a senior-style, evidence-first audit that detects non-obvious documentation drift and outputs cited proposals.
-- Use this before PR creation and after completing a task to surface required doc updates.
+- This command targets Agent OS documentation: `.agent-os/product/`, `CHANGELOG.md`, `CLAUDE.md`, `docs/`, GitHub issues/PRs
+- Normal mode checks: recent commits, open issues without specs, recent PRs not in CHANGELOG
+- Deep mode adds: file reference validation, spec-issue cross-referencing, roadmap status, orphaned specs
+- Use before PR creation and after task completion to ensure documentation is current
 

@@ -5,6 +5,24 @@ All notable changes to Agent OS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Documentation Drift Detection Command** (#40)
+  - `/update-documentation` command for detecting documentation drift
+  - Normal mode for quick health checks of recent activity
+  - `--deep` mode for comprehensive audit of all Agent OS documentation
+  - Detects missing CHANGELOG entries, issues without specs, broken file references
+  - Cross-references specs with GitHub issues and validates roadmap status
+  - Evidence-based operation only (no fabrication)
+  - Integrated into git workflow (Phase 4) for PR creation
+  - Bats test suite with 14 comprehensive tests
+
+### Changed
+- Updated `workflow-modules/step-4-git-integration.md` to include mandatory documentation check
+- PR template now includes Documentation Updates section
+- `instructions/core/execute-task.md` already includes documentation sync step
+
 ## [4.0.0] - 2025-08-17
 
 ### Added

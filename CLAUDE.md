@@ -42,6 +42,7 @@ This is **Agent OS** - the framework itself that enables AI-assisted development
 # Testing
 ./test-workflow-detection.sh        # Test workflow detection system
 python validate_subagents.py        # Validate subagent definitions
+bats tests/test-update-documentation.bats  # Test documentation drift detection
 
 # Development Tools
 aos status                          # Check Agent OS installation status
@@ -49,6 +50,12 @@ aos update                          # Update Agent OS components
 aos run "command"                   # Run command in background
 aos tasks                           # List background tasks
 aos logs <task-id>                  # View task logs
+
+# Documentation Commands
+/update-documentation               # Check for documentation drift (dry-run)
+/update-documentation --deep        # Comprehensive documentation audit
+/update-documentation --diff-only   # Show git diff without analysis
+/update-documentation --create-missing  # Create missing docs (use with caution)
 ```
 
 ## Architecture Overview
