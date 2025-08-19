@@ -15,6 +15,14 @@ import subprocess
 import sys
 from datetime import datetime
 
+# Add parent directory to path to import project root resolver
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+try:
+    from scripts.project_root_resolver import ProjectRootResolver
+except ImportError:
+    # Fallback if resolver not available
+    ProjectRootResolver = None
+
 
 # Patterns that indicate user wants to proceed
 PROCEED_PATTERNS = [
