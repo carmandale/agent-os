@@ -1,5 +1,11 @@
 # Known Issues and Solutions
 
+## Hooks: Working Hybrid Solution
+- Base: July 29 structure  
+- Fix: Removed set -e (was failing on non-critical errors)
+- Status: Working in production, DO NOT "fix" without testing
+- Preserved: hooks-stable/ directory contains the working versions
+
 ## Claude Code Shell Function Caching
 
 ### Problem
