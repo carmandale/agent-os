@@ -8,12 +8,24 @@ set -euo pipefail
 
 # Configuration
 HOOKS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPTS_DIR="$(dirname "$HOOKS_DIR")/scripts"
 LOG_DIR="${HOME}/.agent-os/logs"
 PROJECT_LOG=""
 
-# Determine storage location based on CLAUDE_PROJECT_DIR
-if [ -n "${CLAUDE_PROJECT_DIR:-}" ] && [ -d "${CLAUDE_PROJECT_DIR}/.agent-os" ]; then
-    PROJECT_LOG="${CLAUDE_PROJECT_DIR}/.agent-os/observed-bash.jsonl"
+# Resolve project root using the new standardized resolver
+PROJECT_ROOT=""
+if [ -f "$SCRIPTS_DIR/project_root_resolver.py" ]; then
+    PROJECT_ROOT=$(python3 "$SCRIPTS_DIR/project_root_resolver.py" 2>/dev/null || echo "")
+fi
+
+# Fall back to CLAUDE_PROJECT_DIR or current directory if resolver fails
+if [ -z "$PROJECT_ROOT" ]; then
+    PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$PWD}"
+fi
+
+# Determine storage location based on resolved project root
+if [ -d "${PROJECT_ROOT}/.agent-os" ]; then
+    PROJECT_LOG="${PROJECT_ROOT}/.agent-os/observed-bash.jsonl"
     mkdir -p "$(dirname "$PROJECT_LOG")"
 else
     PROJECT_LOG="${LOG_DIR}/observed-bash.jsonl"
