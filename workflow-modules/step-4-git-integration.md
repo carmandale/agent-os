@@ -1,5 +1,16 @@
 # Step 4: Git Integration and Completion
 
+## Documentation Check (Step 8.5)
+
+**MANDATORY:** Run documentation check before committing
+- **Command:** `/update-documentation --dry-run`
+- **Purpose:** Detect documentation drift before PR creation
+- **Action:** Update any documentation flagged as outdated
+- **Required updates:**
+  - CHANGELOG.md for code changes
+  - README.md for setup/tool changes
+  - Product docs for spec completions
+
 ## Git Workflow (Step 9)
 
 **Commit Process:**
@@ -30,6 +41,11 @@
 ## Testing  
 - [TEST_COVERAGE]
 - All tests passing ✓
+
+## Documentation Updates
+- [ ] Ran `/update-documentation --dry-run` to check for drift
+- [ ] Updated relevant documentation if needed
+- [ ] CHANGELOG.md updated with changes
 
 ## Issue Status
 - [ ] Update issue with progress
