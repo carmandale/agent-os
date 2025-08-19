@@ -46,7 +46,27 @@ def log_debug(message):
 
 def resolve_workspace_root(input_data: dict | None = None) -> str:
     """Best-effort resolution of the target project directory for checks."""
-    # Prefer explicit fields from hook payload
+    # Use ProjectRootResolver if available
+    if ProjectRootResolver:
+        try:
+            resolver = ProjectRootResolver()
+            
+            # Extract file path if present
+            file_path = None
+            if input_data:
+                tool_input = input_data.get("tool_input", {}) or {}
+                for key in ["file_path", "path"]:
+                    p = tool_input.get(key)
+                    if isinstance(p, str) and p.strip():
+                        file_path = p
+                        break
+            
+            # Resolve using the new standardized resolver
+            return resolver.resolve(file_path=file_path, hook_payload=input_data)
+        except Exception as e:
+            log_debug(f"ProjectRootResolver failed: {e}, falling back to legacy resolution")
+    
+    # Legacy fallback if ProjectRootResolver not available
     try:
         if input_data:
             # Common fields that may be present
