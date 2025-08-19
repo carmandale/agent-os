@@ -7,22 +7,22 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
 
 ## Tasks
 
-- [ ] 1. Fix the update-documentation.sh script to focus on documentation drift detection
-  - [ ] 1.1 Write tests for documentation drift detection functionality
-  - [ ] 1.2 Remove database configuration checks from the script
-  - [ ] 1.3 Implement normal mode documentation health checks
-  - [ ] 1.4 Verify all tests pass
+- [x] 1. Fix the update-documentation.sh script to focus on documentation drift detection
+  - [x] 1.1 Write tests for documentation drift detection functionality
+  - [x] 1.2 Remove database configuration checks from the script
+  - [x] 1.3 Implement normal mode documentation health checks
+  - [x] 1.4 Verify all tests pass
 
-- [ ] 2. Implement deep mode comprehensive audit functionality
-  - [ ] 2.1 Write tests for deep mode audit functionality
-  - [ ] 2.2 Implement GitHub issue/spec cross-referencing
-  - [ ] 2.3 Implement file reference validation
-  - [ ] 2.4 Verify all tests pass
+- [x] 2. Implement deep mode comprehensive audit functionality
+  - [x] 2.1 Write tests for deep mode audit functionality
+  - [x] 2.2 Implement GitHub issue/spec cross-referencing
+  - [x] 2.3 Implement file reference validation
+  - [x] 2.4 Verify all tests pass
 
-- [ ] 3. Create the slash command interface
-  - [ ] 3.1 Create ~/.claude/commands/update-documentation.md
-  - [ ] 3.2 Update setup scripts to install the command
-  - [ ] 3.3 Test command integration
+- [x] 3. Create the slash command interface
+  - [x] 3.1 Create ~/.claude/commands/update-documentation.md
+  - [x] 3.2 Update setup scripts to install the command
+  - [x] 3.3 Test command integration
 
 - [ ] 4. Update instruction files and hooks
   - [ ] 4.1 Update instructions/core/execute-tasks.md Phase 4
