@@ -514,24 +514,36 @@ quick_setup_project() {
         fi
     fi
     
-    # If type unknown, ask once
+    # Always offer to change/add AI assistant setup
+    echo ""
     if [ "$project_type" = "unknown" ]; then
-        echo ""
         echo "Which AI assistant will you use?"
-        echo "  1) Claude Code"
-        echo "  2) Cursor"
-        echo "  3) Both"
-        echo "  4) Skip"
-        echo -n "Choice [1-4]: "
-        read -r choice
-        
-        case "$choice" in
-            1) project_type="claude" ;;
-            2) project_type="cursor" ;;
-            3) project_type="both" ;;
-            *) return 1 ;;
-        esac
+    else
+        echo "Current setup: $project_type. Change or add AI assistant?"
     fi
+    echo "  1) Claude Code"
+    echo "  2) Cursor" 
+    echo "  3) Both"
+    if [ "$project_type" != "unknown" ]; then
+        echo "  4) Keep current ($project_type)"
+    else
+        echo "  4) Skip"
+    fi
+    echo -n "Choice [1-4]: "
+    read -r choice
+    
+    case "$choice" in
+        1) project_type="claude" ;;
+        2) project_type="cursor" ;;
+        3) project_type="both" ;;
+        4) 
+            if [ "$project_type" = "unknown" ]; then
+                return 1
+            fi
+            # Keep existing type
+            ;;
+        *) return 1 ;;
+    esac
     
     # Setup based on type
     case "$project_type" in
