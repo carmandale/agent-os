@@ -545,6 +545,14 @@ quick_setup_project() {
         *) return 1 ;;
     esac
     
+    # Create project Agent OS structure if it doesn't exist
+    if [ ! -d ".agent-os" ]; then
+        print_status "info" "Creating .agent-os project structure..."
+        mkdir -p .agent-os/product
+        mkdir -p .agent-os/specs
+        print_status "success" "Project structure created"
+    fi
+    
     # Setup based on type
     case "$project_type" in
         "claude"|"both")
