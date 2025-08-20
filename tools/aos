@@ -279,12 +279,8 @@ check_project_currency() {
             ;;
     esac
     
-    # Check for product docs
-    if [ "$project_type" != "unknown" ]; then
-        if [ ! -d ".agent-os/product" ]; then
-            issues+=("Product documentation not initialized")
-        fi
-    fi
+    # Note: Product docs are created by /plan-product or /analyze-product commands,
+    # not during initial setup, so we don't check for them here
     
     if [ ${#issues[@]} -eq 0 ]; then
         echo "current"
