@@ -36,16 +36,70 @@ Use it with:
 ## Quick Start
 
 ### Installation
+
+#### 1. Install Agent OS Framework (SYSTEM)
 ```bash
+# Installs to ~/.agent-os/ (your home directory)
 curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup.sh | bash
 ```
 
-### Background Task Management (New!)
-```bash
-# Install the aos CLI tool
-curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/tools/install-aos-alias.sh | bash
+This installs the Agent OS framework globally in your system.
 
-# Run dev server in background
+#### 2. Initialize Your Project (PROJECT)
+```bash
+# Navigate to your project directory
+cd ~/Projects/YourProject
+
+# Initialize Agent OS for this project
+aos init
+
+# Choose your AI assistant:
+# - Claude Code
+# - Cursor  
+# - Both
+```
+
+This creates `.agent-os/` in your project with product documentation structure.
+
+#### 3. Start Using Agent OS
+
+**In Claude Code:**
+- `/plan-product` - Start with a new product
+- `/analyze-product` - Start with existing code
+- `/create-spec` - Plan a new feature
+- `/execute-tasks` - Build and ship code
+
+**In Cursor:**
+- `@plan-product` - Start with a new product
+- `@analyze-product` - Start with existing code  
+- `@create-spec` - Plan a new feature
+- `@execute-tasks` - Build and ship code
+
+### Understanding Agent OS Contexts
+
+⚠️ **Critical:** Agent OS exists in three distinct contexts:
+
+1. **REPO** (`~/Projects/agent-os/`) - The source code repository
+2. **SYSTEM** (`~/.agent-os/`) - Your installed framework
+3. **PROJECT** (`YourProject/.agent-os/`) - Project-specific configuration
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed explanation.
+
+### aos CLI Tool
+
+The `aos` command manages your Agent OS installation:
+
+```bash
+# Check status and updates
+aos status
+
+# Update Agent OS framework  
+aos update
+
+# Initialize a project
+aos init
+
+# Run background tasks
 aos run "npm run dev"
 
 # List running tasks
