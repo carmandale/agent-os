@@ -494,6 +494,17 @@ with open('$AGENT_OS_HOME/tasks/registry.json', 'r') as f:
     else
         print_status "info" "No background tasks"
     fi
+    
+    # Offer to update if available
+    local update_status=$(check_for_updates)
+    if [ "$update_status" != "current" ] && [ "$update_status" != "not installed" ]; then
+        echo ""
+        echo -n "Update Agent OS to version $update_status now? [y/N]: "
+        read -r response
+        if [[ "$response" =~ ^[Yy]$ ]]; then
+            smart_update
+        fi
+    fi
 }
 
 # Quick project setup
