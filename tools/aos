@@ -422,6 +422,8 @@ check_comprehensive_status() {
             print_status "error" "Version: not installed (latest ${remote_version})"
         else
             print_status "warning" "Update available: ${remote_version} (local ${local_version})"
+            # Store for later prompt
+            UPDATE_AVAILABLE="$remote_version"
         fi
         
         # Check components
