@@ -717,30 +717,8 @@ case "${1:-}" in
         check_comprehensive_status
         ;;
     
-    # Background task commands
-    "run")
-        shift
-        handle_background_command run "$@"
-        ;;
-    "tasks"|"list")
-        handle_background_command tasks
-        ;;
-    "monitor")
-        handle_background_command monitor "$2"
-        ;;
-    "logs")
-        shift
-        handle_background_command logs "$@"
-        ;;
-    "stop")
-        handle_background_command stop "$2"
-        ;;
-    "debug")
-        handle_background_command debug
-        ;;
-    "clean")
-        handle_background_command clean "$2"
-        ;;
+    # Note: Background task commands removed - use Claude Code's native backgrounding
+    # Agent OS now observes via hooks instead of managing processes
     
     # Bash observation commands (Issue #19)
     "notify")
