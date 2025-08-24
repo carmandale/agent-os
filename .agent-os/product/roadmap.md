@@ -18,15 +18,15 @@ The following features have been implemented:
 - [x] Hygiene checking system - Workspace management `M`
 - [x] Reality check system for task consistency - Quality assurance `M`
 - [x] **Claude Code Hooks Implementation** - Workflow enforcement to prevent abandonment `L` ✅ **COMPLETE** (Issue #37)
-- [x] **Background Task Management** - Complete implementation of non-blocking development workflows `XL` ✅ **COMPLETE** (v2.2.0)
-  - aos-background tool for process management
-  - Task registry with JSON storage and PID tracking
-  - Log management system with monitoring and search
-  - Debug helper for troubleshooting failed tasks
+- [x] **Bash Observation System** - Complete implementation of hook-based command monitoring `XL` ✅ **COMPLETE** (v2.2.0, Issue #19)
+  - Pre-bash and post-bash hooks via Claude Code hook system
+  - Command classification and intent detection
+  - Observed command history in `observed-bash.jsonl`
+  - Dashboard and notification commands for command visibility
 - [x] **aos v4 CLI** - Unified command-line interface `L` ✅ **COMPLETE** (v2.2.0)
-  - Integration of Agent OS management with background tasks
+  - Integration of Agent OS management with Bash observation
   - Single aos command for all operations
-  - Background task status in comprehensive reports
+  - Comprehensive status reporting and dashboard functionality
 - [x] **Builder Methods Subagents System** - Native Claude Code agent architecture `XL` ✅ **COMPLETE** (v2.4.0, Issues #25, #27)
   - Refactored from Python to native Claude Code agents
   - context-fetcher: Codebase search and analysis

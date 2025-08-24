@@ -750,9 +750,9 @@ case "${1:-}" in
         echo ""
         echo "Examples:"
         echo "  aos init                    # Setup Agent OS in project"
-        echo "  aos run 'npm run dev'       # Run dev server in background"
-        echo "  aos tasks                   # List running tasks"
-        echo "  aos monitor task-123        # Watch task output"
+        echo "  aos status                  # Check installation status"
+        echo "  aos dashboard               # View observed Bash commands"
+        echo "  aos notify 'Build complete' # Send notification"
         echo ""
         echo "No command runs interactive mode"
         ;;
