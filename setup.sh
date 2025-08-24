@@ -218,6 +218,24 @@ curl -s -o "$HOME/.agent-os/scripts/testing-enforcer.sh" "${BASE_URL}/scripts/te
 chmod +x "$HOME/.agent-os/scripts/testing-enforcer.sh"
 echo "  ✓ ~/.agent-os/scripts/testing-enforcer.sh"
 
+# Transparent work sessions scripts
+for script in workflow-validator.sh work-session-manager.sh commit-boundary-manager.sh session-auto-start.sh; do
+    curl -s -o "$HOME/.agent-os/scripts/$script" "${BASE_URL}/scripts/$script"
+    chmod +x "$HOME/.agent-os/scripts/$script"
+    echo "  ✓ ~/.agent-os/scripts/$script"
+done
+
+# Additional utility scripts
+for script in check-updates.sh validate-instructions.sh; do
+    curl -s -o "$HOME/.agent-os/scripts/$script" "${BASE_URL}/scripts/$script"
+    chmod +x "$HOME/.agent-os/scripts/$script"
+    echo "  ✓ ~/.agent-os/scripts/$script"
+done
+
+# Python scripts
+curl -s -o "$HOME/.agent-os/scripts/project_root_resolver.py" "${BASE_URL}/scripts/project_root_resolver.py"
+echo "  ✓ ~/.agent-os/scripts/project_root_resolver.py"
+
 # Download workflow modules
 echo ""
 echo "📥 Downloading workflow modules to ~/.agent-os/workflow-modules/"
