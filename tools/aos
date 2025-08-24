@@ -694,7 +694,7 @@ main_menu() {
             ;;
         2) smart_update ;;
         3) check_comprehensive_status ;;
-        4) handle_background_command tasks ;;
+        4) show_bash_dashboard ;;
         *) print_status "info" "Goodbye!" ;;
     esac
 }
