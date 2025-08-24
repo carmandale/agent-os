@@ -176,12 +176,15 @@ create_boundary_commit() {
         # Generate commit message
         local commit_message=$(generate_commit_message "$boundary_type" "$custom_message")
         
-        # Stage changes and create commit
-        git add .
-        git commit -m "$commit_message"
-        
-        echo "✅ Automatic commit created at $boundary_type boundary"
-        return 0
+        # Stage changes and create commit with error handling
+        if git add . && git commit -m "$commit_message"; then
+            echo "✅ Automatic commit created at $boundary_type boundary"
+            return 0
+        else
+            log_debug "Git commit failed for boundary: $boundary_type"
+            echo "❌ Failed to create automatic commit at $boundary_type boundary" >&2
+            return 1
+        fi
     else
         log_debug "No boundary detected for context: $context"
         return 1
