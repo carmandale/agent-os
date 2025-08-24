@@ -45,9 +45,10 @@ EOF
     # Set up GitHub issue environment variable
     export GITHUB_ISSUE="123"
     
-    # Commit the spec files to ensure clean git status
+    # Commit the spec files AND scripts to ensure clean git status
     git -C "$TEST_REPO_DIR" add .agent-os/
-    git -C "$TEST_REPO_DIR" commit -m "Add test spec for transparent sessions"
+    git -C "$TEST_REPO_DIR" add scripts/
+    git -C "$TEST_REPO_DIR" commit -m "Add test spec and scripts for transparent sessions"
 }
 
 teardown() {
@@ -64,7 +65,8 @@ teardown() {
     # Active spec exists (created in setup)
     # GitHub issue reference exists (set in setup)
     
-    run bash -c "cd '$TEST_REPO_DIR' && ./scripts/workflow-validator.sh check"
+    # Use workflow validator from outside repo to avoid uncommitted changes
+    run bash -c "cd '$TEST_REPO_DIR' && bash '$BATS_TEST_DIRNAME/../scripts/workflow-validator.sh' check"
     
     [ "$status" -eq 0 ]
     [[ "$output" =~ "All conditions met - transparent work session can auto-start" ]]

@@ -38,10 +38,10 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 4.4 Update all references to use correct paths
   - [x] 4.5 Verify all tests pass for command resolution
 
-- [ ] 5. End-to-End Integration Testing
-  - [ ] 5.1 Write comprehensive integration tests
-  - [ ] 5.2 Test complete /execute-tasks workflow with transparent sessions
-  - [ ] 5.3 Validate commit count reduction (16+ commits → 2-4 commits)
-  - [ ] 5.4 Test workflow guidance when conditions not met
-  - [ ] 5.5 Test override mechanism functionality
-  - [ ] 5.6 Verify all integration tests pass
+- [x] 5. End-to-End Integration Testing
+  - [x] 5.1 Write comprehensive integration tests
+  - [x] 5.2 Test complete /execute-tasks workflow with transparent sessions
+  - [x] 5.3 Validate commit count reduction (16+ commits → 2-4 commits)
+  - [x] 5.4 Test workflow guidance when conditions not met
+  - [x] 5.5 Test override mechanism functionality
+  - [x] 5.6 Verify all integration tests pass
