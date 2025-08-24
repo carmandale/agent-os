@@ -67,15 +67,14 @@ teardown() {
     # Create changes
     echo "test content" > "$TEST_REPO_DIR/test-file.txt"
     
-    # Make git commit fail by removing git config
-    run bash -c "cd '$TEST_REPO_DIR' && git config --unset user.name && git config --unset user.email && ./commit-boundary-manager.sh commit phase_2_complete"
+    # Make git commit fail by corrupting the git directory
+    rm -rf "$TEST_REPO_DIR/.git/refs"
     
-    # Should handle git failure gracefully
+    run bash -c "cd '$TEST_REPO_DIR' && ./commit-boundary-manager.sh commit phase_2_complete"
+    
+    # Should handle git failure and return error status
     [ "$status" -ne 0 ]
-    
-    # Restore git config for cleanup
-    git -C "$TEST_REPO_DIR" config user.name "Test User"
-    git -C "$TEST_REPO_DIR" config user.email "test@example.com"
+    [[ "$output" =~ "Failed to create automatic commit" ]]
 }
 
 @test "generates appropriate error message for invalid generate-message context" {
