@@ -622,24 +622,8 @@ quick_setup_project() {
     fi
 }
 
-# Pass through to background task manager for task commands
-handle_background_command() {
-    local bg_script="$AGENT_OS_HOME/tools/aos-background"
-    
-    # Check if background script exists
-    if [ ! -f "$bg_script" ]; then
-        # Try to find it in the repo
-        bg_script="$(dirname "$0")/aos-background"
-        if [ ! -f "$bg_script" ]; then
-            print_status "error" "Background task manager not found"
-            print_status "info" "Update Agent OS to get background task support"
-            return 1
-        fi
-    fi
-    
-    # Pass through the command
-    "$bg_script" "$@"
-}
+# Note: aos-background was removed - Agent OS observes Claude Code's native backgrounding via hooks
+# Background task functionality is now handled through Bash observation hooks
 
 # Main menu - streamlined with better validation
 main_menu() {
