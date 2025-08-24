@@ -31,12 +31,12 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 3.5 Handle error scenarios and partial completion rollback
   - [x] 3.6 Verify all tests pass for commit boundary logic
 
-- [ ] 4. Command Path Resolution
-  - [ ] 4.1 Write tests for command resolution
-  - [ ] 4.2 Fix /execute-tasks command reference to point to correct instruction file
-  - [ ] 4.3 Clarify execute-tasks vs execute-task distinction in documentation
-  - [ ] 4.4 Update all references to use correct paths
-  - [ ] 4.5 Verify all tests pass for command resolution
+- [x] 4. Command Path Resolution
+  - [x] 4.1 Write tests for command resolution
+  - [x] 4.2 Fix /execute-tasks command reference to point to correct instruction file
+  - [x] 4.3 Clarify execute-tasks vs execute-task distinction in documentation
+  - [x] 4.4 Update all references to use correct paths
+  - [x] 4.5 Verify all tests pass for command resolution
 
 - [ ] 5. End-to-End Integration Testing
   - [ ] 5.1 Write comprehensive integration tests
