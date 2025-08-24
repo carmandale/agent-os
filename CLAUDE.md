@@ -155,6 +155,12 @@ Agents are triggered via `subagent="agent-name"` XML attributes in instruction f
 - Update roadmap.md when completing features
 - Document decisions in decisions.md
 
+### Background Task Management
+- **NEVER create aos-background tool** - It was deprecated in favor of hooks
+- Agent OS observes Claude Code's native backgrounding, doesn't manage processes
+- Use `aos dashboard` and `aos notify` for Bash observation features
+- See docs/IMPORTANT-NO-AOS-BACKGROUND.md for details
+
 ## Evidence-Based Development Protocol
 
 When working on Agent OS itself:

@@ -13,7 +13,6 @@ This report documents the current state of the Agent OS installation, execution 
 ```
 /Users/dalecarman/.agent-os/.version
 /Users/dalecarman/.agent-os/tools/agentos-alias.sh
-/Users/dalecarman/.agent-os/tools/aos-background
 /Users/dalecarman/.agent-os/tools/aos-v4
 ```
 
@@ -79,7 +78,6 @@ tools/
 
 ls -la ~/.agent-os/tools
 agentos-alias.sh
-aos-background
 aos-v4
 ```
 
