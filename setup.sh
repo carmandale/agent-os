@@ -42,8 +42,16 @@ echo "🚀 Agent OS Setup Script"
 echo "========================"
 echo ""
 
-# Version tracking
-AGENT_OS_VERSION="4.0.0"
+# Version tracking - get version from VERSION file or fallback to repo
+if [ -f "VERSION" ]; then
+    AGENT_OS_VERSION=$(cat VERSION)
+else
+    # Fallback to downloading version from repo
+    AGENT_OS_VERSION=$(curl -sSL "${BASE_URL}/VERSION" 2>/dev/null | head -n1)
+    if [ -z "$AGENT_OS_VERSION" ]; then
+        AGENT_OS_VERSION="4.0.2"  # Fallback if curl fails
+    fi
+fi
 
 # Base URL for raw GitHub content
 # Updated to use carmandale/agent-os fork with custom GitHub Issues workflow,
