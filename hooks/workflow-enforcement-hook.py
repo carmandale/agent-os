@@ -133,9 +133,17 @@ def check_workflow_status(cwd: str) -> list[str]:
     """Analyze workflow status and return issues for given workspace."""
     issues = []
     
-    # Check for uncommitted changes
-    if check_git_status(cwd):
-        issues.append("Uncommitted changes detected")
+    # In work session mode, skip uncommitted changes check to allow batching
+    work_session_active = os.environ.get("AGENT_OS_WORK_SESSION", "").lower() == "true"
+    session_file = os.path.expanduser("~/.agent-os/cache/work-session")
+    session_exists = os.path.exists(session_file)
+    
+    if work_session_active or session_exists:
+        log_debug("Work session mode active - allowing uncommitted changes")
+    else:
+        # Check for uncommitted changes only when not in work session
+        if check_git_status(cwd):
+            issues.append("Uncommitted changes detected")
     
     # Check for open PRs
     if check_open_prs(cwd):
