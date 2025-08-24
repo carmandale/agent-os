@@ -7,7 +7,8 @@ load test_helper
 setup() {
     setup_test_repo
     
-    # Create mock commit boundary detector
+    # Create scripts directory and mock commit boundary detector
+    mkdir -p "$TEST_REPO_DIR/scripts"
     cat > "$TEST_REPO_DIR/scripts/commit-boundary-detector.sh" << 'EOF'
 #!/bin/bash
 # Mock commit boundary detection script
