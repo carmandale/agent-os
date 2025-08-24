@@ -63,14 +63,7 @@ done
 
 # Download Claude Code user CLAUDE.md
 echo ""
-echo "📥 Downloading Claude Code configuration to ~/.claude/"
-
-if [ -f "$HOME/.claude/CLAUDE.md" ]; then
-    echo "  ⚠️  ~/.claude/CLAUDE.md already exists - skipping"
-else
-    curl -s -o "$HOME/.claude/CLAUDE.md" "${BASE_URL}/claude-code/user/CLAUDE.md"
-    echo "  ✓ ~/.claude/CLAUDE.md"
-fi
+echo "📥 Claude Code configuration handled by main setup.sh script"
 
 echo ""
 echo "✅ Agent OS Claude Code installation complete!"
