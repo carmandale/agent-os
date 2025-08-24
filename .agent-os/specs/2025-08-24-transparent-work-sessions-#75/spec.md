@@ -43,3 +43,9 @@ When workflow conditions aren't met, the system should clearly explain what need
 1. Developers using `/execute-tasks` on proper workflows experience logical commit patterns (2-4 commits instead of 16+)
 2. Developers with improper workflow setup receive clear, actionable guidance instead of cryptic error messages
 3. All existing Agent OS quality standards and workflow enforcement continue to work as designed
+
+## Spec Documentation
+
+- Tasks: @.agent-os/specs/2025-08-24-transparent-work-sessions-#75/tasks.md
+- Technical Specification: @.agent-os/specs/2025-08-24-transparent-work-sessions-#75/sub-specs/technical-spec.md
+- Tests Specification: @.agent-os/specs/2025-08-24-transparent-work-sessions-#75/sub-specs/tests.md
