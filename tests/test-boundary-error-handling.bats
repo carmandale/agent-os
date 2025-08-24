@@ -74,7 +74,7 @@ teardown() {
     
     # Should handle git failure and return error status
     [ "$status" -ne 0 ]
-    [[ "$output" =~ "Failed to create automatic commit" ]]
+    [[ "$output" =~ "Git repository appears to be corrupted" ]]
 }
 
 @test "generates appropriate error message for invalid generate-message context" {
