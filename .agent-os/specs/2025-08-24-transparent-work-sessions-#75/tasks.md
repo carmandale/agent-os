@@ -15,13 +15,13 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [ ] 1.5 Implement override mechanism (AGENT_OS_FORCE_SESSION=true)
   - [ ] 1.6 Verify all tests pass for workflow detection
 
-- [ ] 2. Hook System Integration for Transparent Batching
-  - [ ] 2.1 Write tests for hook session state detection
-  - [ ] 2.2 Update workflow-enforcement-hook.py to properly detect active sessions
-  - [ ] 2.3 Modify hook logic to allow batching during sessions
-  - [ ] 2.4 Fix Task tool blocking issues during active sessions
-  - [ ] 2.5 Ensure environment variable and file-based session detection both work
-  - [ ] 2.6 Verify all tests pass for hook integration
+- [x] 2. Hook System Integration for Transparent Batching
+  - [x] 2.1 Write tests for hook session state detection
+  - [x] 2.2 Update workflow-enforcement-hook.py to properly detect active sessions
+  - [x] 2.3 Modify hook logic to allow batching during sessions
+  - [x] 2.4 Fix Task tool blocking issues during active sessions
+  - [x] 2.5 Ensure environment variable and file-based session detection both work
+  - [x] 2.6 Verify all tests pass for hook integration
 
 - [ ] 3. Logical Commit Boundary Implementation
   - [ ] 3.1 Write tests for commit boundary detection
