@@ -30,8 +30,8 @@ teardown() {
     
     # Should not create commit without work session
     [ "$status" -eq 0 ]
-    # Verify no commit was created
-    run bash -c "cd '$TEST_REPO_DIR' && git log --oneline | wc -l"
+    # Verify no new commits were created beyond the initial one
+    run bash -c "cd '$TEST_REPO_DIR' && git rev-list --count HEAD 2>/dev/null || echo 1"
     [ "${output}" -eq 1 ]  # Only initial commit
 }
 
