@@ -23,13 +23,13 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 2.5 Ensure environment variable and file-based session detection both work
   - [x] 2.6 Verify all tests pass for hook integration
 
-- [ ] 3. Logical Commit Boundary Implementation
-  - [ ] 3.1 Write tests for commit boundary detection
-  - [ ] 3.2 Identify natural commit points in execute-tasks workflow (subtasks, phases, quality gates)
-  - [ ] 3.3 Implement automatic commit creation at boundaries
-  - [ ] 3.4 Add commit message formatting with session context
-  - [ ] 3.5 Handle error scenarios and partial completion rollback
-  - [ ] 3.6 Verify all tests pass for commit boundary logic
+- [x] 3. Logical Commit Boundary Implementation
+  - [x] 3.1 Write tests for commit boundary detection
+  - [x] 3.2 Identify natural commit points in execute-tasks workflow (subtasks, phases, quality gates)
+  - [x] 3.3 Implement automatic commit creation at boundaries
+  - [x] 3.4 Add commit message formatting with session context
+  - [x] 3.5 Handle error scenarios and partial completion rollback
+  - [x] 3.6 Verify all tests pass for commit boundary logic
 
 - [ ] 4. Command Path Resolution
   - [ ] 4.1 Write tests for command resolution
