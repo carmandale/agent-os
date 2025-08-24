@@ -150,14 +150,19 @@ if [[ "$hooks_response" == "y" ]]; then
         mkdir -p "$HOME/.agent-os/hooks/lib"
         mkdir -p "$HOME/.agent-os/hooks/tests"
         
-        # Download hook utilities
-        for util in workflow-detector.sh git-utils.sh context-builder.sh; do
+        # Download ALL hook utilities
+        for util in workflow-detector.sh git-utils.sh context-builder.sh evidence-standards.sh project-config-injector.sh testing-enforcer.sh testing-reminder.sh workflow-reminder.sh; do
             curl -s -o "$HOME/.agent-os/hooks/lib/$util" "${BASE_URL}/hooks/lib/$util"
-            echo "  ✓ Downloaded $util"
+            chmod +x "$HOME/.agent-os/hooks/lib/$util"
+            echo "  ✓ Downloaded lib/$util"
         done
         
-        # Download hook scripts
-        for hook in stop-hook.sh post-tool-use-hook.sh user-prompt-submit-hook.sh install-hooks.sh; do
+        # Download Python hook
+        curl -s -o "$HOME/.agent-os/hooks/workflow-enforcement-hook.py" "${BASE_URL}/hooks/workflow-enforcement-hook.py"
+        echo "  ✓ Downloaded workflow-enforcement-hook.py"
+        
+        # Download bash hooks
+        for hook in stop-hook.sh post-tool-use-hook.sh user-prompt-submit-hook.sh pre-bash-hook.sh post-bash-hook.sh notify-hook.sh install-hooks.sh; do
             curl -s -o "$HOME/.agent-os/hooks/$hook" "${BASE_URL}/hooks/$hook"
             chmod +x "$HOME/.agent-os/hooks/$hook"
             echo "  ✓ Downloaded $hook"
