@@ -44,6 +44,10 @@ EOF
     
     # Set up GitHub issue environment variable
     export GITHUB_ISSUE="123"
+    
+    # Commit the spec files to ensure clean git status
+    git -C "$TEST_REPO_DIR" add .agent-os/
+    git -C "$TEST_REPO_DIR" commit -m "Add test spec for transparent sessions"
 }
 
 teardown() {
