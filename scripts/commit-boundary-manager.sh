@@ -163,7 +163,14 @@ create_boundary_commit() {
     fi
     
     # Check if there are changes to commit
-    if [ -z "$(git status --porcelain)" ]; then
+    local git_status
+    if ! git_status=$(git status --porcelain 2>/dev/null); then
+        log_debug "Git status command failed - repository may be corrupted"
+        echo "❌ Git repository appears to be corrupted or inaccessible" >&2
+        return 1
+    fi
+    
+    if [ -z "$git_status" ]; then
         log_debug "No changes to commit"
         return 0
     fi
