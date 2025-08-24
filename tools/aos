@@ -673,7 +673,7 @@ main_menu() {
     
     echo "  2) Update Agent OS"
     echo "  3) Full status report"
-    echo "  4) Background tasks"
+    echo "  4) Bash dashboard"
     echo "  5) Exit"
     echo ""
     echo -n "Choice [1-5]: "
