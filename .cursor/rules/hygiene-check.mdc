@@ -18,4 +18,4 @@ Run a comprehensive workspace hygiene check and report actionable results.
 - Use ✅❌⚠️ indicators and paste actual command outputs
 
 ## Full Instructions
-- See: @~/.agent-os/instructions/hygiene-check.md
+- See: @~/.agent-os/instructions/core/hygiene-check.md
