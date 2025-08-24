@@ -26,6 +26,45 @@ This is **Agent OS** - the framework itself that enables AI-assisted development
 - **Spec Planning:** Use `@~/.agent-os/instructions/core/create-spec.md`
 - **Tasks Execution:** Use `@~/.agent-os/instructions/core/execute-tasks.md`
 
+## CRITICAL: Development Workflow
+
+### Repository Structure
+
+**SOURCE CODE** (what we develop and edit):
+- `commands/` - Command definitions  
+- `hooks/` - Hook scripts (Python & shell)
+- `instructions/` - Workflow instructions
+- `scripts/` - Utility scripts
+- `tools/` - CLI tools (aos command)
+- `setup.sh` and setup scripts
+- `CLAUDE.md` (this file)
+
+**PROJECT'S AGENT OS CONFIG** (part of repo, but managed by workflows):
+- `.agent-os/` - This project's Agent OS config
+- `.claude/` - This project's Claude settings
+- `.cursor/` - This project's Cursor settings
+
+**INSTALLATION LOCATIONS** (deployed by setup scripts, NEVER edit directly):
+- `~/.agent-os/` - User's global Agent OS installation
+- `~/.claude/settings.json` - User's Claude Code configuration (per [Anthropic docs](https://docs.anthropic.com/en/docs/claude-code/settings))
+
+### NEVER EDIT
+1. **User's home directory files** (`~/.agent-os/`, `~/.claude/`, etc.)
+2. **Project's installation files** (`.agent-os/`, `.claude/`, `.cursor/` in the repo)
+
+### REQUIRED WORKFLOW
+```
+1. PLAN - Discuss changes needed
+2. EDIT SOURCE - Modify source files in repo ONLY
+3. TEST - Run test scripts
+4. COMMIT - Commit to repo
+5. PUSH - Push to GitHub
+6. INSTALL - Run setup.sh from GitHub (the "real" install)
+7. VERIFY - Test that installation works
+```
+
+**All changes must go through source code → installation scripts → deployed files**
+
 ## Build and Test Commands
 
 ```bash

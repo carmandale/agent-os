@@ -77,23 +77,9 @@ for cmd in "${COMMANDS[@]}"; do
     fi
 done
 
-# Copy Claude Code user CLAUDE.md if it exists
+# Claude Code configuration handled by main setup.sh
 echo ""
-echo "📥 Installing Claude Code configuration..."
-
-if [ -f "$AGENT_OS_PATH/claude-code/user/CLAUDE.md" ]; then
-    if [ -f "$HOME/.claude/CLAUDE.md" ]; then
-        echo -e "  ${YELLOW}⚠️  ~/.claude/CLAUDE.md already exists - skipping${NC}"
-    else
-        if cp "$AGENT_OS_PATH/claude-code/user/CLAUDE.md" "$HOME/.claude/" 2>/dev/null; then
-            echo -e "  ${GREEN}✓ Installed ~/.claude/CLAUDE.md${NC}"
-        else
-            echo -e "  ${RED}✗ Failed to install ~/.claude/CLAUDE.md${NC}"
-        fi
-    fi
-else
-    echo -e "  ${YELLOW}⚠ Claude Code CLAUDE.md template not found${NC}"
-fi
+echo "📥 Claude Code configuration handled by main setup.sh script"
 
 # Installation verification
 echo ""
