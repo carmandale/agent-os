@@ -171,7 +171,7 @@ class AgentOSContextChecker:
             for match in matches:
                 if pattern.startswith("@~/.agent-os/"):
                     references.append(f"@~/.agent-os/{match}")
-                elif pattern.startswith("@\.agent-os/"):
+                elif pattern.startswith(r"@\.agent-os/"):
                     references.append(f"@.agent-os/{match}")
                 elif pattern.startswith("!~/.agent-os/scripts/"):
                     references.append(f"!~/.agent-os/scripts/{match}")
