@@ -49,8 +49,8 @@ Build system to validate and document the three-context architecture (source/ins
 - [x] Create automated context documentation generator
 - [x] Implement context drift detection
 - [x] Add context validation to health check system
-- [ ] Create troubleshooting guide for context issues
-- [ ] Add context validation hooks to setup scripts
+- [x] Create troubleshooting guide for context issues
+- [x] Add context validation hooks to setup scripts
 
 #### Acceptance Criteria:
 - Clear mapping of all files to their appropriate contexts
