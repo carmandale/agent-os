@@ -190,6 +190,32 @@ else
     echo "  https://github.com/carmandale/agent-os/hooks/"
 fi
 
+# Context validation hook - validate Claude Code integration
+echo ""
+echo "🔍 Validating Claude Code integration..."
+if command -v claude >/dev/null 2>&1; then
+	# Check if commands were properly installed
+	if claude list-commands 2>/dev/null | grep -q "/execute-tasks"; then
+		echo "  ✅ Claude Code commands validated"
+	else
+		echo "  ⚠️  Claude Code commands may not be properly registered"
+		echo "     Try running: claude reload"
+	fi
+else
+	echo "  ⚠️  Claude Code CLI not found in PATH"
+	echo "     Commands installed but require Claude Code to be installed"
+fi
+
+# Run context validation if available
+if [ -f "tools/context-validator.sh" ]; then
+	if ./tools/context-validator.sh --install-only >/dev/null 2>&1; then
+		echo "  ✅ Installation context validated"
+	else
+		echo "  ⚠️  Context validation warnings detected"
+		echo "     Run './tools/context-validator.sh' for details"
+	fi
+fi
+
 echo ""
 echo "Next steps:"
 echo ""
