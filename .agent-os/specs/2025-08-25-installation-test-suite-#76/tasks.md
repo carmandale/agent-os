@@ -41,14 +41,14 @@ Create comprehensive BATS test suite for validating Agent OS installations.
 Build system to validate and document the three-context architecture (source/install/project).
 
 #### Subtasks:
-- [ ] Create `tools/context-validator.sh` - Validates file contexts
-- [ ] Implement context mapping generator (`tools/generate-context-map.sh`)
-- [ ] Create reference resolution validator (`tools/validate-references.sh`)
-- [ ] Build context-aware file checker (`tools/check-file-contexts.py`)
-- [ ] Add validation rules for each context type
-- [ ] Create automated context documentation generator
-- [ ] Implement context drift detection
-- [ ] Add context validation to health check system
+- [x] Create `tools/context-validator.sh` - Validates file contexts
+- [x] Implement context mapping generator (`tools/generate-context-map.sh`)
+- [x] Create reference resolution validator (`tools/validate-references.sh`)
+- [x] Build context-aware file checker (`tools/check-file-contexts.py`)
+- [x] Add validation rules for each context type
+- [x] Create automated context documentation generator
+- [x] Implement context drift detection
+- [x] Add context validation to health check system
 - [ ] Create troubleshooting guide for context issues
 - [ ] Add context validation hooks to setup scripts
 
