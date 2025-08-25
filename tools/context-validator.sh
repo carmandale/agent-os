@@ -243,8 +243,8 @@ validate_references_in_file() {
 	
 	for pattern in "${reference_patterns[@]}"; do
 		while IFS= read -r line; do
-			# Extract the referenced path - simplified approach to avoid sed regex issues
-			local ref_path=$(echo "$line" | grep -o "${pattern}[^[:space:]]*" | sed "s|${pattern}||")
+			# Extract the referenced path - handle both clean and tagged references
+			local ref_path=$(echo "$line" | grep -o "${pattern}[^[:space:]<>]*" | sed "s|${pattern}||")
 			if [[ -n "$ref_path" ]]; then
 				validate_reference_resolution "$pattern$ref_path" "$context_type"
 			fi
