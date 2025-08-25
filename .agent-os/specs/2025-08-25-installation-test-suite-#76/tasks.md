@@ -15,16 +15,16 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
 Create comprehensive BATS test suite for validating Agent OS installations.
 
 #### Subtasks:
-- [ ] Create `tests/installation/` directory structure
-- [ ] Implement `test-file-references.bats` - Validates all file references in setup scripts
-- [ ] Implement `test-setup-completeness.bats` - Tests complete installation flow
-- [ ] Implement `test-cross-platform.bats` - macOS/Linux compatibility testing
-- [ ] Implement `test-update-paths.bats` - Update scenario validation
-- [ ] Create `test-clean-environment.bats` - Fresh installation testing
-- [ ] Add file existence validation for all referenced scripts and configs
-- [ ] Implement dependency chain verification (hooks → scripts → instructions)
-- [ ] Create test fixtures for different installation states
-- [ ] Add performance benchmarks for installation speed
+- [x] Create `tests/installation/` directory structure
+- [x] Implement `test-file-references.bats` - Validates all file references in setup scripts
+- [x] Implement `test-setup-completeness.bats` - Tests complete installation flow
+- [x] Implement `test-cross-platform.bats` - macOS/Linux compatibility testing
+- [x] Implement `test-update-paths.bats` - Update scenario validation
+- [x] Create `test-clean-environment.bats` - Fresh installation testing
+- [x] Add file existence validation for all referenced scripts and configs
+- [x] Implement dependency chain verification (hooks → scripts → instructions)
+- [x] Create test fixtures for different installation states
+- [x] Add performance benchmarks for installation speed
 
 #### Acceptance Criteria:
 - All setup script file references are validated
