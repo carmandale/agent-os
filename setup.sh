@@ -276,6 +276,26 @@ echo "  ✓ Version $AGENT_OS_VERSION tracked"
 # Remove deprecated lowercase version file if present
 rm -f "$HOME/.agent-os/.version" 2>/dev/null || true
 
+# Context validation hook - validate installation integrity
+echo ""
+echo "🔍 Validating installation context..."
+if [ -f "tools/context-validator.sh" ]; then
+	# Run context validation if we're in the source repository
+	if ./tools/context-validator.sh --install-only >/dev/null 2>&1; then
+		echo "  ✅ Context validation passed"
+	else
+		echo "  ⚠️  Context validation warnings detected"
+		echo "     Run './tools/context-validator.sh' for details"
+	fi
+else
+	# Basic validation if context-validator not available
+	if [ -d "$HOME/.agent-os/instructions/core" ] && [ -f "$HOME/.agent-os/VERSION" ]; then
+		echo "  ✅ Basic installation structure validated"
+	else
+		echo "  ⚠️  Installation may be incomplete"
+	fi
+fi
+
 echo ""
 echo "✅ Agent OS base installation complete!"
 echo ""
