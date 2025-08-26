@@ -218,6 +218,24 @@ curl -s -o "$HOME/.agent-os/scripts/testing-enforcer.sh" "${BASE_URL}/scripts/te
 chmod +x "$HOME/.agent-os/scripts/testing-enforcer.sh"
 echo "  ✓ ~/.agent-os/scripts/testing-enforcer.sh"
 
+# Transparent work sessions scripts
+for script in workflow-validator.sh work-session-manager.sh commit-boundary-manager.sh session-auto-start.sh; do
+    curl -s -o "$HOME/.agent-os/scripts/$script" "${BASE_URL}/scripts/$script"
+    chmod +x "$HOME/.agent-os/scripts/$script"
+    echo "  ✓ ~/.agent-os/scripts/$script"
+done
+
+# Additional utility scripts
+for script in check-updates.sh validate-instructions.sh; do
+    curl -s -o "$HOME/.agent-os/scripts/$script" "${BASE_URL}/scripts/$script"
+    chmod +x "$HOME/.agent-os/scripts/$script"
+    echo "  ✓ ~/.agent-os/scripts/$script"
+done
+
+# Python scripts
+curl -s -o "$HOME/.agent-os/scripts/project_root_resolver.py" "${BASE_URL}/scripts/project_root_resolver.py"
+echo "  ✓ ~/.agent-os/scripts/project_root_resolver.py"
+
 # Download workflow modules
 echo ""
 echo "📥 Downloading workflow modules to ~/.agent-os/workflow-modules/"
@@ -257,6 +275,26 @@ echo "  ✓ Version $AGENT_OS_VERSION tracked"
 
 # Remove deprecated lowercase version file if present
 rm -f "$HOME/.agent-os/.version" 2>/dev/null || true
+
+# Context validation hook - validate installation integrity
+echo ""
+echo "🔍 Validating installation context..."
+if [ -f "tools/context-validator.sh" ]; then
+	# Run context validation if we're in the source repository
+	if ./tools/context-validator.sh --install-only >/dev/null 2>&1; then
+		echo "  ✅ Context validation passed"
+	else
+		echo "  ⚠️  Context validation warnings detected"
+		echo "     Run './tools/context-validator.sh' for details"
+	fi
+else
+	# Basic validation if context-validator not available
+	if [ -d "$HOME/.agent-os/instructions/core" ] && [ -f "$HOME/.agent-os/VERSION" ]; then
+		echo "  ✅ Basic installation structure validated"
+	else
+		echo "  ⚠️  Installation may be incomplete"
+	fi
+fi
 
 echo ""
 echo "✅ Agent OS base installation complete!"

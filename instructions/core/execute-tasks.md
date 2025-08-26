@@ -45,6 +45,37 @@ version: 2.0.0
   <block>If DISCOVERY_COMPLETE marker or required evidence is missing, DO NOT proceed to Phase 1</block>
 </discovery_gate>
 
+# Phase 0.5: Transparent Work Session Detection (AUTO-START)
+
+> Automatically detect proper workflow conditions and enable transparent commit batching
+
+<session_detection>
+  <purpose>Enable transparent work session batching when proper Agent OS workflow detected</purpose>
+  <conditions>
+    - Git workspace is clean (no uncommitted changes)
+    - Active spec exists in .agent-os/specs/ with tasks.md
+    - GitHub issue reference found in spec folder or environment
+  </conditions>
+  <validation>
+    Execute workflow validator to check conditions:
+    !~/.agent-os/scripts/workflow-validator.sh check-with-override
+  </validation>
+  <auto_start_logic>
+    IF all conditions met:
+      - Print: "✅ Workflow conditions met - enabling transparent work session batching"
+      - Start work session: ~/.agent-os/scripts/work-session-manager.sh start "Auto-started for execute-tasks workflow"
+      - Set environment: export AGENT_OS_WORK_SESSION=true
+      - Continue to Phase 1 with transparent batching enabled
+    ELSE:
+      - Print helpful guidance from validator output
+      - Check for override: if AGENT_OS_FORCE_SESSION=true, start session anyway
+      - Otherwise block execution until conditions met
+  </auto_start_logic>
+  <transparency>
+    Session management should be invisible to user unless they request details
+  </transparency>
+</session_detection>
+
 # Task Execution Rules
 
 > Lightweight orchestrator using Claude Code best practices

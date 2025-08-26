@@ -622,24 +622,8 @@ quick_setup_project() {
     fi
 }
 
-# Pass through to background task manager for task commands
-handle_background_command() {
-    local bg_script="$AGENT_OS_HOME/tools/aos-background"
-    
-    # Check if background script exists
-    if [ ! -f "$bg_script" ]; then
-        # Try to find it in the repo
-        bg_script="$(dirname "$0")/aos-background"
-        if [ ! -f "$bg_script" ]; then
-            print_status "error" "Background task manager not found"
-            print_status "info" "Update Agent OS to get background task support"
-            return 1
-        fi
-    fi
-    
-    # Pass through the command
-    "$bg_script" "$@"
-}
+# Note: aos-background was removed - Agent OS observes Claude Code's native backgrounding via hooks
+# Background task functionality is now handled through Bash observation hooks
 
 # Main menu - streamlined with better validation
 main_menu() {
@@ -689,7 +673,7 @@ main_menu() {
     
     echo "  2) Update Agent OS"
     echo "  3) Full status report"
-    echo "  4) Background tasks"
+    echo "  4) Bash dashboard"
     echo "  5) Exit"
     echo ""
     echo -n "Choice [1-5]: "
@@ -710,7 +694,7 @@ main_menu() {
             ;;
         2) smart_update ;;
         3) check_comprehensive_status ;;
-        4) handle_background_command tasks ;;
+        4) show_bash_dashboard ;;
         *) print_status "info" "Goodbye!" ;;
     esac
 }
@@ -733,30 +717,8 @@ case "${1:-}" in
         check_comprehensive_status
         ;;
     
-    # Background task commands
-    "run")
-        shift
-        handle_background_command run "$@"
-        ;;
-    "tasks"|"list")
-        handle_background_command tasks
-        ;;
-    "monitor")
-        handle_background_command monitor "$2"
-        ;;
-    "logs")
-        shift
-        handle_background_command logs "$@"
-        ;;
-    "stop")
-        handle_background_command stop "$2"
-        ;;
-    "debug")
-        handle_background_command debug
-        ;;
-    "clean")
-        handle_background_command clean "$2"
-        ;;
+    # Note: Background task commands removed - use Claude Code's native backgrounding
+    # Agent OS now observes via hooks instead of managing processes
     
     # Bash observation commands (Issue #19)
     "notify")
@@ -782,25 +744,15 @@ case "${1:-}" in
         echo "  update            Smart update Agent OS"
         echo "  status            Comprehensive status report"
         echo ""
-        echo "Background Task Commands:"
-        echo "  run <command>     Run command in background"
-        echo "  tasks             List all background tasks"
-        echo "  monitor <id>      Monitor task output (tail -f)"
-        echo "  logs <id>         View task logs"
-        echo "  logs -f <id>      Follow task logs"
-        echo "  stop <id>         Stop a running task"
-        echo "  debug             Show recent task errors"
-        echo "  clean [days]      Clean old tasks (default: 7)"
-        echo ""
         echo "Bash Observation Commands:"
         echo "  dashboard         View observed Bash command history"
         echo "  notify <msg>      Display a notification message"
         echo ""
         echo "Examples:"
         echo "  aos init                    # Setup Agent OS in project"
-        echo "  aos run 'npm run dev'       # Run dev server in background"
-        echo "  aos tasks                   # List running tasks"
-        echo "  aos monitor task-123        # Watch task output"
+        echo "  aos status                  # Check installation status"
+        echo "  aos dashboard               # View observed Bash commands"
+        echo "  aos notify 'Build complete' # Send notification"
         echo ""
         echo "No command runs interactive mode"
         ;;

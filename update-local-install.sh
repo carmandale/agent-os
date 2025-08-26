@@ -73,7 +73,6 @@ echo "The following versioned files can be safely removed:"
 OLD_FILES=(
     ~/.agent-os/tools/aos-v3
     ~/.agent-os/tools/aos-v4
-    ~/.agent-os/tools/aos-background
     ~/.agent-os/tools/aos-improved
     ~/.agent-os/hooks/workflow-enforcement-hook-v2.py
     ~/.agent-os/hooks/workflow-enforcement-hook-v3.py

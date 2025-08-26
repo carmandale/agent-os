@@ -2,4 +2,4 @@
 
 Perform a comprehensive workspace hygiene check to verify the environment is clean and ready for work.
 
-Refer to the instructions located in @~/.agent-os/instructions/hygiene-check.md 
+Refer to the instructions located in @~/.agent-os/instructions/core/hygiene-check.md 

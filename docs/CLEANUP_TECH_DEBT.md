@@ -17,10 +17,9 @@ Having multiple versioned files (v1, v2, v3, etc.) in the codebase is poor pract
 - Confusion for contributors
 - Potential for using wrong version
 
-#### 2. AOS CLI Tools (4 versions)
-- `tools/aos-background`
+#### 2. AOS CLI Tools (3 versions)
 - `tools/aos-improved`
-- `tools/aos-v3`
+- `tools/aos-v3`  
 - `tools/aos-v4` (latest)
 
 **Problems:**
@@ -74,7 +73,7 @@ Having multiple versioned files (v1, v2, v3, etc.) in the codebase is poor pract
 
 3. **Remove Old Versions**
    ```bash
-   rm tools/aos-v3 tools/aos-improved tools/aos-background
+   rm tools/aos-v3 tools/aos-improved
    rm hooks/workflow-enforcement-hook-v2.py hooks/workflow-enforcement-hook-v3.py
    ```
 
