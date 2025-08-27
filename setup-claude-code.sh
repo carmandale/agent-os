@@ -199,16 +199,6 @@ echo "📥 Installing Claude Code hooks..."
             echo "  ⚠️ Claude Code hooks installation failed"
         fi
     fi
-else
-    echo ""
-    echo "⚠️ Claude Code hooks installation skipped."
-    echo ""
-    echo "You can install them later by running:"
-    echo "  ~/.agent-os/hooks/install-hooks.sh"
-    echo ""
-    echo "Or download them from:"
-    echo "  https://github.com/carmandale/agent-os/hooks/"
-fi
 
 # Context validation hook - validate Claude Code integration
 echo ""
