@@ -127,11 +127,15 @@ echo "📥 Installing subagent integration..."
 curl -s -o "/tmp/setup-subagent-integration.sh" "${BASE_URL}/integrations/setup-subagent-integration.sh"
 if [ -f "/tmp/setup-subagent-integration.sh" ]; then
     chmod +x "/tmp/setup-subagent-integration.sh"
-    if /tmp/setup-subagent-integration.sh; then
+    /tmp/setup-subagent-integration.sh
+    
+    # Check if installation actually completed by verifying config file exists
+    if [ -f "$HOME/.agent-os/subagent-config.yaml" ]; then
         echo "✅ Subagent integration installed successfully!"
     else
-        echo "⚠️ Subagent integration installation had issues"
+        echo "⚠️ Subagent integration setup did not complete properly"
     fi
+    
     rm -f "/tmp/setup-subagent-integration.sh"
 else
     echo "⚠️ Could not download subagent integration setup"
