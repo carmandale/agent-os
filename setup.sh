@@ -5,8 +5,8 @@
 
 set -e  # Exit on error
 
-# Initialize flags
-OVERWRITE_INSTRUCTIONS=false
+# Initialize flags - always update instructions to get latest versions
+OVERWRITE_INSTRUCTIONS=true
 OVERWRITE_STANDARDS=false
 
 # Parse command line arguments
@@ -312,17 +312,10 @@ echo "   ~/.agent-os/workflow-modules/ - Modular workflow components"
 echo "   ~/.agent-os/tools/            - Agent OS CLI tools (aos)"
 echo "   ~/.agent-os/VERSION           - Version $AGENT_OS_VERSION"
 echo ""
-if [ "$OVERWRITE_INSTRUCTIONS" = false ] && [ "$OVERWRITE_STANDARDS" = false ]; then
-    echo "💡 Note: Existing files were skipped to preserve your customizations"
-    echo "   Use --overwrite-instructions or --overwrite-standards to update specific files"
-else
-    echo "💡 Note: Some files were overwritten based on your flags"
-    if [ "$OVERWRITE_INSTRUCTIONS" = false ]; then
-        echo "   Existing instruction files were preserved"
-    fi
-    if [ "$OVERWRITE_STANDARDS" = false ]; then
-        echo "   Existing standards files were preserved"
-    fi
+echo "💡 Note: Instructions are always updated to latest versions"
+echo "   Standards files preserve your customizations unless --overwrite-standards is used"
+if [ "$OVERWRITE_STANDARDS" = true ]; then
+    echo "   Standards files were overwritten with latest versions"
 fi
 # Check for existing Claude Code commands and offer update
 if [ -d "$HOME/.claude/commands" ] && [ "$(ls -A $HOME/.claude/commands 2>/dev/null)" ]; then

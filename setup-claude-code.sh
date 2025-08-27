@@ -127,11 +127,15 @@ echo "📥 Installing subagent integration..."
 curl -s -o "/tmp/setup-subagent-integration.sh" "${BASE_URL}/integrations/setup-subagent-integration.sh"
 if [ -f "/tmp/setup-subagent-integration.sh" ]; then
     chmod +x "/tmp/setup-subagent-integration.sh"
-    if /tmp/setup-subagent-integration.sh; then
+    /tmp/setup-subagent-integration.sh
+    
+    # Check if installation actually completed by verifying config file exists
+    if [ -f "$HOME/.agent-os/subagent-config.yaml" ]; then
         echo "✅ Subagent integration installed successfully!"
     else
-        echo "⚠️ Subagent integration installation had issues"
+        echo "⚠️ Subagent integration setup did not complete properly"
     fi
+    
     rm -f "/tmp/setup-subagent-integration.sh"
 else
     echo "⚠️ Could not download subagent integration setup"
@@ -156,10 +160,13 @@ echo "📥 Installing Claude Code hooks..."
         echo "  ✓ Hook utilities found"
         
         # Run the hooks installation
-        if "$HOME/.agent-os/hooks/install-hooks.sh"; then
+        "$HOME/.agent-os/hooks/install-hooks.sh"
+        
+        # Check if installation actually completed by verifying config file exists
+        if [ -f "$HOME/.config/claude/hooks.json" ]; then
             echo "  ✅ Claude Code hooks installed successfully!"
         else
-            echo "  ⚠️ Claude Code hooks installation failed"
+            echo "  ⚠️ Claude Code hooks installation did not complete properly"
             echo "     You can install them manually by running:"
             echo "     ~/.agent-os/hooks/install-hooks.sh"
         fi
@@ -193,10 +200,13 @@ echo "📥 Installing Claude Code hooks..."
         echo "  ✓ Downloaded claude-code-hooks.json"
         
         # Run installation
-        if "$HOME/.agent-os/hooks/install-hooks.sh"; then
+        "$HOME/.agent-os/hooks/install-hooks.sh"
+        
+        # Check if installation actually completed by verifying config file exists
+        if [ -f "$HOME/.config/claude/hooks.json" ]; then
             echo "  ✅ Claude Code hooks installed successfully!"
         else
-            echo "  ⚠️ Claude Code hooks installation failed"
+            echo "  ⚠️ Claude Code hooks installation did not complete properly"
         fi
     fi
 

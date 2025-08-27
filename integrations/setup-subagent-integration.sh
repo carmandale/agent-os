@@ -221,15 +221,21 @@ main() {
     echo "Your existing workflows remain unchanged - enhancements are available when YOU want them."
     echo ""
     
-    read -p "Continue with setup? (y/n): " -n 1 -r
-    echo ""
-    
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo "Setup cancelled."
-        exit 0
+    # Skip prompt if running non-interactively (piped input)
+    if [ ! -t 0 ]; then
+        echo "Running in non-interactive mode - proceeding with setup..."
+        echo ""
+    else
+        read -p "Continue with setup? (y/n): " -n 1 -r
+        echo ""
+        
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            echo "Setup cancelled."
+            exit 0
+        fi
+        
+        echo ""
     fi
-    
-    echo ""
     
     # Run setup steps
     check_claude_code
