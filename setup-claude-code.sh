@@ -5,6 +5,33 @@
 
 set -e  # Exit on error
 
+# Initialize flags
+OVERWRITE_COMMANDS=false
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --overwrite-commands)
+            OVERWRITE_COMMANDS=true
+            shift
+            ;;
+        -h|--help)
+            echo "Usage: $0 [OPTIONS]"
+            echo ""
+            echo "Options:"
+            echo "  --overwrite-commands    Overwrite existing command files"
+            echo "  -h, --help              Show this help message"
+            echo ""
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Use --help for usage information"
+            exit 1
+            ;;
+    esac
+done
+
 echo "🚀 Agent OS Claude Code Setup"
 echo "============================="
 echo ""
@@ -37,11 +64,15 @@ echo "📥 Downloading Claude Code command files to ~/.claude/commands/"
 
 # Commands
 for cmd in plan-product create-spec execute-tasks analyze-product hygiene-check update-documentation; do
-    if [ -f "$HOME/.claude/commands/${cmd}.md" ]; then
+    if [ -f "$HOME/.claude/commands/${cmd}.md" ] && [ "$OVERWRITE_COMMANDS" = false ]; then
         echo "  ⚠️  ~/.claude/commands/${cmd}.md already exists - skipping"
     else
         curl -s -o "$HOME/.claude/commands/${cmd}.md" "${BASE_URL}/commands/${cmd}.md"
-        echo "  ✓ ~/.claude/commands/${cmd}.md"
+        if [ -f "$HOME/.claude/commands/${cmd}.md" ] && [ "$OVERWRITE_COMMANDS" = true ]; then
+            echo "  ✓ ~/.claude/commands/${cmd}.md (overwritten)"
+        else
+            echo "  ✓ ~/.claude/commands/${cmd}.md"
+        fi
     fi
 done
 
@@ -53,11 +84,15 @@ mkdir -p "$HOME/.claude/agents"
 # Agent definitions for Builder Methods subagent architecture
 agents=("context-fetcher" "date-checker" "file-creator" "git-workflow" "test-runner")
 for agent in "${agents[@]}"; do
-    if [ -f "$HOME/.claude/agents/${agent}.md" ]; then
+    if [ -f "$HOME/.claude/agents/${agent}.md" ] && [ "$OVERWRITE_COMMANDS" = false ]; then
         echo "  ⚠️  ~/.claude/agents/${agent}.md already exists - skipping"
     else
         curl -s -o "$HOME/.claude/agents/${agent}.md" "${BASE_URL}/claude-code/agents/${agent}.md"
-        echo "  ✓ ~/.claude/agents/${agent}.md"
+        if [ -f "$HOME/.claude/agents/${agent}.md" ] && [ "$OVERWRITE_COMMANDS" = true ]; then
+            echo "  ✓ ~/.claude/agents/${agent}.md (overwritten)"
+        else
+            echo "  ✓ ~/.claude/agents/${agent}.md"
+        fi
     fi
 done
 
