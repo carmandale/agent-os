@@ -6,7 +6,7 @@
 setup() {
 	# Create a temporary test directory
 	export TEST_DIR="$(mktemp -d)"
-	export ORIG_DIR="$(pwd)"
+	export ORIG_DIR="$(cd .. && pwd)"  # Go up one directory from tests/ to project root
 	cd "$TEST_DIR"
 	
 	# Initialize git repo for testing
