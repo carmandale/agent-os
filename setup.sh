@@ -321,7 +321,15 @@ fi
 if [ -d "$HOME/.claude/commands" ] && [ "$(ls -A $HOME/.claude/commands 2>/dev/null)" ]; then
 	echo ""
 	echo "🔄 Claude Code commands detected. Would you like to update them to match the latest Agent OS? (y/n)"
-	read -r -p "Update Claude commands? " response
+	
+	# Skip prompt if running non-interactively (piped input)
+	if [ ! -t 0 ]; then
+		echo "Running in non-interactive mode - updating Claude Code commands automatically..."
+		response="y"
+	else
+		read -r -p "Update Claude commands? " response
+	fi
+	
 	echo ""
 	if [[ $response =~ ^[Yy]$ ]]; then
 		echo "📦 Updating Claude Code commands..."
