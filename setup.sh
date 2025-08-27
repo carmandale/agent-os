@@ -324,6 +324,26 @@ else
         echo "   Existing standards files were preserved"
     fi
 fi
+# Check for existing Claude Code commands and offer update
+if [ -d "$HOME/.claude/commands" ] && [ "$(ls -A $HOME/.claude/commands 2>/dev/null)" ]; then
+	echo ""
+	echo "🔄 Claude Code commands detected. Would you like to update them to match the latest Agent OS? (y/n)"
+	read -r -p "Update Claude commands? " response
+	echo ""
+	if [[ $response =~ ^[Yy]$ ]]; then
+		echo "📦 Updating Claude Code commands..."
+		curl -sSL "${BASE_URL}/setup-claude-code.sh" | bash --overwrite-commands
+		if [ $? -eq 0 ]; then
+			echo "✅ Claude Code commands updated successfully!"
+		else
+			echo "⚠️  Command update had issues, but Agent OS base installation is complete"
+		fi
+	else
+		echo "ℹ️  Claude Code commands not updated. You can update them later with:"
+		echo "   curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup-claude-code.sh | bash --overwrite-commands"
+	fi
+fi
+
 echo ""
 echo "Next steps:"
 echo ""
@@ -331,8 +351,13 @@ echo "1. Customize your coding standards in ~/.agent-os/standards/"
 echo ""
 echo "2. Install commands for your AI coding assistant(s):"
 echo ""
-echo "   - Using Claude Code? Install the Claude Code commands with:"
-echo "     curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup-claude-code.sh | bash"
+if [ ! -d "$HOME/.claude/commands" ] || [ -z "$(ls -A $HOME/.claude/commands 2>/dev/null)" ]; then
+	echo "   - Using Claude Code? Install the Claude Code commands with:"
+	echo "     curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup-claude-code.sh | bash"
+else
+	echo "   - Claude Code commands are installed. To update them:"
+	echo "     curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup-claude-code.sh | bash --overwrite-commands"
+fi
 echo ""
 echo "   - Using Cursor? Install the Cursor commands with:"
 echo "     curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup-cursor.sh | bash"
