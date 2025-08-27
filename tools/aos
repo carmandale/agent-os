@@ -445,7 +445,11 @@ check_comprehensive_status() {
         if [ "$integrity_ok" = true ]; then
             print_status "success" "Integrity OK"
         else
-            print_status "warning" "Integrity issues detected (mismatch or missing files). Run setup to sync."
+            print_status "warning" "Integrity issues detected (mismatch or missing files)."
+            echo "   💡 To sync all components: ./setup.sh"
+            if [ -d "$HOME/.claude/commands" ]; then
+                echo "   💡 To sync Claude commands only: ./setup-claude-code.sh --overwrite-commands"
+            fi
         fi
     else
         print_status "error" "Not installed"
