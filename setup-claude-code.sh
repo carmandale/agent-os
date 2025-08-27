@@ -84,11 +84,15 @@ mkdir -p "$HOME/.claude/agents"
 # Agent definitions for Builder Methods subagent architecture
 agents=("context-fetcher" "date-checker" "file-creator" "git-workflow" "test-runner")
 for agent in "${agents[@]}"; do
-    if [ -f "$HOME/.claude/agents/${agent}.md" ]; then
+    if [ -f "$HOME/.claude/agents/${agent}.md" ] && [ "$OVERWRITE_COMMANDS" = false ]; then
         echo "  ⚠️  ~/.claude/agents/${agent}.md already exists - skipping"
     else
         curl -s -o "$HOME/.claude/agents/${agent}.md" "${BASE_URL}/claude-code/agents/${agent}.md"
-        echo "  ✓ ~/.claude/agents/${agent}.md"
+        if [ -f "$HOME/.claude/agents/${agent}.md" ] && [ "$OVERWRITE_COMMANDS" = true ]; then
+            echo "  ✓ ~/.claude/agents/${agent}.md (overwritten)"
+        else
+            echo "  ✓ ~/.claude/agents/${agent}.md"
+        fi
     fi
 done
 
