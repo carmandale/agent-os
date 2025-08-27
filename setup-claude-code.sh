@@ -137,12 +137,12 @@ else
     echo "⚠️ Could not download subagent integration setup"
 fi
 
-# Ask about Claude Code hooks installation  
+# Install Claude Code hooks automatically
 echo ""
-echo "🪝 Claude Code Hooks Available"
-echo "==============================="
+echo "🪝 Installing Agent OS Claude Code Hooks"
+echo "========================================"
 echo ""
-echo "Agent OS Claude Code hooks provide advanced workflow integration:"
+echo "Agent OS Claude Code hooks provide essential workflow integration:"
 echo "• Prevents workflow abandonment after quality checks"
 echo "• Auto-commits Agent OS documentation changes"
 echo "• Injects contextual project information automatically"
