@@ -150,10 +150,6 @@ echo ""
 echo "These hooks run transparently during your normal Claude Code interactions."
 echo ""
 echo "📥 Installing Claude Code hooks..."
-
-# Install hooks automatically
-    echo ""
-    echo "📥 Installing Claude Code hooks..."
     
     # Check if hooks are already installed
     if [ -f "$HOME/.agent-os/hooks/install-hooks.sh" ]; then
