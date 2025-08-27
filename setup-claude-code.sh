@@ -203,7 +203,7 @@ echo "📥 Installing Claude Code hooks..."
         "$HOME/.agent-os/hooks/install-hooks.sh"
         
         # Check if installation actually completed by verifying config file exists
-        if [ -f "$HOME/.claude/hooks/agent-os-hooks.json" ]; then
+        if [ -f "$HOME/.config/claude/hooks.json" ]; then
             echo "  ✅ Claude Code hooks installed successfully!"
         else
             echo "  ⚠️ Claude Code hooks installation did not complete properly"
