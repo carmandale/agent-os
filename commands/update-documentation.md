@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(gh issue:*), Bash(gh pr:*), Bash(jq:*), Bash(~/.agent-os/scripts/update-documentation.sh:*)
+allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(gh issue:*), Bash(gh pr:*), Bash(jq:*), Bash(~/.agent-os/scripts/update-documentation-wrapper.sh:*)
 description: Detect documentation drift and provide actionable recommendations for Agent OS projects
 argument-hint: [--dry-run|--diff-only|--create-missing|--deep]
 ---
@@ -15,7 +15,7 @@ Run the documentation health check to detect drift and provide actionable recomm
 
 ### Documentation Health Report
 
-!`~/.agent-os/scripts/update-documentation.sh $ARGUMENTS`
+!`~/.agent-os/scripts/update-documentation-wrapper.sh $ARGUMENTS`
 
 If no flags are provided, default to `--dry-run` for safe operation.
 
@@ -32,4 +32,5 @@ If no flags are provided, default to `--dry-run` for safe operation.
 - Normal mode checks: recent commits, open issues without specs, recent PRs not in CHANGELOG
 - Deep mode adds: file reference validation, spec-issue cross-referencing, roadmap status, orphaned specs
 - Use before PR creation and after task completion to ensure documentation is current
+- **Exit Code Translation**: Uses wrapper script to provide user-friendly status messages instead of confusing Claude Code error displays
 
