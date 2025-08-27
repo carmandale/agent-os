@@ -332,7 +332,7 @@ if [ -d "$HOME/.claude/commands" ] && [ "$(ls -A $HOME/.claude/commands 2>/dev/n
 	echo ""
 	if [[ $response =~ ^[Yy]$ ]]; then
 		echo "📦 Updating Claude Code commands..."
-		curl -sSL "${BASE_URL}/setup-claude-code.sh" | bash --overwrite-commands
+		curl -sSL "${BASE_URL}/setup-claude-code.sh" | bash -s -- --overwrite-commands
 		if [ $? -eq 0 ]; then
 			echo "✅ Claude Code commands updated successfully!"
 		else
@@ -340,7 +340,7 @@ if [ -d "$HOME/.claude/commands" ] && [ "$(ls -A $HOME/.claude/commands 2>/dev/n
 		fi
 	else
 		echo "ℹ️  Claude Code commands not updated. You can update them later with:"
-		echo "   curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup-claude-code.sh | bash --overwrite-commands"
+		echo "   curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup-claude-code.sh | bash -s -- --overwrite-commands"
 	fi
 fi
 
@@ -356,7 +356,7 @@ if [ ! -d "$HOME/.claude/commands" ] || [ -z "$(ls -A $HOME/.claude/commands 2>/
 	echo "     curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup-claude-code.sh | bash"
 else
 	echo "   - Claude Code commands are installed. To update them:"
-	echo "     curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup-claude-code.sh | bash --overwrite-commands"
+	echo "     curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup-claude-code.sh | bash -s -- --overwrite-commands"
 fi
 echo ""
 echo "   - Using Cursor? Install the Cursor commands with:"
