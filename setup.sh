@@ -179,6 +179,11 @@ curl -s -o "$HOME/.agent-os/scripts/update-documentation.sh" "${BASE_URL}/script
 chmod +x "$HOME/.agent-os/scripts/update-documentation.sh"
 echo "  ✓ ~/.agent-os/scripts/update-documentation.sh"
 
+# update-documentation-wrapper.sh (Claude Code friendly exit code translation)
+curl -s -o "$HOME/.agent-os/scripts/update-documentation-wrapper.sh" "${BASE_URL}/scripts/update-documentation-wrapper.sh"
+chmod +x "$HOME/.agent-os/scripts/update-documentation-wrapper.sh"
+echo "  ✓ ~/.agent-os/scripts/update-documentation-wrapper.sh"
+
 # config-resolver.py
 curl -s -o "$HOME/.agent-os/scripts/config-resolver.py" "${BASE_URL}/scripts/config-resolver.py"
 echo "  ✓ ~/.agent-os/scripts/config-resolver.py"
