@@ -64,11 +64,15 @@ echo "📥 Downloading Claude Code command files to ~/.claude/commands/"
 
 # Commands
 for cmd in plan-product create-spec execute-tasks analyze-product hygiene-check update-documentation; do
-    if [ -f "$HOME/.claude/commands/${cmd}.md" ]; then
+    if [ -f "$HOME/.claude/commands/${cmd}.md" ] && [ "$OVERWRITE_COMMANDS" = false ]; then
         echo "  ⚠️  ~/.claude/commands/${cmd}.md already exists - skipping"
     else
         curl -s -o "$HOME/.claude/commands/${cmd}.md" "${BASE_URL}/commands/${cmd}.md"
-        echo "  ✓ ~/.claude/commands/${cmd}.md"
+        if [ -f "$HOME/.claude/commands/${cmd}.md" ] && [ "$OVERWRITE_COMMANDS" = true ]; then
+            echo "  ✓ ~/.claude/commands/${cmd}.md (overwritten)"
+        else
+            echo "  ✓ ~/.claude/commands/${cmd}.md"
+        fi
     fi
 done
 
