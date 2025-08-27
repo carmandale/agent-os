@@ -332,7 +332,7 @@ if [ -d "$HOME/.claude/commands" ] && [ "$(ls -A $HOME/.claude/commands 2>/dev/n
 	echo ""
 	if [[ $response =~ ^[Yy]$ ]]; then
 		echo "📦 Updating Claude Code commands..."
-		curl -sSL "${BASE_URL}/setup-claude-code.sh" | bash --overwrite-commands
+		curl -sSL "${BASE_URL}/setup-claude-code.sh" | bash -s -- --overwrite-commands
 		if [ $? -eq 0 ]; then
 			echo "✅ Claude Code commands updated successfully!"
 		else
