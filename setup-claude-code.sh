@@ -5,6 +5,33 @@
 
 set -e  # Exit on error
 
+# Initialize flags
+OVERWRITE_COMMANDS=false
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --overwrite-commands)
+            OVERWRITE_COMMANDS=true
+            shift
+            ;;
+        -h|--help)
+            echo "Usage: $0 [OPTIONS]"
+            echo ""
+            echo "Options:"
+            echo "  --overwrite-commands    Overwrite existing command files"
+            echo "  -h, --help              Show this help message"
+            echo ""
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Use --help for usage information"
+            exit 1
+            ;;
+    esac
+done
+
 echo "🚀 Agent OS Claude Code Setup"
 echo "============================="
 echo ""
