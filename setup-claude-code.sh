@@ -149,10 +149,9 @@ echo "• Injects contextual project information automatically"
 echo ""
 echo "These hooks run transparently during your normal Claude Code interactions."
 echo ""
-echo "Install Claude Code hooks? (y/n)"
-read -r hooks_response
+echo "📥 Installing Claude Code hooks..."
 
-if [[ "$hooks_response" == "y" ]]; then
+# Install hooks automatically
     echo ""
     echo "📥 Installing Claude Code hooks..."
     
