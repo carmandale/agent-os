@@ -127,7 +127,7 @@ echo "📥 Installing subagent integration..."
 curl -s -o "/tmp/setup-subagent-integration.sh" "${BASE_URL}/integrations/setup-subagent-integration.sh"
 if [ -f "/tmp/setup-subagent-integration.sh" ]; then
     chmod +x "/tmp/setup-subagent-integration.sh"
-    /tmp/setup-subagent-integration.sh
+    /tmp/setup-subagent-integration.sh < /dev/null
     
     # Check if installation actually completed by verifying config file exists
     if [ -f "$HOME/.agent-os/subagent-config.yaml" ]; then
