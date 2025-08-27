@@ -340,7 +340,7 @@ if [ -d "$HOME/.claude/commands" ] && [ "$(ls -A $HOME/.claude/commands 2>/dev/n
 		fi
 	else
 		echo "ℹ️  Claude Code commands not updated. You can update them later with:"
-		echo "   curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup-claude-code.sh | bash --overwrite-commands"
+		echo "   curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup-claude-code.sh | bash -s -- --overwrite-commands"
 	fi
 fi
 
