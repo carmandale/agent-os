@@ -109,62 +109,47 @@ echo "   ~/.claude/agents/          - Claude Code agent definitions"
 echo "   ~/.claude/CLAUDE.md        - Claude Code configuration"
 echo ""
 
-# Ask about subagent integration
-echo "🤖 Automatic Workflow Enhancement Available"
-echo "=========================================="
+# Install subagent integration automatically
+echo "🤖 Installing Agent OS Subagent Integration"
+echo "==========================================="
 echo ""
-echo "Agent OS can automatically integrate with your Claude Code subagents for:"
+echo "Agent OS subagents provide automatic workflow enhancement:"
 echo "• Real-time code review during development"
 echo "• Comprehensive testing strategies when writing tests"
 echo "• Security analysis for auth and data handling"
 echo "• Performance optimization for critical paths"
 echo "• Code quality improvements beyond linting"
 echo ""
-echo "All enhancements are automatic - no extra commands needed!"
-echo ""
-echo "Install automatic subagent integration? (y/n)"
-read -r response
 
-if [[ "$response" == "y" ]]; then
-    echo ""
-    echo "📥 Installing subagent integration..."
-    
-    # Download and run subagent setup
-    curl -s -o "/tmp/setup-subagent-integration.sh" "${BASE_URL}/integrations/setup-subagent-integration.sh"
-    if [ -f "/tmp/setup-subagent-integration.sh" ]; then
-        chmod +x "/tmp/setup-subagent-integration.sh"
-        /tmp/setup-subagent-integration.sh
-        rm -f "/tmp/setup-subagent-integration.sh"
+echo "📥 Installing subagent integration..."
+
+# Download and run subagent setup
+curl -s -o "/tmp/setup-subagent-integration.sh" "${BASE_URL}/integrations/setup-subagent-integration.sh"
+if [ -f "/tmp/setup-subagent-integration.sh" ]; then
+    chmod +x "/tmp/setup-subagent-integration.sh"
+    if /tmp/setup-subagent-integration.sh; then
+        echo "✅ Subagent integration installed successfully!"
     else
-        echo "⚠️ Could not download subagent integration setup. You can install it later from:"
-        echo "   https://github.com/carmandale/agent-os/integrations/"
+        echo "⚠️ Subagent integration installation had issues"
     fi
+    rm -f "/tmp/setup-subagent-integration.sh"
 else
-    echo ""
-    echo "⚠️ Subagent integration skipped."
-    echo ""
-    echo "You can install it later by running:"
-    echo "  curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/integrations/setup-subagent-integration.sh | bash"
+    echo "⚠️ Could not download subagent integration setup"
 fi
 
-# Ask about Claude Code hooks installation  
+# Install Claude Code hooks automatically
 echo ""
-echo "🪝 Claude Code Hooks Available"
-echo "==============================="
+echo "🪝 Installing Agent OS Claude Code Hooks"
+echo "========================================"
 echo ""
-echo "Agent OS Claude Code hooks provide advanced workflow integration:"
+echo "Agent OS Claude Code hooks provide essential workflow integration:"
 echo "• Prevents workflow abandonment after quality checks"
 echo "• Auto-commits Agent OS documentation changes"
 echo "• Injects contextual project information automatically"
 echo ""
 echo "These hooks run transparently during your normal Claude Code interactions."
 echo ""
-echo "Install Claude Code hooks? (y/n)"
-read -r hooks_response
-
-if [[ "$hooks_response" == "y" ]]; then
-    echo ""
-    echo "📥 Installing Claude Code hooks..."
+echo "📥 Installing Claude Code hooks..."
     
     # Check if hooks are already installed
     if [ -f "$HOME/.agent-os/hooks/install-hooks.sh" ]; then
@@ -214,16 +199,6 @@ if [[ "$hooks_response" == "y" ]]; then
             echo "  ⚠️ Claude Code hooks installation failed"
         fi
     fi
-else
-    echo ""
-    echo "⚠️ Claude Code hooks installation skipped."
-    echo ""
-    echo "You can install them later by running:"
-    echo "  ~/.agent-os/hooks/install-hooks.sh"
-    echo ""
-    echo "Or download them from:"
-    echo "  https://github.com/carmandale/agent-os/hooks/"
-fi
 
 # Context validation hook - validate Claude Code integration
 echo ""
