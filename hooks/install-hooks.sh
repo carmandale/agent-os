@@ -52,12 +52,19 @@ mkdir -p "$HOOKS_CONFIG"
 if [ -f "$HOOKS_CONFIG/agent-os-hooks.json" ]; then
     echo "⚠️  Agent OS hooks are already installed"
     echo ""
-    echo "Do you want to reinstall/update them? (y/n)"
-    read -r response
     
-    if [[ "$response" != "y" ]]; then
-        echo "Installation cancelled"
-        exit 0
+    # Skip prompt if running non-interactively (piped input)
+    if [ ! -t 0 ]; then
+        echo "Running in non-interactive mode - updating hooks..."
+        echo ""
+    else
+        echo "Do you want to reinstall/update them? (y/n)"
+        read -r response
+        
+        if [[ "$response" != "y" ]]; then
+            echo "Installation cancelled"
+            exit 0
+        fi
     fi
     
     echo ""
