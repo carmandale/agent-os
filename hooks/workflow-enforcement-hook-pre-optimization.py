@@ -83,7 +83,7 @@ def resolve_workspace_root(input_data: dict) -> str:
 def fast_git_check(cwd: str) -> bool:
     """Ultra-fast git status check."""
     returncode, stdout, _ = cached_subprocess(
-        ["git", "status", "--porcelain"], cwd=cwd, timeout=1.5, cache_ttl=10
+        ["git", "status", "--porcelain"], cwd=cwd, timeout=1.5, cache_ttl=3
     )
     return returncode == 0 and bool(stdout.strip())
 
@@ -92,7 +92,7 @@ def fast_pr_check(cwd: str) -> bool:
     """Ultra-fast PR check with fallback."""
     returncode, stdout, _ = cached_subprocess(
         ["gh", "pr", "list", "--state", "open", "--json", "number"], 
-        cwd=cwd, timeout=0.3, cache_ttl=30
+        cwd=cwd, timeout=2.0, cache_ttl=15
     )
     if returncode == 0:
         try:
@@ -131,7 +131,7 @@ def fast_intent_check(prompt: str = "") -> str:
     try:
         returncode, stdout, _ = cached_subprocess([
             os.path.expanduser("~/.agent-os/scripts/intent-analyzer.sh"), "--text", text
-        ], timeout=0.2, cache_ttl=60)
+        ], timeout=1.0, cache_ttl=60)
         
         if returncode == 0:
             val = (stdout or "").strip().upper()
@@ -361,7 +361,7 @@ def handle_posttool(input_data):
         returncode, _, _ = cached_subprocess([
             os.path.expanduser("~/.agent-os/scripts/update-documentation.sh"),
             "--dry-run"
-        ], cwd=root, timeout=0.3, cache_ttl=10)
+        ], cwd=root, timeout=2.0, cache_ttl=10)
         
         if returncode == 2:
             message = ("⚠️ Documentation updates may be required.\n"
