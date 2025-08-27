@@ -5,8 +5,8 @@
 
 set -e  # Exit on error
 
-# Initialize flags
-OVERWRITE_INSTRUCTIONS=false
+# Initialize flags - always update instructions to get latest versions
+OVERWRITE_INSTRUCTIONS=true
 OVERWRITE_STANDARDS=false
 
 # Parse command line arguments
