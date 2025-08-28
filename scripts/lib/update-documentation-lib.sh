@@ -595,6 +595,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 EOF
 }
 
+extract_unreleased_entries() {
+    local changelog_file="${1:-CHANGELOG.md}"
+    
+    if [[ ! -f "$changelog_file" ]]; then
+        return 0
+    fi
+    
+    # Extract content between [Unreleased] and next version section
+    local in_unreleased=false
+    local result=""
+    
+    while IFS= read -r line; do
+        if [[ "$line" =~ ^\#\#\ \[Unreleased\] ]]; then
+            in_unreleased=true
+            continue
+        elif [[ "$line" =~ ^\#\# && "$in_unreleased" == true ]]; then
+            # Found next version section, stop
+            break
+        elif [[ "$in_unreleased" == true && -n "$line" ]]; then
+            # Add non-empty lines from unreleased section
+            if [[ -n "$result" ]]; then
+                result+=$'\n'
+            fi
+            result+="$line"
+        fi
+    done < "$changelog_file"
+    
+    echo "$result"
+}
+
 validate_changelog_format() {
     local changelog_file="$1"
     
