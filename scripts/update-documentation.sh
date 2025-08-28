@@ -300,6 +300,29 @@ fi
 
 printf -- '%s\n' "${proposals[@]}" | sort -u | sed 's/^/- /'
 
+# Auto-update CHANGELOG if requested and library is available
+if [[ $UPDATE_CHANGELOG -eq 1 ]] && [[ $needs_changelog -eq 1 ]]; then
+  if command -v full_changelog_update >/dev/null 2>&1; then
+    echo ""
+    echo "# CHANGELOG Auto-Update"
+    if [[ "$MODE" == "dry-run" ]]; then
+      echo "Would update CHANGELOG.md with recent commits and PRs"
+      # Show preview of what would be added
+      if command -v generate_changelog_entries >/dev/null 2>&1; then
+        echo "Preview of entries to add:"
+        generate_changelog_entries --since="7 days ago" --dry-run 2>/dev/null || echo "(No recent commits found for changelog)"
+      fi
+    else
+      full_changelog_update --since="7 days ago"
+      echo "✓ CHANGELOG.md updated with recent changes"
+    fi
+  else
+    echo ""
+    echo "# CHANGELOG Update (Unavailable)"
+    echo "Enhanced library not loaded - cannot auto-update CHANGELOG"
+  fi
+fi
+
 # Check for missing required documentation
 missing=()
 for target in CHANGELOG.md README.md CLAUDE.md \
