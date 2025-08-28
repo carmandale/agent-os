@@ -4,10 +4,17 @@
 
 set -euo pipefail
 
+# Source the enhanced library if available
+SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
+if [[ -f "$SCRIPT_DIR/lib/update-documentation-lib.sh" ]]; then
+    source "$SCRIPT_DIR/lib/update-documentation-lib.sh"
+fi
+
 # Parse command line arguments
 MODE="dry-run"
 CREATE_MISSING=0
 DEEP=0
+UPDATE_CHANGELOG=0
 
 for arg in "$@"; do
   case "$arg" in
@@ -15,6 +22,8 @@ for arg in "$@"; do
     --diff-only) MODE="diff-only" ;;
     --create-missing) CREATE_MISSING=1 ;;
     --deep) DEEP=1 ;;
+    --update-changelog) UPDATE_CHANGELOG=1 ;;
+    --changelog-only) UPDATE_CHANGELOG=1; MODE="changelog-only" ;;
   esac
 done
 
