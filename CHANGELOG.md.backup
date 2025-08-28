@@ -8,47 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-
-### Changed
-- feat: add changelog-only mode and auto-update integration
-- feat: integrate CHANGELOG update functionality into main script
-- fix: handle empty changelogs with missing [Unreleased] sections
-- fix: add create_basic_changelog function for empty CHANGELOG handling
-- test: enable CHANGELOG file operations tests
-- feat: complete CHANGELOG file operations implementation
-- chore: update PROJECT_INDEX.json for continued task execution
-- test: activate core CHANGELOG auto-update function tests
-- feat: implement core CHANGELOG auto-update functions
-- chore: update PROJECT_INDEX.json for continued task execution
-- test: create comprehensive CHANGELOG auto-update test suite
-- test: activate core modular library function tests
-- test: enable library sourcing test for modular refactor
-- feat: create modular library for update-documentation functionality
-- test: add comprehensive component tests for update-documentation refactor
-- chore: update PROJECT_INDEX.json for task execution
-- feat: add comprehensive tasks breakdown for enhanced update-documentation #90
-- feat: create spec for enhanced /update-documentation command #90
-- chore: update PROJECT_INDEX.json during spec creation
-- fix: change informational findings from error to success in update-documentation
-- chore: update PROJECT_INDEX.json during testing
-- fix: add TTY detection to Claude Code commands update prompt
-- chore: update PROJECT_INDEX.json during testing
-- fix: redirect stdin to /dev/null for subagent setup
-- fix: complete installer chain - non-interactive, mandatory components, correct success detection (#89)
-- force: ensure correct setup-claude-code.sh content is in GitHub
-- Make subagents and hooks mandatory - remove unnecessary optional prompts #87 (#88)
-- Fix critical installer syntax error and document command caching issue #85 (#86)
-- Fix installer command sync mismatches causing integrity warnings #83 (#84)
-- chore: update PROJECT_INDEX.json after spec completion
-- docs: mark Issue #80 spec tasks as complete
-- Fix misleading error display in /update-documentation command #80 (#81)
-- chore: update PROJECT_INDEX.json after hooks refactor completion
-- Refactor Agent OS Hooks Architecture for Performance and Modularity (#79)
-- Complete Task 2 of Installation Test Suite - Context Validation System (#77)
-- Clean up test files
-- Implement work session batching system and test functionality
-- feat: add work session manager for batched commits
-- fix: setup script now uses dynamic version from VERSION file
 - **Documentation Drift Detection Command** (#40)
   - `/update-documentation` command for detecting documentation drift
   - Normal mode for quick health checks of recent activity
@@ -237,3 +196,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Major (X.0.0)**: Breaking changes, architectural updates
 - **Minor (0.X.0)**: New features, backwards compatible
+- **Patch (0.0.X)**: Bug fixes, minor improvements
