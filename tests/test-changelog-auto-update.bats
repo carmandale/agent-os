@@ -91,7 +91,6 @@ teardown() {
 }
 
 @test "categorize_commit() sorts commits by type" {
-    skip "Function not yet implemented - Task 2.2"
     source "$LIB_PATH"
     
     result=$(categorize_commit "feat: add new feature")
@@ -234,7 +233,6 @@ teardown() {
 }
 
 @test "format_changelog_date() uses consistent date format" {
-    skip "Function not yet implemented - Task 2.2"
     source "$LIB_PATH"
     
     result=$(format_changelog_date "2024-08-28T14:30:00Z")
@@ -310,7 +308,6 @@ teardown() {
 }
 
 @test "validate_changelog_format() checks structure" {
-    skip "Function not yet implemented - Task 2.2"
     source "$LIB_PATH"
     
     validate_changelog_format CHANGELOG.md
