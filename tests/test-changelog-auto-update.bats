@@ -171,7 +171,6 @@ teardown() {
 }
 
 @test "update_changelog_file() preserves existing content" {
-    skip "Function not yet implemented - Task 2.2"
     source "$LIB_PATH"
     
     # Backup original changelog
@@ -194,7 +193,6 @@ teardown() {
 }
 
 @test "update_changelog_file() handles empty changelog" {
-    skip "Function not yet implemented - Task 2.2"
     source "$LIB_PATH"
     
     # Create empty changelog
@@ -215,7 +213,6 @@ teardown() {
 # ============================================================================
 
 @test "detect_version_changes() identifies version bumps" {
-    skip "Function not yet implemented - Task 2.2"
     source "$LIB_PATH"
     
     # Create version file changes
@@ -296,7 +293,6 @@ teardown() {
 # ============================================================================
 
 @test "backup_changelog() creates safety backup" {
-    skip "Function not yet implemented - Task 2.2"
     source "$LIB_PATH"
     
     backup_changelog
