@@ -635,6 +635,34 @@ update_changelog_file() {
         create_basic_changelog "$changelog_file"
     fi
     
+    # Check if [Unreleased] section exists
+    if ! grep -q "^## \[Unreleased\]" "$changelog_file"; then
+        log_info "Adding [Unreleased] section to existing changelog"
+        # Add [Unreleased] section after main header
+        local temp_file
+        temp_file=$(mktemp)
+        
+        local header_done=false
+        while IFS= read -r line; do
+            echo "$line" >> "$temp_file"
+            if [[ "$line" =~ ^#[[:space:]] && "$header_done" == false ]]; then
+                header_done=true
+                echo "" >> "$temp_file"
+                echo "## [Unreleased]" >> "$temp_file"
+                echo "" >> "$temp_file"
+            fi
+        done < "$changelog_file"
+        
+        # If no header found, just append
+        if [[ "$header_done" == false ]]; then
+            echo "" >> "$temp_file"
+            echo "## [Unreleased]" >> "$temp_file"
+            echo "" >> "$temp_file"
+        fi
+        
+        mv "$temp_file" "$changelog_file"
+    fi
+    
     # Find the [Unreleased] section
     local temp_file
     temp_file=$(mktemp)
