@@ -49,6 +49,27 @@ if [[ "$MODE" == "diff-only" ]]; then
   exit 0
 fi
 
+# If changelog-only mode, update CHANGELOG and exit
+if [[ "$MODE" == "changelog-only" ]]; then
+  if command -v full_changelog_update >/dev/null 2>&1; then
+    echo ""
+    echo "# CHANGELOG Update"
+    if [[ "$MODE" == "dry-run" ]]; then
+      echo "Would update CHANGELOG.md with recent commits and PRs"
+      # Show what would be added (dry-run preview)
+      if command -v generate_changelog_entries >/dev/null 2>&1; then
+        generate_changelog_entries --since="7 days ago" --dry-run || true
+      fi
+    else
+      full_changelog_update --since="7 days ago"
+    fi
+  else
+    echo "CHANGELOG update functionality not available (enhanced library not loaded)"
+    exit 1
+  fi
+  exit 0
+fi
+
 # Function to check if CHANGELOG has recent entries (last 30 days)
 check_changelog_recent() {
   if [[ ! -f CHANGELOG.md ]]; then
