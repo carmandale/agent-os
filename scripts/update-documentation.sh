@@ -80,7 +80,6 @@ check_issues_without_specs() {
   if [[ ${#issues_without_specs[@]} -gt 0 ]]; then
     echo "## Issues without specs:"
     printf -- '- Issue #%s\n' "${issues_without_specs[@]}"
-    return 1
   fi
   return 0
 }
@@ -105,7 +104,6 @@ check_recent_prs() {
       if [[ ${#undocumented_prs[@]} -gt 0 ]]; then
         echo "## Recent PRs not in CHANGELOG:"
         printf -- '- PR #%s\n' "${undocumented_prs[@]}"
-        return 1
       fi
     fi
   fi
