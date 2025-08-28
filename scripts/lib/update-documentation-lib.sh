@@ -601,6 +601,224 @@ validate_changelog_format() {
     return 0
 }
 
+update_changelog_file() {
+    local new_entries="$1"
+    local changelog_file="${2:-CHANGELOG.md}"
+    
+    if [[ -z "$new_entries" ]]; then
+        log_warning "No new entries to add to changelog"
+        return 0
+    fi
+    
+    # Create backup
+    backup_changelog
+    
+    # Check if changelog exists
+    if [[ ! -f "$changelog_file" ]]; then
+        log_info "Creating new CHANGELOG.md"
+        create_basic_changelog "$changelog_file"
+    fi
+    
+    # Find the [Unreleased] section
+    local temp_file
+    temp_file=$(mktemp)
+    
+    # Read through file and insert new entries under [Unreleased]
+    local in_unreleased=false
+    local entries_added=false
+    
+    while IFS= read -r line; do
+        echo "$line" >> "$temp_file"
+        
+        # Check if we found the [Unreleased] section
+        if [[ "$line" =~ ^\#\#\ \[Unreleased\] ]]; then
+            in_unreleased=true
+        elif [[ "$line" =~ ^\#\# && "$in_unreleased" == true ]]; then
+            # Found next version section, insert entries before it
+            if [[ "$entries_added" == false ]]; then
+                echo "" >> "$temp_file"
+                echo "$new_entries" >> "$temp_file"
+                entries_added=true
+            fi
+            in_unreleased=false
+        elif [[ "$in_unreleased" == true && "$line" =~ ^\#\#\# && "$entries_added" == false ]]; then
+            # Found first subsection under [Unreleased], insert before it
+            echo "" >> "$temp_file"
+            echo "$new_entries" >> "$temp_file"
+            echo "" >> "$temp_file"
+            entries_added=true
+        fi
+    done < "$changelog_file"
+    
+    # If we never found a place to insert, add at end of [Unreleased]
+    if [[ "$entries_added" == false ]]; then
+        echo "" >> "$temp_file"
+        echo "$new_entries" >> "$temp_file"
+    fi
+    
+    # Replace original file
+    mv "$temp_file" "$changelog_file"
+    log_success "Updated $changelog_file with new entries"
+}
+
+preserve_manual_entries() {
+    local new_entries="$1"
+    local changelog_file="${2:-CHANGELOG.md}"
+    
+    if [[ ! -f "$changelog_file" ]]; then
+        echo "$new_entries"
+        return 0
+    fi
+    
+    # Extract existing entries from [Unreleased] section
+    local existing_entries
+    existing_entries=$(extract_unreleased_entries "$changelog_file")
+    
+    if [[ -z "$existing_entries" ]]; then
+        echo "$new_entries"
+        return 0
+    fi
+    
+    # Merge entries by category
+    merge_changelog_sections "$existing_entries" "$new_entries"
+}
+
+merge_changelog_sections() {
+    local existing="$1"
+    local new="$2"
+    
+    # Simple merge approach - combine similar sections
+    local merged=""
+    
+    # Parse both sets of entries and combine by category
+    declare -A all_sections
+    
+    # Extract sections from existing entries
+    local current_section=""
+    local section_content=""
+    
+    while IFS= read -r line; do
+        if [[ "$line" =~ ^\#\#\#\ (.+) ]]; then
+            # Save previous section
+            if [[ -n "$current_section" && -n "$section_content" ]]; then
+                all_sections["$current_section"]+="$section_content"$'\n'
+            fi
+            current_section="${BASH_REMATCH[1]}"
+            section_content=""
+        elif [[ -n "$current_section" && "$line" =~ ^- ]]; then
+            section_content+="$line"$'\n'
+        fi
+    done <<< "$existing"
+    
+    # Save last section from existing
+    if [[ -n "$current_section" && -n "$section_content" ]]; then
+        all_sections["$current_section"]+="$section_content"
+    fi
+    
+    # Add new entries
+    current_section=""
+    section_content=""
+    
+    while IFS= read -r line; do
+        if [[ "$line" =~ ^\#\#\#\ (.+) ]]; then
+            # Save previous section
+            if [[ -n "$current_section" && -n "$section_content" ]]; then
+                all_sections["$current_section"]+="$section_content"$'\n'
+            fi
+            current_section="${BASH_REMATCH[1]}"
+            section_content=""
+        elif [[ -n "$current_section" && "$line" =~ ^- ]]; then
+            section_content+="$line"$'\n'
+        fi
+    done <<< "$new"
+    
+    # Save last section from new
+    if [[ -n "$current_section" && -n "$section_content" ]]; then
+        all_sections["$current_section"]+="$section_content"
+    fi
+    
+    # Output merged sections
+    for category in "Added" "Changed" "Fixed"; do
+        if [[ -n "${all_sections[$category]:-}" ]]; then
+            merged+="### $category"$'\n'
+            merged+="${all_sections[$category]}"$'\n'
+        fi
+    done
+    
+    echo "$merged" | sed '/^[[:space:]]*$/d'
+}
+
+detect_version_changes() {
+    local since="${1:-1 day ago}"
+    
+    # Look for version-related files and tags
+    local version_files=("VERSION" "version.txt" "package.json")
+    local version_changes=""
+    
+    # Check for version file changes
+    for file in "${version_files[@]}"; do
+        if [[ -f "$file" ]] && git diff --name-only HEAD~1 2>/dev/null | grep -q "^$file$"; then
+            local current_version
+            if [[ "$file" == "VERSION" || "$file" == "version.txt" ]]; then
+                current_version=$(cat "$file" 2>/dev/null | tr -d '\n')
+            elif [[ "$file" == "package.json" ]]; then
+                current_version=$(grep '"version"' "$file" | head -1 | sed 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
+            fi
+            
+            if [[ -n "$current_version" ]]; then
+                version_changes="$current_version"
+                break
+            fi
+        fi
+    done
+    
+    # Check for recent tags if no version file changes
+    if [[ -z "$version_changes" ]]; then
+        local recent_tag
+        recent_tag=$(git tag --sort=-creatordate --merged HEAD | head -1 2>/dev/null || true)
+        if [[ -n "$recent_tag" ]]; then
+            version_changes="$recent_tag"
+        fi
+    fi
+    
+    echo "$version_changes"
+}
+
+full_changelog_update() {
+    local since="${1:-1 day ago}"
+    local changelog_file="${2:-CHANGELOG.md}"
+    
+    # Validate environment
+    validate_environment || return 1
+    validate_repository || return 1
+    
+    # Generate new entries
+    log_info "Analyzing commits since: $since"
+    local new_entries
+    new_entries=$(generate_changelog_entries --since="$since")
+    
+    if [[ -z "$new_entries" ]]; then
+        log_info "No new entries to add to changelog"
+        return 0
+    fi
+    
+    # Preserve existing manual entries
+    local merged_entries
+    merged_entries=$(preserve_manual_entries "$new_entries" "$changelog_file")
+    
+    # Update the changelog file
+    update_changelog_file "$merged_entries" "$changelog_file"
+    
+    # Validate the result
+    if validate_changelog_format "$changelog_file"; then
+        log_success "Successfully updated $changelog_file"
+        return 0
+    else
+        log_error "Changelog validation failed after update"
+        return 1
+    fi
+}
+
 # ============================================================================
 # Main Execution Function
 # ============================================================================
