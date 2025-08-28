@@ -42,7 +42,6 @@ teardown() {
 # ============================================================================
 
 @test "parse_flags() handles --dry-run flag" {
-    skip "Function not yet implemented - Task 1.2"
     source "$LIB_PATH"
     
     result=$(parse_flags --dry-run)
@@ -51,7 +50,6 @@ teardown() {
 }
 
 @test "parse_flags() handles --update flag" {
-    skip "Function not yet implemented - Task 1.2"
     source "$LIB_PATH"
     
     result=$(parse_flags --update)
@@ -231,10 +229,9 @@ teardown() {
 # ============================================================================
 
 @test "log_info() outputs formatted messages" {
-    skip "Function not yet implemented - Task 1.3"
     source "$LIB_PATH"
     
-    result=$(log_info "Test message")
+    result=$(log_info "Test message" 2>&1)
     [ "$?" -eq 0 ]
     [[ "$result" == *"Test message"* ]]
 }
