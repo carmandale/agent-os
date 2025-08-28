@@ -33,7 +33,6 @@ teardown() {
 # ============================================================================
 
 @test "library exists and can be sourced" {
-    skip "Library not yet implemented - Task 1.4"
     [ -f "$LIB_PATH" ]
     source "$LIB_PATH"
 }
