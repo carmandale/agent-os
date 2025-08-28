@@ -360,6 +360,248 @@ is_diff_only_mode() {
 }
 
 # ============================================================================
+# CHANGELOG Auto-Update Module
+# ============================================================================
+
+analyze_git_commits() {
+    local since=""
+    local format="simple"
+    
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --since=*)
+                since="${1#*=}"
+                shift
+                ;;
+            --format=*)
+                format="${1#*=}"
+                shift
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
+    
+    # Build git log command
+    local git_cmd="git log --oneline"
+    if [[ -n "$since" ]]; then
+        git_cmd="$git_cmd --since='$since'"
+    fi
+    
+    # Get commits
+    local commits
+    commits=$(eval "$git_cmd" 2>/dev/null || true)
+    
+    if [[ -z "$commits" ]]; then
+        return 0
+    fi
+    
+    # Process commits based on format
+    if [[ "$format" == "detailed" ]]; then
+        # Include commit body and metadata
+        git_cmd="git log --format='%h|%s|%b|%an|%ad' --date=iso"
+        if [[ -n "$since" ]]; then
+            git_cmd="$git_cmd --since='$since'"
+        fi
+        eval "$git_cmd" 2>/dev/null || true
+    else
+        echo "$commits"
+    fi
+}
+
+categorize_commit() {
+    local commit_msg="$1"
+    
+    # Extract type from conventional commit format
+    if [[ "$commit_msg" =~ ^(feat|feature)[\(:] ]]; then
+        echo "Added"
+    elif [[ "$commit_msg" =~ ^fix[\(:] ]]; then
+        echo "Fixed"
+    elif [[ "$commit_msg" =~ ^(docs|doc)[\(:] ]]; then
+        echo "Changed"
+    elif [[ "$commit_msg" =~ ^(style|refactor)[\(:] ]]; then
+        echo "Changed"
+    elif [[ "$commit_msg" =~ ^(test|tests)[\(:] ]]; then
+        echo "Changed"
+    elif [[ "$commit_msg" =~ ^(chore|build|ci)[\(:] ]]; then
+        echo "Changed"
+    elif [[ "$commit_msg" =~ ^(breaking|BREAKING)[\(:] ]]; then
+        echo "Changed"
+    elif [[ "$commit_msg" =~ ^(perf|performance)[\(:] ]]; then
+        echo "Changed"
+    else
+        echo "Changed"
+    fi
+}
+
+fetch_pr_data() {
+    local merged=false
+    local limit=10
+    
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --merged)
+                merged=true
+                shift
+                ;;
+            --limit=*)
+                limit="${1#*=}"
+                shift
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
+    
+    # Check if gh CLI is available
+    if ! command -v gh &> /dev/null; then
+        return 0
+    fi
+    
+    # Build gh command
+    local gh_cmd="gh pr list --json number,title,mergedAt,author,body --limit $limit"
+    if [[ "$merged" == true ]]; then
+        gh_cmd="$gh_cmd --state merged"
+    fi
+    
+    # Execute and return PR data
+    eval "$gh_cmd" 2>/dev/null || echo "[]"
+}
+
+format_pr_entry() {
+    local pr_data="$1"
+    local category="${2:-Added}"
+    
+    # Extract PR information using basic string manipulation
+    # (avoiding jq dependency in core function)
+    local pr_number
+    local pr_title
+    local pr_author
+    
+    pr_number=$(echo "$pr_data" | sed -n 's/.*"number": *\([0-9]*\).*/\1/p')
+    pr_title=$(echo "$pr_data" | sed -n 's/.*"title": *"\([^"]*\)".*/\1/p')
+    pr_author=$(echo "$pr_data" | sed -n 's/.*"login": *"\([^"]*\)".*/\1/p')
+    
+    if [[ -n "$pr_number" && -n "$pr_title" ]]; then
+        echo "- **$pr_title** (#$pr_number) @$pr_author"
+    fi
+}
+
+generate_changelog_entries() {
+    local since=""
+    
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --since=*)
+                since="${1#*=}"
+                shift
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
+    
+    # Get commits
+    local commits
+    commits=$(analyze_git_commits --since="$since")
+    
+    if [[ -z "$commits" ]]; then
+        return 0
+    fi
+    
+    # Categorize commits
+    declare -A categories
+    categories["Added"]=""
+    categories["Fixed"]=""
+    categories["Changed"]=""
+    
+    while IFS= read -r commit; do
+        if [[ -n "$commit" ]]; then
+            # Extract commit message (after hash)
+            local commit_msg
+            commit_msg=$(echo "$commit" | cut -d' ' -f2-)
+            
+            # Remove conventional commit prefix for display
+            commit_msg=$(echo "$commit_msg" | sed 's/^[a-zA-Z]*[(:][^)]*[)]*: *//')
+            
+            local category
+            category=$(categorize_commit "$commit")
+            
+            if [[ -n "${categories[$category]}" ]]; then
+                categories[$category]+=$'\n'"- $commit_msg"
+            else
+                categories[$category]="- $commit_msg"
+            fi
+        fi
+    done <<< "$commits"
+    
+    # Output formatted sections
+    for category in "Added" "Changed" "Fixed"; do
+        if [[ -n "${categories[$category]}" ]]; then
+            echo "### $category"
+            echo "${categories[$category]}"
+            echo ""
+        fi
+    done
+}
+
+format_changelog_date() {
+    local input_date="$1"
+    
+    if [[ "$input_date" == "now" ]]; then
+        date +%Y-%m-%d
+    elif [[ "$input_date" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}T ]]; then
+        # ISO format - extract just the date part
+        echo "$input_date" | cut -d'T' -f1
+    elif [[ "$input_date" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+        # Already in correct format
+        echo "$input_date"
+    else
+        # Try to parse with date command
+        date -d "$input_date" +%Y-%m-%d 2>/dev/null || date +%Y-%m-%d
+    fi
+}
+
+backup_changelog() {
+    if [[ -f "CHANGELOG.md" ]]; then
+        cp "CHANGELOG.md" "CHANGELOG.md.backup"
+        log_info "Created backup: CHANGELOG.md.backup"
+        return 0
+    else
+        log_warning "No CHANGELOG.md found to backup"
+        return 1
+    fi
+}
+
+validate_changelog_format() {
+    local changelog_file="$1"
+    
+    if [[ ! -f "$changelog_file" ]]; then
+        log_error "Changelog file not found: $changelog_file"
+        return 1
+    fi
+    
+    # Check for basic Keep a Changelog structure
+    if ! grep -q "# Changelog" "$changelog_file" && ! grep -q "# CHANGELOG" "$changelog_file"; then
+        log_error "Missing changelog header"
+        return 1
+    fi
+    
+    if ! grep -q "## \[" "$changelog_file"; then
+        log_error "Missing version sections"
+        return 1
+    fi
+    
+    return 0
+}
+
+# ============================================================================
 # Main Execution Function
 # ============================================================================
 
