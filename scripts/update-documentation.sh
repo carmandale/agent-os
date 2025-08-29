@@ -80,6 +80,27 @@ if [[ "$MODE" == "changelog-only" ]]; then
   exit 0
 fi
 
+# If sync-roadmap mode, update roadmap and exit
+if [[ "$SYNC_ROADMAP" -eq 1 ]]; then
+  if command -v full_roadmap_sync >/dev/null 2>&1; then
+    echo ""
+    echo "# Roadmap Synchronization"
+    if [[ "$MODE" == "dry-run" ]]; then
+      echo "Would update roadmap.md based on completed specs and tasks"
+      # Show what would be updated (dry-run preview)
+      if command -v analyze_spec_completion >/dev/null 2>&1; then
+        analyze_spec_completion --dry-run || true
+      fi
+    else
+      full_roadmap_sync ".agent-os/product/roadmap.md"
+    fi
+  else
+    echo "Roadmap sync functionality not available (roadmap-sync library not loaded)"
+    exit 1
+  fi
+  exit 0
+fi
+
 # Function to check if CHANGELOG has recent entries (last 30 days)
 check_changelog_recent() {
   if [[ ! -f CHANGELOG.md ]]; then
