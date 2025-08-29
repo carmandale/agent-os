@@ -12,6 +12,9 @@ fi
 if [[ -f "$SCRIPT_DIR/lib/spec-creator.sh" ]]; then
     source "$SCRIPT_DIR/lib/spec-creator.sh"
 fi
+if [[ -f "$SCRIPT_DIR/lib/roadmap-sync.sh" ]]; then
+    source "$SCRIPT_DIR/lib/roadmap-sync.sh"
+fi
 
 # Parse command line arguments
 MODE="dry-run"
