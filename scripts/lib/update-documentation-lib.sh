@@ -1071,5 +1071,6 @@ log_error() {
 
 is_dry_run() {
     # Check if running in dry-run mode - compatible with main script
-    [[ "${MODE:-dry-run}" == "dry-run" ]]
+    local mode="${MODE:-dry-run}"
+    [[ "$mode" == "dry-run" ]]
 }
