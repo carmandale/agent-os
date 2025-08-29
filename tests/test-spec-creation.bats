@@ -47,7 +47,9 @@ teardown() {
     source "$SPEC_LIB_PATH"
     
     spec_dir=$(generate_spec_directory "implement dashboard" 456)
-    create_spec_directory "$spec_dir"
+    setup_spec_structure "$spec_dir"
+    create_spec_template "$spec_dir" "implement dashboard" 456
+    create_tasks_template "$spec_dir" "implement dashboard"
     
     [ -d ".agent-os/specs/$spec_dir" ]
     [ -f ".agent-os/specs/$spec_dir/spec.md" ]
