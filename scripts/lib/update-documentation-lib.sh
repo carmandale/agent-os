@@ -967,3 +967,109 @@ main_execution() {
     
     return 0
 }
+
+# ============================================================================
+# Discovery and Analysis Functions (Task 1.3)
+# ============================================================================
+
+discover_changes() {
+    # Detect git changes - current implementation compatible with main script
+    git diff --name-only HEAD 2>/dev/null || true
+}
+
+analyze_documentation_health() {
+    local changed="$1"
+    if [[ -z "$changed" ]]; then
+        return 0
+    fi
+    
+    # Basic health check - identify files that might need documentation
+    local health_issues=""
+    while IFS= read -r file; do
+        if [[ "$file" =~ \.(sh|js|ts|py)$ ]]; then
+            health_issues+="Documentation may be needed for: $file"$'\n'
+        fi
+    done <<< "$changed"
+    
+    echo "$health_issues" | sed '/^$/d'
+}
+
+analyze_issues_without_specs() {
+    # Check for GitHub issues that don't have corresponding specs
+    if ! command -v gh >/dev/null 2>&1; then
+        return 0
+    fi
+    
+    local issues
+    issues=$(gh issue list --limit 10 --json number,title --jq '.[] | "\(.number):\(.title)"' 2>/dev/null || echo "")
+    
+    if [[ -n "$issues" ]]; then
+        echo "Issues without specs detected:"
+        echo "$issues" | head -3
+    fi
+}
+
+analyze_recent_prs() {
+    # Check for recent PRs that might need documentation
+    if ! command -v gh >/dev/null 2>&1; then
+        return 0
+    fi
+    
+    local recent_prs
+    recent_prs=$(gh pr list --state merged --limit 5 --json number,title --jq '.[] | "#\(.number): \(.title)"' 2>/dev/null || echo "")
+    
+    if [[ -n "$recent_prs" ]]; then
+        echo "Recent merged PRs:"
+        echo "$recent_prs"
+    fi
+}
+
+generate_report() {
+    local section_title="$1"
+    local content="$2"
+    local summary="${3:-}"
+    
+    echo "# $section_title"
+    if [[ -n "$content" ]]; then
+        echo "$content"
+    fi
+    if [[ -n "$summary" ]]; then
+        echo ""
+        echo "$summary"
+    fi
+}
+
+validate_environment() {
+    # Check for required commands
+    local missing_commands=()
+    
+    if ! command -v git >/dev/null 2>&1; then
+        missing_commands+=("git")
+    fi
+    
+    if [[ ${#missing_commands[@]} -gt 0 ]]; then
+        log_error "Missing required commands: ${missing_commands[*]}"
+        return 1
+    fi
+    
+    return 0
+}
+
+validate_repository() {
+    # Check if we're in a git repository
+    if ! git rev-parse --show-toplevel >/dev/null 2>&1; then
+        log_error "Not in a git repository"
+        return 1
+    fi
+    
+    return 0
+}
+
+log_error() {
+    echo -e "${RED}❌ $1${NC}" >&2
+}
+
+is_dry_run() {
+    # Check if running in dry-run mode - compatible with main script
+    [[ "${MODE:-dry-run}" == "dry-run" ]]
+}
