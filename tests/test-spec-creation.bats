@@ -157,7 +157,6 @@ teardown() {
 }
 
 @test "detects spec directory conflicts" {
-    skip "Function not yet implemented - Task 3.2"
     source "$SPEC_LIB_PATH"
     
     spec_dir="2024-08-28-conflict-test-#404"
