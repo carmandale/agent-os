@@ -8,8 +8,8 @@ set -e
 
 # Configuration
 HOOKS_DIR="$HOME/.agent-os/hooks"
-CLAUDE_CODE_CONFIG_DIR="$HOME/.config/claude"
-HOOKS_CONFIG_FILE="$CLAUDE_CODE_CONFIG_DIR/hooks.json"
+CLAUDE_CODE_CONFIG_DIR="$HOME/.claude"
+HOOKS_CONFIG_FILE="$CLAUDE_CODE_CONFIG_DIR/settings.json"
 
 # Colors for output
 RED='\033[0;31m'
