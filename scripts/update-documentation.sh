@@ -18,6 +18,7 @@ MODE="dry-run"
 CREATE_MISSING=0
 DEEP=0
 UPDATE_CHANGELOG=0
+CREATE_SPEC=0
 
 for arg in "$@"; do
   case "$arg" in
@@ -27,6 +28,7 @@ for arg in "$@"; do
     --deep) DEEP=1 ;;
     --update-changelog) UPDATE_CHANGELOG=1 ;;
     --changelog-only) UPDATE_CHANGELOG=1; MODE="changelog-only" ;;
+    --create-spec) CREATE_SPEC=1 ;;
   esac
 done
 
