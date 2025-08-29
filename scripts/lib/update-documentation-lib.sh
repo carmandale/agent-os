@@ -533,10 +533,13 @@ generate_changelog_entries() {
             local category
             category=$(categorize_commit "$commit")
             
-            if [[ -n "${categories[$category]:-}" ]]; then
-                categories[$category]+=$'\n'"- $commit_msg"
-            else
-                categories[$category]="- $commit_msg"
+            # Only process recognized categories
+            if [[ "$category" == "Added" || "$category" == "Fixed" || "$category" == "Changed" ]]; then
+                if [[ -n "${categories[$category]:-}" ]]; then
+                    categories[$category]+=$'\n'"- $commit_msg"
+                else
+                    categories[$category]="- $commit_msg"
+                fi
             fi
         fi
     done <<< "$commits"
