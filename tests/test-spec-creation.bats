@@ -192,7 +192,6 @@ teardown() {
 }
 
 @test "handles GitHub API failures gracefully" {
-    skip "Function not yet implemented - Task 3.2"
     source "$SPEC_LIB_PATH"
     
     # Mock failing gh command
