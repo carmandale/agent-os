@@ -120,17 +120,13 @@ teardown() {
 @test "validate_spec_name() rejects invalid names" {
     source "$SPEC_LIB_PATH"
     
-    validate_spec_name ""
-    [ "$?" -ne 0 ]
+    ! validate_spec_name ""
     
-    validate_spec_name "a"
-    [ "$?" -ne 0 ]
+    ! validate_spec_name "a"
     
-    validate_spec_name "name with / slash"
-    [ "$?" -ne 0 ]
+    ! validate_spec_name "name with / slash"
     
-    validate_spec_name "name with . dots"
-    [ "$?" -ne 0 ]
+    ! validate_spec_name "name with . dots"
 }
 
 @test "spec name sanitization for directory names" {
