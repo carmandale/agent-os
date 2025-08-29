@@ -84,7 +84,7 @@ teardown() {
     # Check for required task structure
     grep -q "# Implementation Tasks" ".agent-os/specs/$spec_dir/tasks.md"
     grep -q "## Phase 1:" ".agent-os/specs/$spec_dir/tasks.md"
-    grep -q "- \[ \]" ".agent-os/specs/$spec_dir/tasks.md"
+    grep -q "\\- \\[ \\]" ".agent-os/specs/$spec_dir/tasks.md"
 }
 
 @test "sub-specs directory structure creation" {
