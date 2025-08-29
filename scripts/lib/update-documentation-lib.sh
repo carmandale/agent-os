@@ -617,8 +617,8 @@ extract_unreleased_entries() {
         elif [[ "$line" =~ ^\#\# && "$in_unreleased" == true ]]; then
             # Found next version section, stop
             break
-        elif [[ "$in_unreleased" == true && -n "$line" ]]; then
-            # Add non-empty lines from unreleased section
+        elif [[ "$in_unreleased" == true ]]; then
+            # Add lines from unreleased section (including empty lines)
             if [[ -n "$result" ]]; then
                 result+=$'\n'
             fi
