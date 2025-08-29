@@ -611,7 +611,7 @@ extract_unreleased_entries() {
     local result=""
     
     while IFS= read -r line; do
-        if [[ "$line" =~ ^##\ \\[Unreleased\\] ]]; then
+        if [[ "$line" == "## [Unreleased]" ]]; then
             in_unreleased=true
             continue
         elif [[ "$line" =~ ^\#\# && "$in_unreleased" == true ]]; then
