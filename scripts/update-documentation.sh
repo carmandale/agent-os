@@ -4,10 +4,13 @@
 
 set -euo pipefail
 
-# Source the enhanced library if available
+# Source the enhanced libraries if available
 SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
 if [[ -f "$SCRIPT_DIR/lib/update-documentation-lib.sh" ]]; then
     source "$SCRIPT_DIR/lib/update-documentation-lib.sh"
+fi
+if [[ -f "$SCRIPT_DIR/lib/spec-creator.sh" ]]; then
+    source "$SCRIPT_DIR/lib/spec-creator.sh"
 fi
 
 # Parse command line arguments
