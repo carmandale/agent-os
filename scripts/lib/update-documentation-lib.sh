@@ -978,7 +978,7 @@ discover_changes() {
 }
 
 analyze_documentation_health() {
-    local changed="$1"
+    local changed="${1:-}"
     if [[ -z "$changed" ]]; then
         return 0
     fi
