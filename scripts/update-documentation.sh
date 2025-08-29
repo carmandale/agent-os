@@ -328,6 +328,47 @@ if [[ $UPDATE_CHANGELOG -eq 1 ]] && [[ $needs_changelog -eq 1 ]]; then
   fi
 fi
 
+# Auto-create specs for issues without specs if requested
+if [[ $CREATE_SPEC -eq 1 ]]; then
+  if command -v create_spec_from_issue >/dev/null 2>&1; then
+    echo ""
+    echo "# Spec Creation from GitHub Issues"
+    
+    # Check for issues without corresponding specs
+    if command -v gh >/dev/null 2>&1; then
+      open_issues=$(gh issue list --state open --json number,title --jq '.[].number' 2>/dev/null || echo "")
+      
+      if [[ -n "$open_issues" ]]; then
+        for issue_num in $open_issues; do
+          # Check if spec already exists for this issue
+          existing_spec=$(find .agent-os/specs -name "*#${issue_num}" -type d 2>/dev/null | head -1)
+          
+          if [[ -z "$existing_spec" ]]; then
+            if [[ "$MODE" == "dry-run" ]]; then
+              issue_title=$(gh issue view "$issue_num" --json title --jq '.title' 2>/dev/null || echo "Issue #$issue_num")
+              echo "Would create spec for: Issue #$issue_num - $issue_title"
+            else
+              echo "Creating spec for issue #$issue_num..."
+              if spec_dir=$(create_spec_from_issue "$issue_num" 2>/dev/null); then
+                create_complete_spec "$(gh issue view "$issue_num" --json title --jq '.title')" "$issue_num"
+                echo "✓ Created spec: $spec_dir"
+              else
+                echo "⚠️ Failed to create spec for issue #$issue_num"
+              fi
+            fi
+          fi
+        done
+      else
+        echo "No open issues found"
+      fi
+    else
+      echo "GitHub CLI not available - cannot create specs from issues"
+    fi
+  else
+    echo "Spec creation functionality not available (spec-creator library not loaded)"
+  fi
+fi
+
 # Check for missing required documentation
 missing=()
 for target in CHANGELOG.md README.md CLAUDE.md \
