@@ -151,9 +151,9 @@ EOF
     [ "$?" -eq 0 ]
     
     # Should extract Phase 2 tasks
-    [[ "$result" == *"CHANGELOG auto-update functionality"* ]]
-    [[ "$result" == *"Spec directory creation system"* ]]
-    [[ "$result" == *"Roadmap synchronization"* ]]
+    [[ "$result" == *"Team standards sharing system"* ]]
+    [[ "$result" == *"Multi-project workspace management"* ]]
+    [[ "$result" == *"Shared decision logging across projects"* ]]
 }
 
 # ============================================================================
