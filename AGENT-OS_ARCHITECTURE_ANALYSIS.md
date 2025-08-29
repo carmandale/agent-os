@@ -70,7 +70,7 @@ graph TD
 
     subgraph "Configuration Files"
         CF1[~/.claude/settings.json<br/>Old hook config]
-        CF2[~/.config/claude/hooks.json<br/>New hook config]
+        CF2[~/.claude/settings.json<br/>Claude Code hook config]
         CF3[~/.agent-os/VERSION]
     end
 
