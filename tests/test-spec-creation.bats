@@ -165,8 +165,10 @@ teardown() {
     check_spec_directory_exists "$spec_dir"
     [ "$?" -eq 0 ]
     
-    check_spec_directory_exists "nonexistent-spec"
-    [ "$?" -ne 0 ]
+    if check_spec_directory_exists "nonexistent-spec"; then
+        # Should fail for nonexistent directory
+        return 1
+    fi
 }
 
 # ============================================================================
