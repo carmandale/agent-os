@@ -47,7 +47,7 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
 - [x] Add test for handling edge cases (no commits, malformed changelog, etc.)
 - [x] Verify tests fail initially (red phase)
 
-#### 2.2 Implement CHANGELOG Logic ✅ **SUBSTANTIAL PROGRESS** (12/15 tests passing - 80%)
+#### 2.2 Implement CHANGELOG Logic ✅ **MAJOR PROGRESS** (13/15 tests passing - 87%)
 - [x] Functions integrated into `scripts/lib/update-documentation-lib.sh`
 - [x] Implement `categorize_commit()` to sort commits by type
 - [x] Implement `update_changelog_file()` to safely append new entries
@@ -55,13 +55,15 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
 - [x] Implement `analyze_git_commits()` to detect commit types (both test variants)
 - [x] Implement `fetch_pr_data()` to retrieve GitHub PR information
 - [x] Implement `format_pr_entry()` to create changelog entries
-- [x] Fix `generate_changelog_entries()` array access issues - mostly working
+- [x] Fix `generate_changelog_entries()` - now working correctly with proper categorization
 - [x] Fix array safety issues in associative array handling
-- [x] Remove skip statements from 6 implemented functions
-- [ ] Complete `preserve_manual_entries()` implementation
-- [ ] Complete `merge_changelog_sections()` implementation  
-- [ ] Fix `validate_changelog_format()` function
-- [x] Verify most CHANGELOG tests pass (green phase - 12/15 passing)
+- [x] Fix commit message cleanup regex to properly remove conventional prefixes
+- [x] Fix extract_unreleased_entries() string matching for [Unreleased] section
+- [x] Remove skip statements from implemented functions
+- [ ] Complete `preserve_manual_entries()` implementation (extract_unreleased_entries fixed)
+- [ ] Complete `merge_changelog_sections()` implementation (BASH_REMATCH issue)
+- [ ] Fix `validate_changelog_format()` function (exit code issue)
+- [x] Verify most CHANGELOG tests pass (green phase - 13/15 passing - 87%)
 
 #### 2.3 Integrate with Main Command
 - [ ] Add `--update-changelog` flag to `/update-documentation` command
