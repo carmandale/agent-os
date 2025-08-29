@@ -120,7 +120,6 @@ EOF
 # ============================================================================
 
 @test "parse_roadmap_structure() identifies phases and tasks" {
-    skip "Function not yet implemented - Task 4.2"
     source "$ROADMAP_LIB_PATH"
     
     result=$(parse_roadmap_structure ".agent-os/product/roadmap.md")
@@ -146,7 +145,6 @@ EOF
 }
 
 @test "extract_roadmap_tasks() lists individual tasks" {
-    skip "Function not yet implemented - Task 4.2"
     source "$ROADMAP_LIB_PATH"
     
     result=$(extract_roadmap_tasks ".agent-os/product/roadmap.md" "Phase 2")
@@ -178,7 +176,6 @@ EOF
 }
 
 @test "analyze_spec_tasks() determines spec completion status" {
-    skip "Function not yet implemented - Task 4.2"
     source "$ROADMAP_LIB_PATH"
     
     create_completed_specs
@@ -249,7 +246,6 @@ EOF
 }
 
 @test "sync_roadmap_dates() updates last modified timestamp" {
-    skip "Function not yet implemented - Task 4.2"
     source "$ROADMAP_LIB_PATH"
     
     # Copy roadmap for testing
@@ -347,7 +343,6 @@ EOF
 # ============================================================================
 
 @test "update_roadmap_version() increments version properly" {
-    skip "Function not yet implemented - Task 4.2"
     source "$ROADMAP_LIB_PATH"
     
     # Copy roadmap for testing
