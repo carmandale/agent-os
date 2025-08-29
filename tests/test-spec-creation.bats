@@ -176,7 +176,6 @@ teardown() {
 # ============================================================================
 
 @test "generates spec directory from GitHub issue number" {
-    skip "Function not yet implemented - Task 3.2"
     source "$SPEC_LIB_PATH"
     
     # Mock gh command for testing
