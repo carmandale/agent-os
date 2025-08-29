@@ -76,12 +76,12 @@ teardown() {
 }
 
 @test "parse_flags() handles --sync-roadmap flag" {
-    skip "Function not yet implemented - Task 1.2"
     source "$LIB_PATH"
     
-    result=$(parse_flags --sync-roadmap)
+    parse_flags --sync-roadmap
     [ "$?" -eq 0 ]
-    [[ "$result" == *"SYNC_ROADMAP=1"* ]]
+    [[ "$SYNC_ROADMAP" -eq 1 ]]
+    [[ "$MODE" == "update" ]]
 }
 
 @test "parse_flags() handles --all flag" {
