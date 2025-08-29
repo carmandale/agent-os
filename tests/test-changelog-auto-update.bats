@@ -109,7 +109,6 @@ teardown() {
 # ============================================================================
 
 @test "fetch_pr_data() retrieves GitHub PR information" {
-    skip "Function not yet implemented - Task 2.2"
     source "$LIB_PATH"
     
     # Mock gh command for testing
@@ -135,7 +134,6 @@ teardown() {
 }
 
 @test "format_pr_entry() creates changelog entries" {
-    skip "Function not yet implemented - Task 2.2"
     source "$LIB_PATH"
     
     local pr_data='{"number": 123, "title": "Add user authentication", "author": {"login": "testuser"}}'
@@ -151,7 +149,6 @@ teardown() {
 # ============================================================================
 
 @test "generate_changelog_entries() creates properly formatted entries" {
-    skip "Function not yet implemented - Task 2.2"
     source "$LIB_PATH"
     
     # Mock commit and PR data
