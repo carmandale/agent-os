@@ -241,7 +241,6 @@ teardown() {
 # ============================================================================
 
 @test "preserve_manual_entries() keeps user-written content" {
-    skip "Function not yet implemented - Task 2.2"
     source "$LIB_PATH"
     
     # Add manual entry to changelog
@@ -263,7 +262,6 @@ teardown() {
 }
 
 @test "merge_changelog_sections() combines entries properly" {
-    skip "Function not yet implemented - Task 2.2"
     source "$LIB_PATH"
     
     local existing="### Added
