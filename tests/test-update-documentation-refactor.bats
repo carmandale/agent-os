@@ -67,12 +67,12 @@ teardown() {
 }
 
 @test "parse_flags() handles --fix-refs flag" {
-    skip "Function not yet implemented - Task 1.2"
     source "$LIB_PATH"
     
-    result=$(parse_flags --fix-refs)
+    parse_flags --fix-refs
     [ "$?" -eq 0 ]
-    [[ "$result" == *"FIX_REFS=1"* ]]
+    [[ "$FIX_REFS" -eq 1 ]]
+    [[ "$MODE" == "update" ]]
 }
 
 @test "parse_flags() handles --sync-roadmap flag" {
