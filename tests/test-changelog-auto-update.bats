@@ -151,13 +151,16 @@ teardown() {
 @test "generate_changelog_entries() creates properly formatted entries" {
     source "$LIB_PATH"
     
-    # Mock commit and PR data
-    export TEST_COMMITS='[
-        {"message": "feat: add user login", "date": "2024-08-28", "hash": "abc123"},
-        {"message": "fix: resolve validation bug", "date": "2024-08-28", "hash": "def456"}
-    ]'
+    # Create test commits of different types
+    echo "login feature" > login.txt
+    git add login.txt
+    git commit -m "feat: add user login" >/dev/null 2>&1
     
-    result=$(generate_changelog_entries --since="1 day ago")
+    echo "validation fix" > validation.txt
+    git add validation.txt
+    git commit -m "fix: resolve validation bug" >/dev/null 2>&1
+    
+    result=$(generate_changelog_entries --since="1 hour ago")
     [ "$?" -eq 0 ]
     [[ "$result" == *"### Added"* ]]
     [[ "$result" == *"### Fixed"* ]]
