@@ -111,7 +111,6 @@ teardown() {
 # ============================================================================
 
 @test "discover_changes() detects git changes" {
-    skip "Function not yet implemented - Task 1.3"
     source "$LIB_PATH"
     
     echo "# Test" > test.md
@@ -123,7 +122,6 @@ teardown() {
 }
 
 @test "discover_changes() returns empty for clean workspace" {
-    skip "Function not yet implemented - Task 1.3"
     source "$LIB_PATH"
     
     result=$(discover_changes)
@@ -136,7 +134,6 @@ teardown() {
 # ============================================================================
 
 @test "analyze_documentation_health() performs basic health check" {
-    skip "Function not yet implemented - Task 1.3"
     source "$LIB_PATH"
     
     result=$(analyze_documentation_health)
@@ -145,7 +142,6 @@ teardown() {
 }
 
 @test "analyze_issues_without_specs() detects missing specs" {
-    skip "Function not yet implemented - Task 1.3"
     source "$LIB_PATH"
     
     # Mock gh command for testing
@@ -162,7 +158,6 @@ teardown() {
 }
 
 @test "analyze_recent_prs() detects undocumented PRs" {
-    skip "Function not yet implemented - Task 1.3"
     source "$LIB_PATH"
     
     # Mock gh command for testing
@@ -186,7 +181,6 @@ teardown() {
 # ============================================================================
 
 @test "generate_report() creates structured output" {
-    skip "Function not yet implemented - Task 1.3"
     source "$LIB_PATH"
     
     result=$(generate_report "Discovery" "test.md" "No issues found")
@@ -200,7 +194,6 @@ teardown() {
 # ============================================================================
 
 @test "validate_environment() checks required commands" {
-    skip "Function not yet implemented - Task 1.3"
     source "$LIB_PATH"
     
     result=$(validate_environment)
@@ -209,7 +202,6 @@ teardown() {
 }
 
 @test "validate_repository() checks git repository" {
-    skip "Function not yet implemented - Task 1.3"
     source "$LIB_PATH"
     
     result=$(validate_repository)
@@ -218,7 +210,6 @@ teardown() {
 }
 
 @test "validate_repository() fails outside git repository" {
-    skip "Function not yet implemented - Task 1.3"
     source "$LIB_PATH"
     
     cd /tmp
@@ -239,7 +230,6 @@ teardown() {
 }
 
 @test "log_error() outputs error messages" {
-    skip "Function not yet implemented - Task 1.3"
     source "$LIB_PATH"
     
     result=$(log_error "Error message")
@@ -248,7 +238,6 @@ teardown() {
 }
 
 @test "is_dry_run() detects dry run mode" {
-    skip "Function not yet implemented - Task 1.3"
     source "$LIB_PATH"
     
     export MODE="dry-run"
