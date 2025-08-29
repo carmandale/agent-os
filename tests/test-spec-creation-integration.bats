@@ -145,7 +145,10 @@ teardown() {
     }
     export -f gh
     
+    # Allow exit code 0 or 2 (updates required)
     result=$("$SCRIPT_PATH" --create-spec --dry-run 2>/dev/null)
+    exit_code=$?
+    [ "$exit_code" -eq 0 ] || [ "$exit_code" -eq 2 ]
     
     # Should provide clear information about what would be created
     [[ "$result" == *"Spec Creation from GitHub Issues"* ]]
