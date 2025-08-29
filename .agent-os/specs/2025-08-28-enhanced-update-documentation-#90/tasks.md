@@ -77,15 +77,19 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
 - [x] Add test for handling existing directories without overwriting
 - [x] Verify tests fail initially (red phase)
 
-#### 3.2 Implement Spec Creation Logic ✅ **SUBSTANTIAL PROGRESS** (8/14 tests passing)
+#### 3.2 Implement Spec Creation Logic ✅ **COMPLETE** (14/14 tests passing)
 - [x] Create `scripts/lib/spec-creator.sh` with spec generation functions
 - [x] Implement `generate_spec_directory()` to create properly named directories
 - [x] Implement `create_spec_template()` to generate spec.md with current date
 - [x] Implement `setup_spec_structure()` to create sub-specs and tasks directories
 - [x] Implement `validate_spec_name()` to ensure proper naming conventions
 - [x] Implement spec name sanitization for directory names
-- [ ] Complete `handles existing directories without overwriting` functionality
-- [x] Verify most spec creation tests pass (green phase - 8/14 passing)
+- [x] Implement `create_spec_directory()` with missing file creation logic
+- [x] Implement `check_spec_directory_exists()` for conflict detection
+- [x] Implement `create_spec_from_issue()` GitHub integration with error handling
+- [x] Enhanced template generation with all required sections
+- [x] Complete existing directory handling without overwriting files
+- [x] Verify all spec creation tests pass (green phase - 14/14 passing)
 
 #### 3.3 Integrate Spec Creation
 - [ ] Add `--create-spec` flag to `/update-documentation` command
