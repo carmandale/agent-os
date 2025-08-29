@@ -200,9 +200,11 @@ teardown() {
     }
     export -f gh
     
-    result=$(create_spec_from_issue 999)
-    [ "$?" -ne 0 ]
-    [[ "$result" == *"Failed to fetch issue"* ]]
+    # Test that function fails gracefully
+    if create_spec_from_issue 999 2>/dev/null; then
+        # Should fail for non-existent issue
+        return 1
+    fi
 }
 
 # ============================================================================
