@@ -58,12 +58,12 @@ teardown() {
 }
 
 @test "parse_flags() handles --changelog-only flag" {
-    skip "Function not yet implemented - Task 1.2"
     source "$LIB_PATH"
     
-    result=$(parse_flags --changelog-only)
+    parse_flags --changelog-only
     [ "$?" -eq 0 ]
-    [[ "$result" == *"UPDATE_CHANGELOG=1"* ]]
+    [[ "$UPDATE_CHANGELOG" -eq 1 ]]
+    [[ "$MODE" == "update" ]]
 }
 
 @test "parse_flags() handles --fix-refs flag" {
