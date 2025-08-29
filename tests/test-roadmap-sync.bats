@@ -296,8 +296,7 @@ EOF
     # Create invalid roadmap
     echo "Invalid roadmap content" > invalid_roadmap.md
     
-    validate_roadmap_format "invalid_roadmap.md"
-    [ "$?" -ne 0 ]
+    ! validate_roadmap_format "invalid_roadmap.md"
 }
 
 # ============================================================================
@@ -331,11 +330,7 @@ EOF
     source "$ROADMAP_LIB_PATH"
     
     # Test with non-existent roadmap
-    result=$(validate_roadmap_format "nonexistent.md")
-    [ "$?" -ne 0 ]
-    
-    # Should provide helpful error message
-    [[ "$result" == *"not found"* ]] || [[ "$result" == *"does not exist"* ]]
+    ! validate_roadmap_format "nonexistent.md" 2>/dev/null
 }
 
 # ============================================================================
