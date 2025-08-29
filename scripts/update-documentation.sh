@@ -19,6 +19,7 @@ CREATE_MISSING=0
 DEEP=0
 UPDATE_CHANGELOG=0
 CREATE_SPEC=0
+SYNC_ROADMAP=0
 
 for arg in "$@"; do
   case "$arg" in
