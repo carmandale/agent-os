@@ -546,7 +546,7 @@ generate_changelog_entries() {
     
     # Output formatted sections
     for category in "Added" "Changed" "Fixed"; do
-        if [[ -n "${categories[$category]}" ]]; then
+        if [[ -n "${categories[$category]:-}" ]]; then
             echo "### $category"
             echo "${categories[$category]}"
             echo ""
