@@ -317,7 +317,6 @@ teardown() {
 # ============================================================================
 
 @test "full_changelog_update() integrates all components" {
-    skip "Integration not yet implemented - Task 2.3"
     source "$LIB_PATH"
     
     # Create test commits
