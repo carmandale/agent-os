@@ -184,6 +184,24 @@ curl -s -o "$HOME/.agent-os/scripts/update-documentation-wrapper.sh" "${BASE_URL
 chmod +x "$HOME/.agent-os/scripts/update-documentation-wrapper.sh"
 echo "  ✓ ~/.agent-os/scripts/update-documentation-wrapper.sh"
 
+# Create lib directory and download library files
+mkdir -p "$HOME/.agent-os/scripts/lib"
+
+# update-documentation-lib.sh (enhanced documentation functionality)
+curl -s -o "$HOME/.agent-os/scripts/lib/update-documentation-lib.sh" "${BASE_URL}/scripts/lib/update-documentation-lib.sh"
+chmod +x "$HOME/.agent-os/scripts/lib/update-documentation-lib.sh"
+echo "  ✓ ~/.agent-os/scripts/lib/update-documentation-lib.sh"
+
+# spec-creator.sh (spec directory creation functionality)
+curl -s -o "$HOME/.agent-os/scripts/lib/spec-creator.sh" "${BASE_URL}/scripts/lib/spec-creator.sh"
+chmod +x "$HOME/.agent-os/scripts/lib/spec-creator.sh"
+echo "  ✓ ~/.agent-os/scripts/lib/spec-creator.sh"
+
+# roadmap-sync.sh (roadmap synchronization functionality)
+curl -s -o "$HOME/.agent-os/scripts/lib/roadmap-sync.sh" "${BASE_URL}/scripts/lib/roadmap-sync.sh"
+chmod +x "$HOME/.agent-os/scripts/lib/roadmap-sync.sh"
+echo "  ✓ ~/.agent-os/scripts/lib/roadmap-sync.sh"
+
 # config-resolver.py
 curl -s -o "$HOME/.agent-os/scripts/config-resolver.py" "${BASE_URL}/scripts/config-resolver.py"
 echo "  ✓ ~/.agent-os/scripts/config-resolver.py"
