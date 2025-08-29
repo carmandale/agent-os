@@ -53,7 +53,6 @@ teardown() {
 # ============================================================================
 
 @test "analyze_git_commits() detects commit types" {
-    skip "Function not yet implemented - Task 2.2"
     source "$LIB_PATH"
     
     # Create test commits of different types
