@@ -85,23 +85,25 @@ teardown() {
 }
 
 @test "parse_flags() handles --all flag" {
-    skip "Function not yet implemented - Task 1.2"
     source "$LIB_PATH"
     
-    result=$(parse_flags --all)
+    parse_flags --all
     [ "$?" -eq 0 ]
-    [[ "$result" == *"UPDATE_ALL=1"* ]]
+    [[ "$UPDATE_ALL" -eq 1 ]]
+    [[ "$UPDATE_CHANGELOG" -eq 1 ]]
+    [[ "$FIX_REFS" -eq 1 ]]
+    [[ "$SYNC_ROADMAP" -eq 1 ]]
+    [[ "$MODE" == "update" ]]
 }
 
 @test "parse_flags() handles multiple flags" {
-    skip "Function not yet implemented - Task 1.2"
     source "$LIB_PATH"
     
-    result=$(parse_flags --update --fix-refs --sync-roadmap)
+    parse_flags --update --fix-refs --sync-roadmap
     [ "$?" -eq 0 ]
-    [[ "$result" == *"MODE=update"* ]]
-    [[ "$result" == *"FIX_REFS=1"* ]]
-    [[ "$result" == *"SYNC_ROADMAP=1"* ]]
+    [[ "$MODE" == "update" ]]
+    [[ "$FIX_REFS" -eq 1 ]]
+    [[ "$SYNC_ROADMAP" -eq 1 ]]
 }
 
 # ============================================================================
