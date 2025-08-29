@@ -71,7 +71,6 @@ teardown() {
 }
 
 @test "analyze_git_commits() handles conventional commit format" {
-    skip "Function not yet implemented - Task 2.2"
     source "$LIB_PATH"
     
     git commit --allow-empty -m "feat(auth): add OAuth integration
