@@ -1074,3 +1074,49 @@ is_dry_run() {
     local mode="${MODE:-dry-run}"
     [[ "$mode" == "dry-run" ]]
 }
+
+# ============================================================================
+# CHANGELOG Integration Function (Task 2.3)
+# ============================================================================
+
+full_changelog_update() {
+    local since="${1:-7 days ago}"
+    local changelog_file="${2:-CHANGELOG.md}"
+    
+    # Validate environment
+    if ! validate_repository; then
+        log_error "Cannot update changelog: not in a git repository"
+        return 1
+    fi
+    
+    # Create backup of existing changelog
+    if ! backup_changelog "$changelog_file"; then
+        log_error "Failed to create changelog backup"
+        return 1
+    fi
+    
+    # Generate new changelog entries from commits and PRs
+    local new_entries
+    new_entries=$(generate_changelog_entries --since="$since")
+    
+    if [[ -z "$new_entries" ]]; then
+        log_info "No new changelog entries found since $since"
+        return 0
+    fi
+    
+    # Preserve any existing manual entries and merge
+    local merged_entries
+    merged_entries=$(preserve_manual_entries "$new_entries" "$changelog_file")
+    
+    # Update the changelog file
+    update_changelog_file "$merged_entries" "$changelog_file"
+    
+    # Validate the result
+    if validate_changelog_format "$changelog_file"; then
+        log_success "Successfully updated $changelog_file"
+        return 0
+    else
+        log_error "Changelog validation failed after update"
+        return 1
+    fi
+}
