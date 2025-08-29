@@ -36,7 +36,6 @@ teardown() {
 # ============================================================================
 
 @test "spec directory naming follows date-issue format" {
-    skip "Function not yet implemented - Task 3.2"
     source "$SPEC_LIB_PATH"
     
     result=$(generate_spec_directory "fix user authentication" 123)
@@ -45,7 +44,6 @@ teardown() {
 }
 
 @test "spec directory creation with proper structure" {
-    skip "Function not yet implemented - Task 3.2"
     source "$SPEC_LIB_PATH"
     
     spec_dir=$(generate_spec_directory "implement dashboard" 456)
@@ -58,7 +56,6 @@ teardown() {
 }
 
 @test "spec template generation with proper content" {
-    skip "Function not yet implemented - Task 3.2"
     source "$SPEC_LIB_PATH"
     
     spec_dir="2024-08-28-test-feature-#789"
@@ -74,7 +71,6 @@ teardown() {
 }
 
 @test "tasks.md template generation with proper structure" {
-    skip "Function not yet implemented - Task 3.2"
     source "$SPEC_LIB_PATH"
     
     spec_dir="2024-08-28-test-tasks-#101"
@@ -90,7 +86,6 @@ teardown() {
 }
 
 @test "sub-specs directory structure creation" {
-    skip "Function not yet implemented - Task 3.2"
     source "$SPEC_LIB_PATH"
     
     spec_dir="2024-08-28-test-subspecs-#202"
@@ -130,7 +125,6 @@ teardown() {
 }
 
 @test "spec name sanitization for directory names" {
-    skip "Function not yet implemented - Task 3.2"
     source "$SPEC_LIB_PATH"
     
     result=$(sanitize_spec_name "Fix User Auth & Login Issues")
