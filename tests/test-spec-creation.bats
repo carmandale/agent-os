@@ -212,7 +212,6 @@ teardown() {
 # ============================================================================
 
 @test "spec template includes all required sections" {
-    skip "Function not yet implemented - Task 3.2"
     source "$SPEC_LIB_PATH"
     
     spec_dir="2024-08-28-template-test-#606"
@@ -230,7 +229,6 @@ teardown() {
 }
 
 @test "tasks template includes proper task structure" {
-    skip "Function not yet implemented - Task 3.2"
     source "$SPEC_LIB_PATH"
     
     spec_dir="2024-08-28-tasks-template-test-#707"
