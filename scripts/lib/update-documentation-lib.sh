@@ -524,14 +524,15 @@ generate_changelog_entries() {
     while IFS= read -r commit; do
         if [[ -n "$commit" ]]; then
             # Extract commit message (after hash)
-            local commit_msg
-            commit_msg=$(echo "$commit" | cut -d' ' -f2-)
-            
-            # Remove conventional commit prefix for display
-            commit_msg=$(echo "$commit_msg" | sed 's/^[a-zA-Z]*[(:][^)]*[)]*: *//')
+            local original_msg
+            original_msg=$(echo "$commit" | cut -d' ' -f2-)
             
             local category
-            category=$(categorize_commit "$commit")
+            category=$(categorize_commit "$original_msg")
+            
+            # Remove conventional commit prefix for display
+            local commit_msg
+            commit_msg=$(echo "$original_msg" | sed 's/^[a-zA-Z]*[(:][^)]*[)]*: *//')
             
             # Only process recognized categories
             if [[ "$category" == "Added" || "$category" == "Fixed" || "$category" == "Changed" ]]; then
