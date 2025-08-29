@@ -532,7 +532,7 @@ generate_changelog_entries() {
             
             # Remove conventional commit prefix for display
             local commit_msg
-            commit_msg=$(echo "$original_msg" | sed 's/^[a-zA-Z]*[(:][^)]*[)]*: *//')
+            commit_msg=$(echo "$original_msg" | sed 's/^[^:]*: *//')
             
             # Only process recognized categories
             if [[ "$category" == "Added" || "$category" == "Fixed" || "$category" == "Changed" ]]; then
