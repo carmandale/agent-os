@@ -30,6 +30,7 @@ for arg in "$@"; do
     --update-changelog) UPDATE_CHANGELOG=1 ;;
     --changelog-only) UPDATE_CHANGELOG=1; MODE="changelog-only" ;;
     --create-spec) CREATE_SPEC=1 ;;
+    --sync-roadmap) SYNC_ROADMAP=1 ;;
   esac
 done
 
