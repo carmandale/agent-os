@@ -249,7 +249,7 @@ check_project_currency() {
             
             # Check hooks version
             if [ -f "$HOME/.claude/settings.json" ]; then
-                if ! grep -q "workflow-enforcement-hook-v2" "$HOME/.claude/settings.json" 2>/dev/null; then
+                if ! grep -q "agent-os-hooks-v2" "$HOME/.claude/settings.json" 2>/dev/null; then
                     issues+=("Claude hooks need update")
                 fi
             fi
