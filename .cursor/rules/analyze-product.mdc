@@ -2,73 +2,8 @@
 alwaysApply: false
 ---
 
-# /analyze-product
+# Analyze Product
 
-Execute the comprehensive Agent OS analyze-product workflow to install Agent OS into an existing codebase.
+Analyze your product's codebase and install Agent OS
 
-This command will:
-1. Analyze your existing codebase thoroughly
-2. Compare project reality against organizational standards (~/.agent-os/standards/)
-3. Detect and help resolve discrepancies between standards, documentation, and reality
-4. Gather product context through targeted questions
-5. Install Agent OS with accurate documentation
-6. Set up all required configuration files
-
-## Usage
-
-```
-/analyze-product
-```
-
-## What This Command Does
-
-**Phase 1: Deep Codebase Analysis**
-- Examines project structure, dependencies, and implementation
-- Checks .cursorrules, README, and other documentation
-- Identifies actual tech stack in use vs what's documented
-
-**Phase 2: Standards Comparison**  
-- Compares project against organizational standards in ~/.agent-os/standards/
-- Detects conflicts (e.g., org uses yarn but project has package-lock.json)
-- Reports discrepancies and offers resolution options
-
-**Phase 3: Discrepancy Resolution**
-- Lets you choose: align with org standards, document exceptions, or update standards
-- Creates GitHub issues for migration work when needed
-- Documents legitimate exceptions in decisions.md
-
-**Phase 4: Context Gathering & Setup**
-- Asks targeted questions about product vision and roadmap
-- Executes plan-product workflow with gathered information
-- Customizes documentation to reflect actual project state
-
-## Key Benefits
-
-- **Prevents build failures** from mismatched package managers or versions
-- **Establishes single source of truth** between standards, docs, and reality  
-- **Creates actionable migration tasks** for alignment work
-- **Documents legitimate exceptions** instead of ignoring them
-- **Sets up Agent OS** with accurate, current information
-
-## Example Output
-
-```
-⚠️ DISCREPANCY REPORT - Project vs Organization Standards
-
-1. Package Manager Conflict:
-   - Org Standard (~/.agent-os): yarn
-   - Project Reality: package-lock.json found (npm in use)
-   - .cursorrules says: npm
-   
-   Options:
-   a) Migrate project to yarn (org standard)
-   b) Keep npm for this project (document exception)
-   c) Update org standard to npm
-   → Your choice [a/b/c]: _
-```
-
-This is a comprehensive installation process, not a casual code review. Use this when setting up Agent OS on existing projects.
-
-## Execution
-
-@~/.agent-os/instructions/core/analyze-product.md
+Refer to the instructions located in @~/.agent-os/instructions/core/analyze-product.md
