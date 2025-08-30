@@ -44,12 +44,15 @@ done
 echo "✅ Prerequisites check passed"
 echo ""
 
-# Create Claude Code hooks directory
-echo "📁 Setting up Claude Code hooks directory..."
-mkdir -p "$HOOKS_CONFIG"
+# Create Claude Code settings file if it doesn't exist
+echo "📁 Setting up Claude Code settings..."
+if [ ! -f "$SETTINGS_FILE" ]; then
+    echo '{}' > "$SETTINGS_FILE"
+    echo "  ✓ Created ~/.claude/settings.json"
+fi
 
-# Check if hooks are already installed
-if [ -f "$HOOKS_CONFIG/agent-os-hooks.json" ]; then
+# Check if Agent OS hooks are already installed
+if grep -q "agent-os-hooks-v2" "$SETTINGS_FILE" 2>/dev/null; then
     echo "⚠️  Agent OS hooks are already installed"
     echo ""
     
@@ -71,11 +74,85 @@ if [ -f "$HOOKS_CONFIG/agent-os-hooks.json" ]; then
     echo "🔄 Updating existing installation..."
 fi
 
-# Copy hooks configuration
+# Install hooks configuration into settings.json
 echo "📋 Installing hooks configuration..."
-# Use the new Bash integration hooks configuration
-cp "$HOOKS_DIR/agent-os-bash-hooks.json" "$HOOKS_CONFIG/agent-os-hooks.json"
-echo "  ✓ Copied hooks configuration to ~/.claude/hooks/"
+python3 - <<EOF
+import json
+import os
+import sys
+
+# Read current settings
+settings_file = "$SETTINGS_FILE"
+try:
+    with open(settings_file, 'r') as f:
+        settings = json.load(f)
+except:
+    settings = {}
+
+# Ensure hooks section exists
+if 'hooks' not in settings:
+    settings['hooks'] = {}
+
+hooks = settings['hooks']
+
+# Add Agent OS hooks with absolute paths for security
+agent_os_dir = os.path.expanduser('~/.agent-os/hooks')
+
+# PreToolUse hooks
+if 'PreToolUse' not in hooks:
+    hooks['PreToolUse'] = []
+
+# Add Bash observation hook
+hooks['PreToolUse'].append({
+    "matcher": "Bash",
+    "hooks": [{
+        "type": "command", 
+        "command": f"{agent_os_dir}/pre-bash-hook.sh"
+    }]
+})
+
+# Add Task context hook  
+hooks['PreToolUse'].append({
+    "matcher": "Task",
+    "hooks": [{
+        "type": "command",
+        "command": f"python3 {agent_os_dir}/workflow-enforcement-hook.py pretool-task"
+    }]
+})
+
+# PostToolUse hooks
+if 'PostToolUse' not in hooks:
+    hooks['PostToolUse'] = []
+
+# Add Bash observation hook
+hooks['PostToolUse'].append({
+    "matcher": "Bash",
+    "hooks": [{
+        "type": "command",
+        "command": f"{agent_os_dir}/post-bash-hook.sh"  
+    }]
+})
+
+# Notification hooks
+if 'Notification' not in hooks:
+    hooks['Notification'] = []
+
+hooks['Notification'].append({
+    "hooks": [{
+        "type": "command",
+        "command": f"{agent_os_dir}/notify-hook.sh"
+    }]
+})
+
+# Add marker for detection
+settings['_agent_os_hooks'] = 'agent-os-hooks-v2'
+
+# Write updated settings
+with open(settings_file, 'w') as f:
+    json.dump(settings, f, indent=2)
+
+print("  ✓ Integrated hooks into ~/.claude/settings.json")
+EOF
 
 # Ensure hook scripts are executable
 echo "🔧 Setting up hook scripts..."
