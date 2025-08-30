@@ -168,6 +168,13 @@ echo "  ✓ Created log directory at ~/.agent-os/logs/"
 echo ""
 echo "✅ Verifying installation..."
 
+# Verify hooks are in settings.json
+if grep -q "agent-os-hooks-v2" "$SETTINGS_FILE" 2>/dev/null; then
+    echo "  ✓ Agent OS hooks integrated into ~/.claude/settings.json"
+else
+    echo "  ⚠️ Hook integration verification failed"
+fi
+
 # Test hook scripts
 echo "🧪 Testing hook scripts..."
 
@@ -200,16 +207,14 @@ echo ""
 echo "🎉 Agent OS Claude Code hooks installation complete!"
 echo ""
 echo "📍 Hooks installed:"
-echo "   ~/.claude/hooks/agent-os-hooks.json - Hook configuration"
-echo "   ~/.agent-os/hooks/ - Hook scripts and utilities"
+echo "   ~/.claude/settings.json - Hook configuration (integrated)"
+echo "   ~/.agent-os/hooks/ - Hook scripts and utilities"  
 echo "   ~/.agent-os/logs/ - Hook execution logs"
 echo ""
 echo "🔧 Hooks enabled:"
-echo "   • Stop Hook - Prevents workflow abandonment"
-echo "   • Post Tool Use Hook - Auto-commits documentation"
-echo "   • User Prompt Submit Hook - Injects project context"
 echo "   • Pre Bash Hook - Observes and classifies Bash commands"
 echo "   • Post Bash Hook - Reports Bash execution results"
+echo "   • Task Context Hook - Injects project context for Task tool"
 echo "   • Notification Hook - Provides helpful reminders"
 echo ""
 echo "💡 How it works:"
@@ -217,7 +222,7 @@ echo "   • Hooks run automatically during Claude Code interactions"
 echo "   • No manual intervention required"
 echo "   • Check ~/.agent-os/logs/ for detailed execution logs"
 echo ""
-echo "🚀 Your Agent OS workflows are now enhanced with automatic enforcement!"
+echo "🚀 Your Agent OS workflows are now enhanced with automatic bash observation!"
 echo ""
 
 # Check if there are any existing Agent OS projects to enable context for
