@@ -12,7 +12,7 @@ echo ""
 # Configuration
 HOOKS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLAUDE_DIR="$HOME/.claude"
-HOOKS_CONFIG="$CLAUDE_DIR/hooks"
+SETTINGS_FILE="$CLAUDE_DIR/settings.json"
 
 # Check prerequisites
 echo "🔍 Checking prerequisites..."
