@@ -573,13 +573,8 @@ quick_setup_project() {
     case "$project_type" in
         "claude"|"both")
             print_status "info" "Setting up Claude Code..."
-            # Check if hooks should be skipped
-            local skip_hooks=""
-            if [ -f "$HOME/.claude/settings.json" ] && grep -q "workflow-enforcement-hook" "$HOME/.claude/settings.json" 2>/dev/null; then
-                skip_hooks="--skip-hooks"
-            fi
             
-            if curl -sSL "$AGENT_OS_RAW_URL/setup-claude-code.sh" | bash -s -- $skip_hooks 2>/dev/null; then
+            if curl -sSL "$AGENT_OS_RAW_URL/setup-claude-code.sh" | bash 2>/dev/null; then
                 print_status "success" "Claude Code ready"
             else
                 print_status "error" "Claude Code setup failed"
