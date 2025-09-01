@@ -14,6 +14,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Comprehensive integration test suite (8/8 tests passing)
   - Documentation drift detection integrated with spec creation
 
+### Fixed
+- **aos installer hooks configuration location** (#91)
+  - Fixed hooks being installed to wrong location (`~/.config/claude/hooks.json`)
+  - Now properly integrates hooks into `~/.claude/settings.json` per Claude Code documentation
+  - Updated setup scripts to check correct paths and detection markers
+  - Fixed aos status command to properly detect installed hooks
+  - Resolves persistent "Claude hooks need update" false warnings
+  - Enables proper bash observation functionality and `/update-documentation` command
+
 ### Changed
 - feat: add changelog-only mode and auto-update integration
 - feat: integrate CHANGELOG update functionality into main script
