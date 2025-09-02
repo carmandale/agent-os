@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Workflow Automation Commands** - New slash commands to prevent workflow abandonment
+  - `/workflow-status` command for comprehensive workflow health checking
+  - `/workflow-complete` command for automated workflow completion and integration
+  - Health check script with git status, documentation drift, and GitHub integration validation
+  - Complete automation script implementing Phase 4 git integration workflow
+  - Support for dry-run mode, verbose output, and fix suggestions
+  - Prevents common workflow issues like uncommitted changes, out-of-date changelogs, unclosed issues
 - **Spec Creation Integration** - Complete Task 3.3 of Enhanced update-documentation #90
   - Full --create-spec flag integration with spec-creator library
   - GitHub CLI integration with graceful error handling

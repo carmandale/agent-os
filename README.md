@@ -68,12 +68,16 @@ This creates `.agent-os/` in your project with product documentation structure.
 - `/analyze-product` - Start with existing code
 - `/create-spec` - Plan a new feature
 - `/execute-tasks` - Build and ship code
+- `/workflow-status` - Check workflow health before starting new work
+- `/workflow-complete` - Complete and integrate all workflow steps
 
 **In Cursor:**
 - `@plan-product` - Start with a new product
 - `@analyze-product` - Start with existing code  
 - `@create-spec` - Plan a new feature
 - `@execute-tasks` - Build and ship code
+- `@workflow-status` - Check workflow health before starting new work
+- `@workflow-complete` - Complete and integrate all workflow steps
 
 ### Understanding Agent OS Contexts
 
