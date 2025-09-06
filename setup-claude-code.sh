@@ -189,7 +189,7 @@ echo "📥 Installing Claude Code hooks..."
         echo "  ✓ Downloaded workflow-enforcement-hook.py"
         
         # Download bash hooks
-        for hook in stop-hook.sh post-tool-use-hook.sh user-prompt-submit-hook.sh pre-bash-hook.sh post-bash-hook.sh notify-hook.sh install-hooks.sh; do
+        for hook in stop-hook.sh user-prompt-submit-hook.sh pre-bash-hook.sh post-bash-hook.sh notify-hook.sh install-hooks.sh; do
             curl -s -o "$HOME/.agent-os/hooks/$hook" "${BASE_URL}/hooks/$hook"
             chmod +x "$HOME/.agent-os/hooks/$hook"
             echo "  ✓ Downloaded $hook"
