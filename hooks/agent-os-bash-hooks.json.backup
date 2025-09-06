@@ -1,6 +1,6 @@
 {
   "name": "Agent OS Bash Integration Hooks",
-  "version": "2.1.0",
+  "version": "2.0.0",
   "description": "First-class Claude Code background Bash integration via observation hooks",
   "hooks": {
     "PreToolUse": [
@@ -12,6 +12,24 @@
             "command": "~/.agent-os/hooks/pre-bash-hook.sh"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit|Update",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/.agent-os/hooks/workflow-enforcement-hook.py pretool"
+          }
+        ]
+      },
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/.agent-os/hooks/workflow-enforcement-hook.py pretool-task"
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -21,6 +39,25 @@
           {
             "type": "command",
             "command": "~/.agent-os/hooks/post-bash-hook.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.agent-os/hooks/post-tool-use-hook.sh"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.agent-os/hooks/notify-hook.sh"
           }
         ]
       }
@@ -44,32 +81,27 @@
           }
         ]
       }
-    ],
-    "Notification": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.agent-os/hooks/notify-hook.sh"
-          }
-        ]
-      }
     ]
   },
   "settings": {
     "logLevel": "info",
     "logDirectory": "~/.agent-os/logs",
-    "bashObservation": true,
-    "contextInjection": true
+    "observedBashLog": "observed-bash.jsonl",
+    "projectScopedLogs": true,
+    "autoCommitDocumentation": true,
+    "contextInjection": true,
+    "workflowEnforcement": true
   },
   "compatibility": {
     "claudeCodeVersion": ">=1.0.0",
-    "agentOsVersion": ">=1.0.0"
+    "agentOsVersion": ">=2.0.0", 
+    "requiresBackgroundTasks": true
   },
   "documentation": {
     "installation": "Run ~/.agent-os/hooks/install-hooks.sh to install these hooks",
     "uninstallation": "Run ~/.agent-os/hooks/uninstall-hooks.sh to remove these hooks",
     "troubleshooting": "Check ~/.agent-os/logs/ for hook execution logs",
+    "bashObservation": "View Bash command history with 'aos dashboard'",
     "repository": "https://github.com/carmandale/agent-os"
   }
 }

@@ -19,7 +19,7 @@ class HookBenchmark:
     def __init__(self):
         self.project_root = Path(__file__).parent.parent.parent.parent
         self.monolithic_hook = self.project_root / "hooks" / "workflow-enforcement-hook.py"
-        self.modular_hook = self.project_root / "hooks" / "workflow-enforcement-hook-modular.py"
+        self.modular_hook = self.project_root / "hooks" / "workflow-enforcement-hook.py"
         
     def create_test_payloads(self):
         """Create test payloads for different hook types."""

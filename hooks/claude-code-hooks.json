@@ -10,12 +10,6 @@
       "enabled": true,
       "priority": 1
     },
-    "postToolUse": {
-      "script": "~/.agent-os/hooks/post-tool-use-hook.sh", 
-      "description": "Auto-commits Agent OS documentation changes after tool use to maintain consistency",
-      "enabled": true,
-      "priority": 1
-    },
     "userPromptSubmit": {
       "script": "~/.agent-os/hooks/user-prompt-submit-hook.sh",
       "description": "Injects contextual project information to improve AI assistance accuracy",

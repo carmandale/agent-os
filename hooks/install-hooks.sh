@@ -34,7 +34,7 @@ if [ ! -d "$HOOKS_DIR" ]; then
 fi
 
 # Check if hook scripts exist
-for hook in "stop-hook.sh" "user-prompt-submit-hook.sh" "pre-bash-hook.sh" "post-bash-hook.sh" "notify-hook.sh" "workflow-enforcement-hook.py"; do
+for hook in "stop-hook.sh" "user-prompt-submit-hook.sh" "pre-bash-hook.sh" "post-bash-hook.sh" "notify-hook.sh"; do
     if [ ! -f "$HOOKS_DIR/$hook" ]; then
         echo "❌ Hook script not found: $hook"
         exit 1
@@ -111,14 +111,6 @@ hooks['PreToolUse'].append({
     }]
 })
 
-# Add Task context hook  
-hooks['PreToolUse'].append({
-    "matcher": "Task",
-    "hooks": [{
-        "type": "command",
-        "command": f"python3 {agent_os_dir}/workflow-enforcement-hook.py pretool-task"
-    }]
-})
 
 # PostToolUse hooks
 if 'PostToolUse' not in hooks:

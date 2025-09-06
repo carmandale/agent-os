@@ -39,7 +39,7 @@ def benchmark_hook(hook_path, hook_type, payload, iterations=10):
 
 def main():
     project_root = Path(__file__).parent.parent.parent.parent
-    optimized_hook = project_root / "hooks" / "workflow-enforcement-hook-v2-final.py"
+    optimized_hook = project_root / "hooks" / "workflow-enforcement-hook.py"
     
     # Test the slow scenarios
     scenarios = [

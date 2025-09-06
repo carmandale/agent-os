@@ -14,7 +14,7 @@ from unittest.mock import patch, MagicMock
 from pathlib import Path
 
 # Add hook to path for testing
-hook_path = Path(__file__).parent.parent.parent / "workflow-enforcement-hook-v2-final.py"
+hook_path = Path(__file__).parent.parent.parent / "workflow-enforcement-hook.py"
 
 class TestHookPerformance(unittest.TestCase):
     """Test performance requirements."""
