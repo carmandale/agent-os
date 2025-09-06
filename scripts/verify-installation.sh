@@ -148,7 +148,7 @@ validate_file_integrity() {
 	)
 	
 	for file in "${required_instructions[@]}"; do
-		local full_path="${AGENT_OS_DIR}/instructions/${file}"
+		local full_path="${AGENT_OS_DIR}/instructions/core/${file}"
 		if [[ ! -f "$full_path" ]]; then
 			log_error "Required instruction file missing: $file"
 			return 1
