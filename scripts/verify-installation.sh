@@ -318,7 +318,7 @@ run_quick_verification() {
 	validate_directory_structure || return 1
 	
 	# Basic file check (just core files)
-	if [[ ! -f "${AGENT_OS_DIR}/instructions/plan-product.md" ]]; then
+	if [[ ! -f "${AGENT_OS_DIR}/instructions/core/plan-product.md" ]]; then
 		log_error "Core instruction file missing"
 		return 1
 	fi
