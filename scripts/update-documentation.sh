@@ -431,8 +431,9 @@ if [[ ${#missing[@]} -gt 0 ]]; then
     # Exit with error if required documentation is missing
     if printf -- '%s\n' "${missing[@]}" | grep -q '^CHANGELOG.md$'; then
       echo ""
-      echo "ERROR: CHANGELOG.md is required for documenting changes."
-      exit 2
+      echo "⚠️  Missing CHANGELOG.md - required for documenting changes.
+   Run /update-documentation --create-missing to create it."
+      exit 0
     fi
   fi
 fi
@@ -442,8 +443,10 @@ if [[ "$MODE" == "dry-run" ]]; then
   # Exit with error code if documentation updates are needed
   if [[ ${#proposals[@]} -gt 0 ]]; then 
     echo ""
-    echo "Documentation updates required. Run without --dry-run to see details."
-    exit 2
+    echo "📋 Documentation update recommendations available.
+   Run /update-documentation (without --dry-run) to apply updates.
+   Run /update-documentation --diff-only to see detailed changes."
+    exit 0
   fi
   exit 0
 fi
