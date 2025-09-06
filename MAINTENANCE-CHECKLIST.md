@@ -30,8 +30,8 @@ git log --oneline origin/main..HEAD
 
 ### 2. Installation State Check
 ```bash
-# Run the verification script
-./verify-installation.sh
+# Run the verification script  
+./scripts/verify-installation.sh
 
 # Manual checks if script doesn't exist yet:
 ls -la ~/.agent-os/hooks/
@@ -66,7 +66,7 @@ When adding new files, update EVERY setup script:
 ./setup-claude-code.sh --overwrite-commands
 
 # Verify all expected files exist
-./verify-installation.sh
+./scripts/verify-installation.sh
 ```
 
 ### 3. Commit and Push Changes
@@ -93,7 +93,7 @@ curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup.sh | 
 ./setup-claude-code.sh
 
 # Verify everything works
-./verify-installation.sh
+./scripts/verify-installation.sh
 ```
 
 ### 5. Fix Any Issues Found
@@ -178,7 +178,7 @@ Installation is successful when:
 - [ ] No "No such file or directory" errors  
 - [ ] All commands work: `/plan-product`, `/create-spec`, etc.
 - [ ] All hooks run without errors
-- [ ] `./verify-installation.sh` passes all checks
+- [ ] `./scripts/verify-installation.sh` passes all checks
 
 ---
 
