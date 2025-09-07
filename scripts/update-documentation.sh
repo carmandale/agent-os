@@ -16,8 +16,8 @@ if [[ -f "$SCRIPT_DIR/lib/roadmap-sync.sh" ]]; then
     source "$SCRIPT_DIR/lib/roadmap-sync.sh"
 fi
 
-# Parse command line arguments
-MODE="dry-run"
+# Parse command line arguments  
+MODE="update"  # Default to actually updating, not dry-run
 CREATE_MISSING=0
 DEEP=0
 UPDATE_CHANGELOG=0
