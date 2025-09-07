@@ -27,7 +27,8 @@ FIX_REFERENCES=0
 
 for arg in "$@"; do
   case "$arg" in
-    --dry-run) MODE="dry-run" ;;
+    --preview|--dry-run) MODE="preview" ;;  # Renamed for clarity
+    --verify) MODE="verify" ;;              # New: check currency without updates
     --diff-only) MODE="diff-only" ;;
     --create-missing) CREATE_MISSING=1 ;;
     --deep) DEEP=1 ;;
@@ -35,6 +36,8 @@ for arg in "$@"; do
     --changelog-only) UPDATE_CHANGELOG=1; MODE="changelog-only" ;;
     --create-spec) CREATE_SPEC=1 ;;
     --sync-roadmap) SYNC_ROADMAP=1 ;;
+    --fix-references) FIX_REFERENCES=1 ;;  # New: fix broken file references
+    --all) UPDATE_CHANGELOG=1; SYNC_ROADMAP=1; FIX_REFERENCES=1 ;;  # Do everything
   esac
 done
 
