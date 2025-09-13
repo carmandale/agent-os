@@ -4,8 +4,6 @@
 # Agent OS Notification Hook
 # Provides gentle reminders based on recent observed Bash activity
 
-set -euo pipefail
-
 # Configuration
 HOOKS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG_DIR="${HOME}/.agent-os/logs"

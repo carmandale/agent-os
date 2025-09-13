@@ -3,13 +3,42 @@
 # context-builder.sh
 # Builds contextual information for Agent OS workflows
 
-set -e
-
-# Source required utilities
+# Source required utilities with error handling
 HOOKS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-source "$HOOKS_DIR/lib/git-utils.sh"
-source "$HOOKS_DIR/lib/workflow-detector.sh"
-source "$HOOKS_DIR/lib/project-config-injector.sh"
+
+# Source git utilities
+if [ -f "$HOOKS_DIR/lib/git-utils.sh" ]; then
+    source "$HOOKS_DIR/lib/git-utils.sh"
+else
+    # Provide fallback functions
+    is_git_repo() { git rev-parse --git-dir >/dev/null 2>&1; }
+    get_current_branch() { git branch --show-current 2>/dev/null || echo "unknown"; }
+    is_clean_workspace() { [ -z "$(git status --porcelain 2>/dev/null)" ]; }
+    extract_github_issue() { echo ""; }
+fi
+
+# Source workflow detector
+if [ -f "$HOOKS_DIR/lib/workflow-detector.sh" ]; then
+    source "$HOOKS_DIR/lib/workflow-detector.sh"
+else
+    # Provide fallback functions
+    is_agent_os_workflow() { return 1; }
+    detect_workflow_phase() { echo "unknown"; }
+    detect_abandonment_risk() { echo "low"; }
+    requires_workflow_completion() { return 1; }
+    needs_step_13_blocking() { return 1; }
+    detect_current_spec() { echo ""; }
+    get_workflow_suggestions() { echo ""; }
+fi
+
+# Source project config injector
+if [ -f "$HOOKS_DIR/lib/project-config-injector.sh" ]; then
+    source "$HOOKS_DIR/lib/project-config-injector.sh"
+else
+    # Provide fallback functions
+    build_workflow_reminder() { echo ""; }
+    build_config_reminder() { echo ""; }
+fi
 
 # Function to build Agent OS project context
 build_project_context() {
@@ -76,8 +105,8 @@ build_git_context() {
         
         if ! is_clean_workspace; then
             local modified untracked
-            modified=$(git status --porcelain | grep -E "^\s*M" | wc -l | tr -d ' ')
-            untracked=$(git status --porcelain | grep -E "^\s*\?\?" | wc -l | tr -d ' ')
+            modified=$(git status --porcelain 2>/dev/null | grep -E "^\s*M" | wc -l | tr -d ' ')
+            untracked=$(git status --porcelain 2>/dev/null | grep -E "^\s*\?\?" | wc -l | tr -d ' ')
             context+="- **Workspace:** $modified modified, $untracked untracked files\n"
         else
             context+="- **Workspace:** Clean\n"

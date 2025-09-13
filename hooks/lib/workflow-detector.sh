@@ -3,11 +3,17 @@
 # workflow-detector.sh
 # Detects current Agent OS workflow state and context
 
-set -e
-
-# Source required utilities
+# Source required utilities with error handling
 HOOKS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-source "$HOOKS_DIR/lib/git-utils.sh"
+if [ -f "$HOOKS_DIR/lib/git-utils.sh" ]; then
+    source "$HOOKS_DIR/lib/git-utils.sh"
+else
+    # Provide fallback git functions if git-utils.sh is missing
+    is_git_repository() { git rev-parse --git-dir >/dev/null 2>&1; }
+    has_uncommitted_changes() { [ -n "$(git status --porcelain 2>/dev/null)" ]; }
+    get_current_spec_folder() { echo ""; }
+    get_current_issue_number() { echo ""; }
+fi
 
 # Function to detect if we're in Agent OS workflow
 is_agent_os_workflow() {
@@ -150,32 +156,38 @@ needs_step_13_blocking() {
 detect_current_spec() {
     # Look for active spec directory
     if [ -d ".agent-os/specs" ]; then
-        # Find most recent spec directory
-        local latest_spec=$(find .agent-os/specs -maxdepth 1 -type d -name "20*" | sort -r | head -1)
+        # Find most recent spec directory (with error handling)
+        local latest_spec
+        latest_spec=$(find .agent-os/specs -maxdepth 1 -type d -name "20*" 2>/dev/null | sort -r | head -1)
         if [ -n "$latest_spec" ]; then
             basename "$latest_spec"
             return
         fi
     fi
-    
+
     echo ""
 }
 
 # Function to detect if documentation needs committing
 needs_documentation_commit() {
+    # Check if we're in a git repository first
+    if ! git rev-parse --git-dir >/dev/null 2>&1; then
+        return 1  # Not in git repo, no commit needed
+    fi
+
     local git_status
     git_status=$(git status --porcelain 2>/dev/null || echo "")
-    
+
     # Check for modified Agent OS documentation files
     if echo "$git_status" | grep -qE "^\s*M\s+\.agent-os/"; then
         return 0
     fi
-    
+
     # Check for modified spec files
     if echo "$git_status" | grep -qE "^\s*M\s+.*tasks\.md$"; then
         return 0
     fi
-    
+
     return 1
 }
 

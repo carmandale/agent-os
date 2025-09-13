@@ -3,8 +3,6 @@
 # git-utils.sh
 # Git utilities for Agent OS workflows
 
-set -e
-
 # Function to check if we're in a git repository
 is_git_repo() {
     git rev-parse --git-dir >/dev/null 2>&1
@@ -95,11 +93,17 @@ commit_agent_os_changes() {
     
     # Stage Agent OS files
     if [ -n "$modified_files" ]; then
-        echo "$modified_files" | xargs git add
+        echo "$modified_files" | xargs -r git add 2>/dev/null || {
+            echo "Warning: Failed to stage modified Agent OS files"
+            return 1
+        }
     fi
-    
+
     if [ -n "$untracked_files" ]; then
-        echo "$untracked_files" | xargs git add
+        echo "$untracked_files" | xargs -r git add 2>/dev/null || {
+            echo "Warning: Failed to stage untracked Agent OS files"
+            return 1
+        }
     fi
     
     # Create commit message

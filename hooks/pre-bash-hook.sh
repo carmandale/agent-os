@@ -4,8 +4,6 @@
 # Agent OS PreToolUse Hook for Bash commands
 # Observes and classifies Bash command intent without blocking
 
-set -euo pipefail
-
 # Configuration
 HOOKS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPTS_DIR="$(dirname "$HOOKS_DIR")/scripts"

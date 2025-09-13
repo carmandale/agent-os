@@ -4,8 +4,6 @@
 # Agent OS PostToolUse Hook for Bash commands
 # Observes Bash command execution results and provides suggestions
 
-set -euo pipefail
-
 # Configuration
 HOOKS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG_DIR="${HOME}/.agent-os/logs"
