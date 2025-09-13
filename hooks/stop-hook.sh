@@ -64,9 +64,25 @@ check_spec_abandonment() {
         return 1  # No active spec, don't block
     fi
 
-    # Check if there are uncommitted changes
-    if ! git diff --quiet HEAD 2>/dev/null; then
-        log_debug "Found uncommitted changes - possible abandonment"
+    # Extract issue number from spec name and check if it's closed
+    local issue_number=$(echo "$current_spec" | grep -oE '#[0-9]+' | sed 's/#//' | head -1)
+    if [ -n "$issue_number" ]; then
+        # Check if GitHub CLI is available and issue is closed
+        if command -v gh >/dev/null 2>&1; then
+            local issue_state=$(gh issue view "$issue_number" --json state -q '.state' 2>/dev/null || echo "")
+            if [ "$issue_state" = "CLOSED" ]; then
+                log_debug "Issue #$issue_number is closed, not blocking"
+                return 1  # Don't block - issue is complete
+            fi
+        fi
+    fi
+
+    # Check if there are uncommitted changes (excluding local config files)
+    local uncommitted_files
+    uncommitted_files=$(git diff --name-only HEAD 2>/dev/null | grep -v -E "\.(local|temp)\.json$|\.env\.local$|\.DS_Store$" || echo "")
+
+    if [ -n "$uncommitted_files" ]; then
+        log_debug "Found uncommitted changes - possible abandonment: $uncommitted_files"
         return 0  # Block - should commit changes
     fi
 
@@ -94,9 +110,12 @@ check_spec_abandonment() {
 check_workspace_abandonment() {
     log_debug "Checking workspace abandonment"
 
-    # If we have uncommitted changes, suggest completing the workflow
-    if ! git diff --quiet HEAD 2>/dev/null; then
-        log_debug "Found uncommitted changes in dirty workspace"
+    # If we have uncommitted changes (excluding local config files), suggest completing the workflow
+    local uncommitted_files
+    uncommitted_files=$(git diff --name-only HEAD 2>/dev/null | grep -v -E "\.(local|temp)\.json$|\.env\.local$|\.DS_Store$" || echo "")
+
+    if [ -n "$uncommitted_files" ]; then
+        log_debug "Found uncommitted changes in dirty workspace: $uncommitted_files"
         return 0  # Block to suggest cleanup
     fi
 
