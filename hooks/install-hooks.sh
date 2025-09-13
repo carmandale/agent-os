@@ -52,7 +52,7 @@ if [ ! -f "$SETTINGS_FILE" ]; then
 fi
 
 # Check if Agent OS hooks are already installed
-if grep -q "agent-os-hooks-v2" "$SETTINGS_FILE" 2>/dev/null; then
+if grep -q "agent-os-hooks-v" "$SETTINGS_FILE" 2>/dev/null; then
     echo "⚠️  Agent OS hooks are already installed"
     echo ""
     
@@ -89,61 +89,71 @@ try:
 except:
     settings = {}
 
-# Ensure hooks section exists
-if 'hooks' not in settings:
-    settings['hooks'] = {}
-
-hooks = settings['hooks']
-
-# Add Agent OS hooks with absolute paths for security
+# Replace hooks section completely to ensure clean installation with new format
 agent_os_dir = os.path.expanduser('~/.agent-os/hooks')
 
-# PreToolUse hooks
-if 'PreToolUse' not in hooks:
-    hooks['PreToolUse'] = []
+# Start with completely new hooks configuration
+hooks = {}
 
-# Add Bash observation hook
-hooks['PreToolUse'].append({
-    "matcher": "Bash",
+# Stop hooks (workflow abandonment prevention)
+hooks['Stop'] = [{
     "hooks": [{
-        "type": "command", 
-        "command": f"{agent_os_dir}/pre-bash-hook.sh"
+        "type": "command",
+        "command": f"{agent_os_dir}/stop-hook.sh"
     }]
-})
+}]
 
+# PostToolUse hooks (documentation auto-commit)
+hooks['PostToolUse'] = [{
+    "hooks": [{
+        "type": "command",
+        "command": f"{agent_os_dir}/post-tool-use-hook.sh"
+    }]
+}]
 
-# PostToolUse hooks
-if 'PostToolUse' not in hooks:
-    hooks['PostToolUse'] = []
+# UserPromptSubmit hooks (context injection)
+hooks['UserPromptSubmit'] = [{
+    "hooks": [{
+        "type": "command",
+        "command": f"{agent_os_dir}/user-prompt-submit-hook.sh"
+    }]
+}]
 
-# Add Bash observation hook
-hooks['PostToolUse'].append({
+# PreToolUse hooks (Bash observation)
+hooks['PreToolUse'] = [{
     "matcher": "Bash",
     "hooks": [{
         "type": "command",
-        "command": f"{agent_os_dir}/post-bash-hook.sh"  
+        "command": f"{agent_os_dir}/pre-bash-hook.sh"
     }]
-})
+}]
 
 # Notification hooks
-if 'Notification' not in hooks:
-    hooks['Notification'] = []
-
-hooks['Notification'].append({
+hooks['Notification'] = [{
     "hooks": [{
         "type": "command",
         "command": f"{agent_os_dir}/notify-hook.sh"
     }]
-})
+}]
 
-# Add marker for detection
-settings['_agent_os_hooks'] = 'agent-os-hooks-v2'
+# Replace the hooks section with our new configuration
+settings['hooks'] = hooks
+
+# Add marker for detection (update to v3 to indicate new format)
+settings['agentOsHooksVersion'] = 'agent-os-hooks-v3'
+
+# Remove old marker if it exists
+if '_agent_os_hooks' in settings:
+    del settings['_agent_os_hooks']
+
+# Preserve other settings like statusLine and model
+# (The python script automatically preserves existing keys)
 
 # Write updated settings
 with open(settings_file, 'w') as f:
     json.dump(settings, f, indent=2)
 
-print("  ✓ Integrated hooks into ~/.claude/settings.json")
+print("  ✓ Integrated hooks into ~/.claude/settings.json with new format")
 EOF
 
 # Ensure hook scripts are executable
@@ -161,7 +171,7 @@ echo ""
 echo "✅ Verifying installation..."
 
 # Verify hooks are in settings.json
-if grep -q "agent-os-hooks-v2" "$SETTINGS_FILE" 2>/dev/null; then
+if grep -q "agent-os-hooks-v3" "$SETTINGS_FILE" 2>/dev/null; then
     echo "  ✓ Agent OS hooks integrated into ~/.claude/settings.json"
 else
     echo "  ⚠️ Hook integration verification failed"

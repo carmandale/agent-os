@@ -163,7 +163,7 @@ echo "📥 Installing Claude Code hooks..."
         "$HOME/.agent-os/hooks/install-hooks.sh"
         
         # Check if installation actually completed by verifying hooks are in settings.json
-        if [ -f "$HOME/.claude/settings.json" ] && grep -q "agent-os-hooks-v2" "$HOME/.claude/settings.json" 2>/dev/null; then
+        if [ -f "$HOME/.claude/settings.json" ] && grep -q "agent-os-hooks-v" "$HOME/.claude/settings.json" 2>/dev/null; then
             echo "  ✅ Claude Code hooks installed successfully!"
         else
             echo "  ⚠️ Claude Code hooks installation did not complete properly"
@@ -203,7 +203,7 @@ echo "📥 Installing Claude Code hooks..."
         "$HOME/.agent-os/hooks/install-hooks.sh"
         
         # Check if installation actually completed by verifying hooks are in settings.json
-        if [ -f "$HOME/.claude/settings.json" ] && grep -q "agent-os-hooks-v2" "$HOME/.claude/settings.json" 2>/dev/null; then
+        if [ -f "$HOME/.claude/settings.json" ] && grep -q "agent-os-hooks-v" "$HOME/.claude/settings.json" 2>/dev/null; then
             echo "  ✅ Claude Code hooks installed successfully!"
         else
             echo "  ⚠️ Claude Code hooks installation did not complete properly"
