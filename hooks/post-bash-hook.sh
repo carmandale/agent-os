@@ -123,5 +123,13 @@ echo "📊 Bash command: ${cmd:0:60}$([ ${#cmd} -gt 60 ] && echo "...")"
 echo "   Status: $status_msg"
 [ -n "$suggestion" ] && echo "   💡 $suggestion"
 
+# Check if this was a git commit and trigger task sync if successful
+if [[ "$cmd" =~ ^git[[:space:]]+commit ]] && [ "$exit_status" = "0" ]; then
+    # Run task status sync in background to avoid blocking
+    if [ -f "$HOOKS_DIR/task-status-sync.sh" ]; then
+        "$HOOKS_DIR/task-status-sync.sh" >/dev/null 2>&1 &
+    fi
+fi
+
 # Always exit 0 for Bash - never block
 exit 0
