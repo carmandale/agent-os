@@ -108,9 +108,9 @@ check_spec_abandonment() {
         fi
     fi
 
-    # Check if there are uncommitted changes (excluding local config files)
+    # Check if there are uncommitted changes (excluding config and generated files)
     local uncommitted_files
-    uncommitted_files=$(git diff --name-only HEAD 2>/dev/null | grep -v -E "\.(local|temp)\.json$|\.env\.local$|\.DS_Store$" || echo "")
+    uncommitted_files=$(git diff --name-only HEAD 2>/dev/null | grep -v -E "\.DS_Store$|\.env(\..*)?$|\.(local|temp|tmp)\..*$|\.xcodeproj/|\.xcworkspace/|xcuserdata/|\.swiftpm/|Package\.resolved$|package-lock\.json$|yarn\.lock$|Podfile\.lock$|\.gitignore$|node_modules/|\.next/|dist/|build/|out/|\.(log|pid|seed|lock)$|\.vscode/|\.idea/|__pycache__/|\.pyc$|\.gradle/|target/" || echo "")
 
     if [ -n "$uncommitted_files" ]; then
         log_debug "Found uncommitted changes - possible abandonment: $uncommitted_files"
@@ -141,9 +141,9 @@ check_spec_abandonment() {
 check_workspace_abandonment() {
     log_debug "Checking workspace abandonment"
 
-    # If we have uncommitted changes (excluding local config files), suggest completing the workflow
+    # If we have uncommitted changes (excluding config and generated files), suggest completing the workflow
     local uncommitted_files
-    uncommitted_files=$(git diff --name-only HEAD 2>/dev/null | grep -v -E "\.(local|temp)\.json$|\.env\.local$|\.DS_Store$" || echo "")
+    uncommitted_files=$(git diff --name-only HEAD 2>/dev/null | grep -v -E "\.DS_Store$|\.env(\..*)?$|\.(local|temp|tmp)\..*$|\.xcodeproj/|\.xcworkspace/|xcuserdata/|\.swiftpm/|Package\.resolved$|package-lock\.json$|yarn\.lock$|Podfile\.lock$|\.gitignore$|node_modules/|\.next/|dist/|build/|out/|\.(log|pid|seed|lock)$|\.vscode/|\.idea/|__pycache__/|\.pyc$|\.gradle/|target/" || echo "")
 
     if [ -n "$uncommitted_files" ]; then
         log_debug "Found uncommitted changes in dirty workspace: $uncommitted_files"
@@ -166,29 +166,29 @@ EOF
         local current_spec=$(find .agent-os/specs -maxdepth 1 -type d -name "20*" 2>/dev/null | sort -r | head -1)
         if [ -n "$current_spec" ]; then
             local spec_basename=$(basename "$current_spec")
-            echo "  - Active spec: $spec_basename" >&2
+            echo "  - Active spec: $spec_basename"
 
             # Check if the issue is actually closed or doesn't exist
             local issue_number=$(echo "$spec_basename" | grep -oE '#[0-9]+' | sed 's/#//' | head -1)
             if [ -n "$issue_number" ] && command -v gh >/dev/null 2>&1; then
                 local issue_state=$(gh issue view "$issue_number" --json state -q '.state' 2>/dev/null || echo "")
                 if [ "$issue_state" = "CLOSED" ] || [ "$issue_state" = "MERGED" ]; then
-                    echo "  - Note: GitHub issue #$issue_number is $issue_state" >&2
-                    echo "  - This may be leftover work that can be cleaned up" >&2
+                    echo "  - Note: GitHub issue #$issue_number is $issue_state"
+                    echo "  - This may be leftover work that can be cleaned up"
                 elif [ -z "$issue_state" ]; then
-                    echo "  - Note: GitHub issue #$issue_number not found in this repository" >&2
-                    echo "  - This may be a cross-repository reference or completed elsewhere" >&2
-                    echo "  - Consider cleaning up this spec or suppressing: export AGENT_OS_HOOKS_QUIET=true" >&2
+                    echo "  - Note: GitHub issue #$issue_number not found in this repository"
+                    echo "  - This may be a cross-repository reference or completed elsewhere"
+                    echo "  - Consider cleaning up this spec or suppressing: export AGENT_OS_HOOKS_QUIET=true"
                 fi
             fi
         fi
     fi
 
     if ! git diff --quiet HEAD 2>/dev/null; then
-        echo "  - Uncommitted changes found" >&2
+        echo "  - Uncommitted changes found"
     fi
 
-    cat << 'EOF' >&2
+    cat << 'EOF'
 
 Next steps:
   1. Review changes: git status
@@ -228,6 +228,16 @@ generate_next_steps() {
 main() {
     log_debug "Stop hook triggered"
 
+    # Read stdin JSON payload (prevents infinite loops)
+    payload="$(cat)"
+    if command -v jq >/dev/null 2>&1; then
+        stop_active=$(echo "$payload" | jq -r '.stop_hook_active // false' 2>/dev/null)
+        if [ "$stop_active" = "true" ]; then
+            log_debug "Stop hook already active, preventing loop"
+            exit 0
+        fi
+    fi
+
     # Allow users to suppress Agent OS hooks
     if [ "${AGENT_OS_HOOKS_QUIET:-false}" = "true" ]; then
         log_debug "Agent OS hooks suppressed via AGENT_OS_HOOKS_QUIET"
@@ -246,10 +256,23 @@ main() {
         exit 0
     fi
 
+    # Rate limiting to prevent spam (5 minute cooldown)
+    local project_id=$(pwd | md5 2>/dev/null || echo "$PWD" | md5sum 2>/dev/null | cut -d' ' -f1)
+    RATE_LIMIT_FILE="/tmp/agent-os-stop-${project_id}"
+    if [ -f "$RATE_LIMIT_FILE" ]; then
+        local file_age=$(($(date +%s) - $(stat -f %m "$RATE_LIMIT_FILE" 2>/dev/null || stat -c %Y "$RATE_LIMIT_FILE" 2>/dev/null || echo 0)))
+        if [ "$file_age" -lt 300 ]; then
+            log_debug "Rate limit active, skipping stop hook (${file_age}s < 300s)"
+            exit 0
+        fi
+    fi
+
     # Check if we should block
     if should_block_interaction; then
         log_debug "Blocking interaction - generating stop message"
-        # Write clear message to stderr for Claude Code
+        # Update rate limit file
+        touch "$RATE_LIMIT_FILE"
+        # Write clear message for Claude Code
         generate_stop_message
         exit 1  # Block the interaction
     else
