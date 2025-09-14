@@ -155,10 +155,10 @@ echo "These hooks run transparently during your normal Claude Code interactions.
 echo ""
 echo "📥 Installing Claude Code hooks..."
     
-    # Check if hooks are already installed
-    if [ -f "$HOME/.agent-os/hooks/install-hooks.sh" ]; then
+    # Check if hooks are already installed and if we should overwrite
+    if [ -f "$HOME/.agent-os/hooks/install-hooks.sh" ] && [ "$OVERWRITE_COMMANDS" = false ]; then
         echo "  ✓ Hook utilities found"
-        
+
         # Run the hooks installation
         "$HOME/.agent-os/hooks/install-hooks.sh"
         
@@ -171,7 +171,11 @@ echo "📥 Installing Claude Code hooks..."
             echo "     ~/.agent-os/hooks/install-hooks.sh"
         fi
     else
-        echo "  ⚠️ Hook utilities not found. Installing from repository..."
+        if [ -f "$HOME/.agent-os/hooks/install-hooks.sh" ]; then
+            echo "  🔄 Updating existing hooks with latest versions..."
+        else
+            echo "  ⚠️ Hook utilities not found. Installing from repository..."
+        fi
         
         # Create hooks directory
         mkdir -p "$HOME/.agent-os/hooks/lib"
