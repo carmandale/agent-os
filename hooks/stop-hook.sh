@@ -52,6 +52,17 @@ should_block_interaction() {
                 if [ "$issue_state" = "CLOSED" ] || [ "$issue_state" = "MERGED" ]; then
                     log_debug "Issue #$issue_number is $issue_state, not blocking"
                     return 1  # Don't block - issue is complete
+                elif [ -z "$issue_state" ]; then
+                    log_debug "Issue #$issue_number not found in this repository, checking if spec is old"
+                    # If the spec is more than 24 hours old and issue doesn't exist, likely completed elsewhere
+                    local spec_dir=".agent-os/specs/$current_spec"
+                    if [ -d "$spec_dir" ]; then
+                        local spec_age_hours=$(( ($(date +%s) - $(stat -f %m "$spec_dir" 2>/dev/null || echo "0")) / 3600 ))
+                        if [ "$spec_age_hours" -gt 24 ]; then
+                            log_debug "Spec is $spec_age_hours hours old and issue not found, not blocking"
+                            return 1  # Don't block - likely completed elsewhere
+                        fi
+                    fi
                 fi
             fi
         fi
@@ -154,7 +165,22 @@ EOF
     if [ -d ".agent-os/specs" ]; then
         local current_spec=$(find .agent-os/specs -maxdepth 1 -type d -name "20*" 2>/dev/null | sort -r | head -1)
         if [ -n "$current_spec" ]; then
-            echo "  - Active spec: $(basename "$current_spec")" >&2
+            local spec_basename=$(basename "$current_spec")
+            echo "  - Active spec: $spec_basename" >&2
+
+            # Check if the issue is actually closed or doesn't exist
+            local issue_number=$(echo "$spec_basename" | grep -oE '#[0-9]+' | sed 's/#//' | head -1)
+            if [ -n "$issue_number" ] && command -v gh >/dev/null 2>&1; then
+                local issue_state=$(gh issue view "$issue_number" --json state -q '.state' 2>/dev/null || echo "")
+                if [ "$issue_state" = "CLOSED" ] || [ "$issue_state" = "MERGED" ]; then
+                    echo "  - Note: GitHub issue #$issue_number is $issue_state" >&2
+                    echo "  - This may be leftover work that can be cleaned up" >&2
+                elif [ -z "$issue_state" ]; then
+                    echo "  - Note: GitHub issue #$issue_number not found in this repository" >&2
+                    echo "  - This may be a cross-repository reference or completed elsewhere" >&2
+                    echo "  - Consider cleaning up this spec or suppressing: export AGENT_OS_HOOKS_QUIET=true" >&2
+                fi
+            fi
         fi
     fi
 

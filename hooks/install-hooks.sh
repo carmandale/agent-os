@@ -198,6 +198,17 @@ else
     echo "  ℹ️ git-utils.sh not tested (not in git repository)"
 fi
 
+# Test task status sync
+if [ -f "$HOOKS_DIR/task-status-sync.sh" ]; then
+    if "$HOOKS_DIR/task-status-sync.sh" 2>/dev/null; then
+        echo "  ✓ task-status-sync.sh working"
+    else
+        echo "  ℹ️ task-status-sync.sh not tested (no active specs)"
+    fi
+else
+    echo "  ⚠️ task-status-sync.sh not found"
+fi
+
 # Test context builder
 if "$HOOKS_DIR/lib/context-builder.sh" project >/dev/null 2>&1; then
     echo "  ✓ context-builder.sh working"
