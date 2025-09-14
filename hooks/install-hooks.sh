@@ -107,7 +107,7 @@ hooks['Stop'] = [{
 hooks['PostToolUse'] = [{
     "hooks": [{
         "type": "command",
-        "command": f"{agent_os_dir}/post-tool-use-hook.sh"
+        "command": f"{agent_os_dir}/post-bash-hook.sh"
     }]
 }]
 
