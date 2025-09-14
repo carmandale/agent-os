@@ -21,9 +21,9 @@ log_debug() {
 should_block_interaction() {
     log_debug "Checking for potential work abandonment"
 
-    # Get all uncommitted files
+    # Get all uncommitted files (modified, staged, and untracked)
     local uncommitted_files
-    uncommitted_files=$(git diff --name-only HEAD 2>/dev/null || echo "")
+    uncommitted_files=$(git status --porcelain 2>/dev/null | cut -c4- || echo "")
 
     if [ -z "$uncommitted_files" ]; then
         log_debug "No uncommitted changes, allowing interaction"
