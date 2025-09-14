@@ -37,6 +37,26 @@ should_block_interaction() {
         return 1  # Don't block
     fi
 
+    # For spec_execution workflow, check if the current issue is closed first
+    if [ "$workflow_state" = "spec_execution" ]; then
+        local current_spec=""
+        if [ -d ".agent-os/specs" ]; then
+            current_spec=$(find .agent-os/specs -maxdepth 1 -type d -name "20*" 2>/dev/null | sort -r | head -1)
+            current_spec=$(basename "$current_spec" 2>/dev/null)
+        fi
+
+        if [ -n "$current_spec" ]; then
+            local issue_number=$(echo "$current_spec" | grep -oE '#[0-9]+' | sed 's/#//' | head -1)
+            if [ -n "$issue_number" ] && command -v gh >/dev/null 2>&1; then
+                local issue_state=$(gh issue view "$issue_number" --json state -q '.state' 2>/dev/null || echo "")
+                if [ "$issue_state" = "CLOSED" ] || [ "$issue_state" = "MERGED" ]; then
+                    log_debug "Issue #$issue_number is $issue_state, not blocking"
+                    return 1  # Don't block - issue is complete
+                fi
+            fi
+        fi
+    fi
+
     # Check for abandonment patterns
     if [ "$workflow_state" = "spec_execution" ]; then
         check_spec_abandonment
