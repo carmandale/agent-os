@@ -50,8 +50,8 @@ should_block_interaction() {
             if [ -n "$issue_number" ] && command -v gh >/dev/null 2>&1; then
                 local issue_state=$(gh issue view "$issue_number" --json state -q '.state' 2>/dev/null || echo "")
                 if [ "$issue_state" = "CLOSED" ] || [ "$issue_state" = "MERGED" ]; then
-                    log_debug "Issue #$issue_number is $issue_state, not blocking"
-                    return 1  # Don't block - issue is complete
+                    log_debug "Issue #$issue_number is $issue_state, skipping all workflow checks"
+                    return 1  # Don't block - work is complete, ignore any uncommitted changes
                 elif [ -z "$issue_state" ]; then
                     log_debug "Issue #$issue_number not found in this repository, checking if spec is old"
                     # If the spec is more than 24 hours old and issue doesn't exist, likely completed elsewhere
@@ -95,15 +95,15 @@ check_spec_abandonment() {
         return 1  # No active spec, don't block
     fi
 
-    # Extract issue number from spec name and check if it's closed
+    # Extract issue number from spec name and check if it's closed FIRST
     local issue_number=$(echo "$current_spec" | grep -oE '#[0-9]+' | sed 's/#//' | head -1)
     if [ -n "$issue_number" ]; then
         # Check if GitHub CLI is available and issue is closed
         if command -v gh >/dev/null 2>&1; then
             local issue_state=$(gh issue view "$issue_number" --json state -q '.state' 2>/dev/null || echo "")
             if [ "$issue_state" = "CLOSED" ]; then
-                log_debug "Issue #$issue_number is closed, not blocking"
-                return 1  # Don't block - issue is complete
+                log_debug "Issue #$issue_number is closed, skipping all abandonment checks"
+                return 1  # Don't block - work is complete, ignore uncommitted changes
             fi
         fi
     fi
