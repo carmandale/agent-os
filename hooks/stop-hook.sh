@@ -19,210 +19,68 @@ log_debug() {
 
 # Check if we should block the current interaction
 should_block_interaction() {
-    # Use basic workflow detection since detect_workflow_state might not exist
-    local workflow_state="unknown"
+    log_debug "Checking for potential work abandonment"
 
-    # Simple checks for Agent OS workflow states
-    if [ -d ".agent-os/specs" ] && [ -n "$(find .agent-os/specs -name "*.md" 2>/dev/null)" ]; then
-        workflow_state="spec_execution"
-    elif ! git diff --quiet HEAD 2>/dev/null; then
-        workflow_state="dirty_workspace"
-    fi
-
-    log_debug "Workflow state: $workflow_state"
-
-    # Only intervene in Agent OS workflows
-    if [ "$workflow_state" != "spec_execution" ] && [ "$workflow_state" != "dirty_workspace" ]; then
-        log_debug "Not in Agent OS workflow, allowing interaction"
-        return 1  # Don't block
-    fi
-
-    # For spec_execution workflow, check if the current issue is closed first
-    if [ "$workflow_state" = "spec_execution" ]; then
-        local current_spec=""
-        if [ -d ".agent-os/specs" ]; then
-            current_spec=$(find .agent-os/specs -maxdepth 1 -type d -name "20*" 2>/dev/null | sort -r | head -1)
-            current_spec=$(basename "$current_spec" 2>/dev/null)
-        fi
-
-        if [ -n "$current_spec" ]; then
-            local issue_number=$(echo "$current_spec" | grep -oE '#[0-9]+' | sed 's/#//' | head -1)
-            if [ -n "$issue_number" ] && command -v gh >/dev/null 2>&1; then
-                local issue_state=$(gh issue view "$issue_number" --json state -q '.state' 2>/dev/null || echo "")
-                if [ "$issue_state" = "CLOSED" ] || [ "$issue_state" = "MERGED" ]; then
-                    log_debug "Issue #$issue_number is $issue_state, skipping all workflow checks"
-                    return 1  # Don't block - work is complete, ignore any uncommitted changes
-                elif [ -z "$issue_state" ]; then
-                    log_debug "Issue #$issue_number not found in this repository, checking if spec is old"
-                    # If the spec is more than 24 hours old and issue doesn't exist, likely completed elsewhere
-                    local spec_dir=".agent-os/specs/$current_spec"
-                    if [ -d "$spec_dir" ]; then
-                        local spec_age_hours=$(( ($(date +%s) - $(stat -f %m "$spec_dir" 2>/dev/null || echo "0")) / 3600 ))
-                        if [ "$spec_age_hours" -gt 24 ]; then
-                            log_debug "Spec is $spec_age_hours hours old and issue not found, not blocking"
-                            return 1  # Don't block - likely completed elsewhere
-                        fi
-                    fi
-                fi
-            fi
-        fi
-    fi
-
-    # Check for abandonment patterns
-    if [ "$workflow_state" = "spec_execution" ]; then
-        check_spec_abandonment
-        return $?
-    elif [ "$workflow_state" = "dirty_workspace" ]; then
-        check_workspace_abandonment
-        return $?
-    fi
-
-    return 1  # Don't block by default
-}
-
-# Check for spec execution abandonment
-check_spec_abandonment() {
-    # Find current spec using simple file operations
-    local current_spec=""
-    if [ -d ".agent-os/specs" ]; then
-        current_spec=$(find .agent-os/specs -maxdepth 1 -type d -name "20*" 2>/dev/null | sort -r | head -1)
-        current_spec=$(basename "$current_spec" 2>/dev/null)
-    fi
-
-    log_debug "Checking spec abandonment for: $current_spec"
-
-    if [ -z "$current_spec" ]; then
-        return 1  # No active spec, don't block
-    fi
-
-    # Extract issue number from spec name and check if it's closed FIRST
-    local issue_number=$(echo "$current_spec" | grep -oE '#[0-9]+' | sed 's/#//' | head -1)
-    if [ -n "$issue_number" ]; then
-        # Check if GitHub CLI is available and issue is closed
-        if command -v gh >/dev/null 2>&1; then
-            local issue_state=$(gh issue view "$issue_number" --json state -q '.state' 2>/dev/null || echo "")
-            if [ "$issue_state" = "CLOSED" ]; then
-                log_debug "Issue #$issue_number is closed, skipping all abandonment checks"
-                return 1  # Don't block - work is complete, ignore uncommitted changes
-            fi
-        fi
-    fi
-
-    # Check if there are uncommitted changes (excluding config and generated files)
+    # Get all uncommitted files
     local uncommitted_files
-    uncommitted_files=$(git diff --name-only HEAD 2>/dev/null | grep -v -E "\.DS_Store$|\.env(\..*)?$|\.(local|temp|tmp)\..*$|\.xcodeproj/|\.xcworkspace/|xcuserdata/|\.swiftpm/|Package\.resolved$|package-lock\.json$|yarn\.lock$|Podfile\.lock$|\.gitignore$|\.pbxproj$|node_modules/|\.next/|dist/|build/|out/|\.(log|pid|seed|lock)$|\.vscode/|\.idea/|__pycache__/|\.pyc$|\.gradle/|target/" || echo "")
+    uncommitted_files=$(git diff --name-only HEAD 2>/dev/null || echo "")
 
-    if [ -n "$uncommitted_files" ]; then
-        log_debug "Found uncommitted changes - possible abandonment: $uncommitted_files"
-        return 0  # Block - should commit changes
+    if [ -z "$uncommitted_files" ]; then
+        log_debug "No uncommitted changes, allowing interaction"
+        return 1  # Don't block - no changes to abandon
     fi
 
-    # Check if tasks are marked complete but not reflected in git
-    if [ -f ".agent-os/specs/$current_spec/tasks.md" ]; then
-        local completed_tasks=$(grep -c "^- \[x\]" ".agent-os/specs/$current_spec/tasks.md" 2>/dev/null || echo "0")
-        local total_tasks=$(grep -c "^- \[" ".agent-os/specs/$current_spec/tasks.md" 2>/dev/null || echo "0")
+    # Filter out config and generated files - these are never abandonment
+    local filtered_files
+    filtered_files=$(echo "$uncommitted_files" | grep -v -E "\.DS_Store$|\.env(\..*)?$|\.(local|temp|tmp)\..*$|\.xcodeproj/|\.xcworkspace/|xcuserdata/|\.swiftpm/|Package\.resolved$|package-lock\.json$|yarn\.lock$|Podfile\.lock$|\.gitignore$|\.pbxproj$|node_modules/|\.next/|dist/|build/|out/|\.(log|pid|seed|lock)$|\.vscode/|\.idea/|__pycache__/|\.pyc$|\.gradle/|target/")
 
-        if [ "$completed_tasks" -gt 0 ] && [ "$total_tasks" -gt 0 ]; then
-            log_debug "Found $completed_tasks/$total_tasks completed tasks"
-
-            # If we have completed tasks but no recent commits, might be abandonment
-            local recent_commits=$(git log --oneline --since="1 hour ago" 2>/dev/null | wc -l)
-            if [ "$recent_commits" -eq 0 ] && ! git diff --quiet HEAD 2>/dev/null; then
-                log_debug "Completed tasks but no recent commits - possible abandonment"
-                return 0  # Block
-            fi
-        fi
+    if [ -z "$filtered_files" ]; then
+        log_debug "Only config/generated files changed, allowing interaction"
+        return 1  # Don't block - only config changes
     fi
 
-    return 1  # Don't block
+    # Check if changes are actual source code files
+    local code_files
+    code_files=$(echo "$filtered_files" | grep -E '\.(swift|js|jsx|ts|tsx|py|go|rs|java|kt|php|rb|c|cpp|h|hpp|cs|scala|clj|sh)$')
+
+    if [ -z "$code_files" ]; then
+        log_debug "No source code files changed, allowing interaction"
+        return 1  # Don't block - no code changes
+    fi
+
+    log_debug "Found uncommitted source code files: $code_files"
+
+    # Check for signs of active work (recent commits suggest ongoing development)
+    local recent_commits
+    recent_commits=$(git log --oneline --since="2 hours ago" 2>/dev/null | wc -l)
+
+    if [ "$recent_commits" -gt 0 ]; then
+        log_debug "Recent commits found ($recent_commits), suggesting active work - allowing interaction"
+        return 1  # Don't block - recent activity suggests active work
+    fi
+
+    log_debug "Uncommitted source code with no recent activity - possible abandonment"
+    return 0  # Block - might be abandoning code changes
 }
 
-# Check for workspace abandonment
-check_workspace_abandonment() {
-    log_debug "Checking workspace abandonment"
-
-    # If we have uncommitted changes (excluding config and generated files), suggest completing the workflow
-    local uncommitted_files
-    uncommitted_files=$(git diff --name-only HEAD 2>/dev/null | grep -v -E "\.DS_Store$|\.env(\..*)?$|\.(local|temp|tmp)\..*$|\.xcodeproj/|\.xcworkspace/|xcuserdata/|\.swiftpm/|Package\.resolved$|package-lock\.json$|yarn\.lock$|Podfile\.lock$|\.gitignore$|\.pbxproj$|node_modules/|\.next/|dist/|build/|out/|\.(log|pid|seed|lock)$|\.vscode/|\.idea/|__pycache__/|\.pyc$|\.gradle/|target/" || echo "")
-
-    if [ -n "$uncommitted_files" ]; then
-        log_debug "Found uncommitted changes in dirty workspace: $uncommitted_files"
-        return 0  # Block to suggest cleanup
-    fi
-
-    return 1  # Don't block
-}
 
 # Generate stop message for Claude Code
 generate_stop_message() {
     cat << 'EOF'
-Agent OS: Incomplete workflow detected
+Agent OS: Uncommitted source code detected
 
-Current status:
-EOF
-
-    # Show current state
-    if [ -d ".agent-os/specs" ]; then
-        local current_spec=$(find .agent-os/specs -maxdepth 1 -type d -name "20*" 2>/dev/null | sort -r | head -1)
-        if [ -n "$current_spec" ]; then
-            local spec_basename=$(basename "$current_spec")
-            echo "  - Active spec: $spec_basename"
-
-            # Check if the issue is actually closed or doesn't exist
-            local issue_number=$(echo "$spec_basename" | grep -oE '#[0-9]+' | sed 's/#//' | head -1)
-            if [ -n "$issue_number" ] && command -v gh >/dev/null 2>&1; then
-                local issue_state=$(gh issue view "$issue_number" --json state -q '.state' 2>/dev/null || echo "")
-                if [ "$issue_state" = "CLOSED" ] || [ "$issue_state" = "MERGED" ]; then
-                    echo "  - Note: GitHub issue #$issue_number is $issue_state"
-                    echo "  - This may be leftover work that can be cleaned up"
-                elif [ -z "$issue_state" ]; then
-                    echo "  - Note: GitHub issue #$issue_number not found in this repository"
-                    echo "  - This may be a cross-repository reference or completed elsewhere"
-                    echo "  - Consider cleaning up this spec or suppressing: export AGENT_OS_HOOKS_QUIET=true"
-                fi
-            fi
-        fi
-    fi
-
-    if ! git diff --quiet HEAD 2>/dev/null; then
-        echo "  - Uncommitted changes found"
-    fi
-
-    cat << 'EOF'
+You have uncommitted source code files with no recent commits (within 2 hours).
+This might indicate abandoned work that should be committed or stashed.
 
 Next steps:
   1. Review changes: git status
-  2. Commit work: git commit -m "description #issue"
-  3. Create PR if ready: gh pr create
+  2. Commit work: git commit -m "description"
+  3. Or stash changes: git stash
   4. Or suppress this check: export AGENT_OS_HOOKS_QUIET=true
 
 EOF
 }
 
-# Generate specific next steps based on current state
-generate_next_steps() {
-    local workflow_state=$(detect_workflow_state)
-    
-    if [ "$workflow_state" = "spec_execution" ]; then
-        local current_spec=$(get_current_spec_folder)
-        local issue_number=$(get_current_issue_number)
-        
-        echo "SPEC EXECUTION WORKFLOW COMPLETION:"
-        echo "1. Commit changes: git commit -m \"<description> #$issue_number\""
-        echo "2. Push changes: git push origin <branch-name>"
-        echo "3. Create PR: gh pr create --title \"<title>\" --body \"Fixes #$issue_number\""
-        echo "4. Mark tasks complete in: .agent-os/specs/$current_spec/tasks.md"
-        echo "5. Return to main branch: git checkout main"
-        
-    elif [ "$workflow_state" = "dirty_workspace" ]; then
-        echo "WORKSPACE CLEANUP REQUIRED:"
-        echo "1. Review uncommitted changes: git status"
-        echo "2. Either commit work: git add . && git commit -m \"<description>\""
-        echo "3. Or stash changes: git stash"
-        echo "4. Or discard changes: git checkout ."
-        echo "5. Ensure clean workspace: git status"
-    fi
-}
 
 # Main execution
 main() {
