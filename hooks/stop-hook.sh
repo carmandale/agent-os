@@ -110,7 +110,7 @@ check_spec_abandonment() {
 
     # Check if there are uncommitted changes (excluding config and generated files)
     local uncommitted_files
-    uncommitted_files=$(git diff --name-only HEAD 2>/dev/null | grep -v -E "\.DS_Store$|\.env(\..*)?$|\.(local|temp|tmp)\..*$|\.xcodeproj/|\.xcworkspace/|xcuserdata/|\.swiftpm/|Package\.resolved$|package-lock\.json$|yarn\.lock$|Podfile\.lock$|\.gitignore$|node_modules/|\.next/|dist/|build/|out/|\.(log|pid|seed|lock)$|\.vscode/|\.idea/|__pycache__/|\.pyc$|\.gradle/|target/" || echo "")
+    uncommitted_files=$(git diff --name-only HEAD 2>/dev/null | grep -v -E "\.DS_Store$|\.env(\..*)?$|\.(local|temp|tmp)\..*$|\.xcodeproj/|\.xcworkspace/|xcuserdata/|\.swiftpm/|Package\.resolved$|package-lock\.json$|yarn\.lock$|Podfile\.lock$|\.gitignore$|\.pbxproj$|node_modules/|\.next/|dist/|build/|out/|\.(log|pid|seed|lock)$|\.vscode/|\.idea/|__pycache__/|\.pyc$|\.gradle/|target/" || echo "")
 
     if [ -n "$uncommitted_files" ]; then
         log_debug "Found uncommitted changes - possible abandonment: $uncommitted_files"
@@ -143,7 +143,7 @@ check_workspace_abandonment() {
 
     # If we have uncommitted changes (excluding config and generated files), suggest completing the workflow
     local uncommitted_files
-    uncommitted_files=$(git diff --name-only HEAD 2>/dev/null | grep -v -E "\.DS_Store$|\.env(\..*)?$|\.(local|temp|tmp)\..*$|\.xcodeproj/|\.xcworkspace/|xcuserdata/|\.swiftpm/|Package\.resolved$|package-lock\.json$|yarn\.lock$|Podfile\.lock$|\.gitignore$|node_modules/|\.next/|dist/|build/|out/|\.(log|pid|seed|lock)$|\.vscode/|\.idea/|__pycache__/|\.pyc$|\.gradle/|target/" || echo "")
+    uncommitted_files=$(git diff --name-only HEAD 2>/dev/null | grep -v -E "\.DS_Store$|\.env(\..*)?$|\.(local|temp|tmp)\..*$|\.xcodeproj/|\.xcworkspace/|xcuserdata/|\.swiftpm/|Package\.resolved$|package-lock\.json$|yarn\.lock$|Podfile\.lock$|\.gitignore$|\.pbxproj$|node_modules/|\.next/|dist/|build/|out/|\.(log|pid|seed|lock)$|\.vscode/|\.idea/|__pycache__/|\.pyc$|\.gradle/|target/" || echo "")
 
     if [ -n "$uncommitted_files" ]; then
         log_debug "Found uncommitted changes in dirty workspace: $uncommitted_files"
