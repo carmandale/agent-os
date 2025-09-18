@@ -66,7 +66,7 @@ should_block_interaction() {
 
 # Generate stop message for Claude Code
 generate_stop_message() {
-    cat << 'EOF'
+    cat << 'EOF' >&2
 Agent OS: Uncommitted source code detected
 
 You have uncommitted source code files with no recent commits (within 2 hours).
