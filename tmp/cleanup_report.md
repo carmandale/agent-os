@@ -1,48 +1,16 @@
 # Agent OS Repository Audit Report
 
 - Root: `/Users/dalecarman/Groove Jones Dropbox/Dale Carman/Projects/dev/agent-os`
-- Files scanned: `378`
-- Python files scanned: `27`
-- Duplicate groups: `7`
-- Broken imports (best-effort): `175`
-- Potentially unreferenced files: `21`
+- Files scanned: `329`
+- Python files scanned: `26`
+- Duplicate groups: `0`
+- Broken imports (best-effort): `168`
+- Potentially unreferenced files: `55`
 
 ## Duplicate Files (by SHA-256)
-- Hash: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
-  - .agent-os/specs/2025-09-07-address-repository-technical-debt-and-infrastructure-gaps-#93/sub-specs/.gitkeep
-  - .agent-os/specs/2025-09-07-claude-code-fabrication-prevention-system-#68/sub-specs/.gitkeep
-  - .agent-os/specs/2025-09-07-enforce-evidence-based-verification-in-execute-tasks-and-execute-task-commands-#69/sub-specs/.gitkeep
-  - .agent-os/specs/2025-09-07-harden-claude-code-enforcement-hooks-installer-pretooluse-gating-pr-guard-docs--#57/sub-specs/.gitkeep
-  - .agent-os/specs/2025-09-07-research-and-improve-claude-code-hooks-implementation-#61/sub-specs/.gitkeep
-  - .agent-os/specs/2025-09-07-subagents-not-being-called-regularly-only-file-creator-is-consistently-used-#60/sub-specs/.gitkeep
-  - .cursorrules
-- Hash: `0778a7fd6d469519910305401e58e2fd51160150337b9f00a47ac25fb102bd3a`
-  - LICENSE
-  - docs/BUILDER_METHODDS_agent-os/LICENSE
-- Hash: `18e3fe27c19e5175546cb40639820114feabd82ba04317297747def975249189`
-  - hooks/tests/test_workspace_hygiene.py
-  - hooks/tests/test_workspace_hygiene.py.bak
-- Hash: `244233be9b2b2b28fca34800a4563a9c1c81fd8a62fdd48d96c1401d1e6024b9`
-  - commands/analyze-product.md
-  - docs/BUILDER_METHODDS_agent-os/commands/analyze-product.md
-- Hash: `300dbdb4e4715eea5dd1ec5eee9607e809eae4a7d8091019d3287b8f01486b50`
-  - commands/create-spec.md
-  - docs/BUILDER_METHODDS_agent-os/commands/create-spec.md
-- Hash: `751199ef341bdf8b2d43d8cefc987ca0067c014b5deac017ce639196c7ba4968`
-  - commands/execute-tasks.md
-  - docs/BUILDER_METHODDS_agent-os/commands/execute-tasks.md
-- Hash: `7dad2ea7baca7763337b49d49cd92c246872ab97443d40e6a2d03a28756e28d0`
-  - commands/plan-product.md
-  - docs/BUILDER_METHODDS_agent-os/commands/plan-product.md
+_No duplicates detected_
 
 ## Broken Python Imports (best-effort)
-- validate_subagents.py:17 → `sys`
-- validate_subagents.py:18 → `os`
-- validate_subagents.py:19 → `pathlib`
-- validate_subagents.py:28 → `subagents`
-- validate_subagents.py:42 → `subagents`
-- validate_subagents.py:66 → `subagent_detector`
-- validate_subagents.py:84 → `task_tool_wrapper`
 - tools/repo-auditor.py:23 → `__future__`
 - tools/repo-auditor.py:25 → `argparse`
 - tools/repo-auditor.py:26 → `ast`
@@ -213,26 +181,60 @@
 - hooks/tests/modular/test_pretool_handler.py:15 → `pretool_handler`
 
 ## Potentially Unreferenced Files (heuristic)
-- docs/BUILDER_METHODDS_agent-os/LICENSE
-- docs/CLEANUP_PLAN.md
+- docs/DIVERGENCE.json
+- docs/agent-os-subagents.txt
+- hooks/claude-settings-example.json
 - hooks/instructions/Subagents - Anthropic.md
-- hooks/tests/experimental/test_integration_context_aware.py
-- scripts/repo-cleanup-validate.sh
+- hooks/tests/debug-workflow.sh
+- hooks/tests/test-bash-hooks.sh
+- scripts/pre-commit-docs-guard.sh
+- scripts/workflow-complete.sh
+- scripts/workflow-status.sh
+- tests/config-memory.bats
+- tests/context-aware-wrapper.bats
+- tests/installation/test-performance-benchmarks.bats
+- tests/intent-analyzer.bats
+- tests/session-memory.bats
+- tests/test-boundary-error-handling.bats
+- tests/test-command-path-resolution.bats
+- tests/test-commit-boundary-detection.bats
+- tests/test-hook-session-detection.bats
+- tests/test-spec-creation-integration.bats
+- tests/test-transparent-sessions-integration.bats
+- tests/test-update-documentation-wrapper.bats
+- tests/test_helper.bash
+- tests/testing-enforcer.bats
+- tests/validator-smoke.bats
+- tests/workflow-harness.bats
+- tests/workflow-validation.bats
+- tests/workspace-state.bats
 - tools/aos
+- tools/test-aos-alias.sh
 - .agent-os/specs/2025-08-11-context-aware-workflow-enforcement-#22/tasks-revised.md
 - .agent-os/specs/2025-08-18-claude-code-hooks-improvement-#62/research-report.md
 - .agent-os/specs/2025-08-30-fix-aos-installer-hooks-#91/research-notes.md
-- .agent-os/specs/2025-09-07-address-repository-technical-debt-and-infrastructure-gaps-#93/sub-specs/.gitkeep
-- .agent-os/specs/2025-09-07-claude-code-fabrication-prevention-system-#68/sub-specs/.gitkeep
-- .agent-os/specs/2025-09-07-enforce-evidence-based-verification-in-execute-tasks-and-execute-task-commands-#69/sub-specs/.gitkeep
-- .agent-os/specs/2025-09-07-harden-claude-code-enforcement-hooks-installer-pretooluse-gating-pr-guard-docs--#57/sub-specs/.gitkeep
-- .agent-os/specs/2025-09-07-research-and-improve-claude-code-hooks-implementation-#61/sub-specs/.gitkeep
-- .agent-os/specs/2025-09-07-subagents-not-being-called-regularly-only-file-creator-is-consistently-used-#60/sub-specs/.gitkeep
+- .claude/agents/agent-os-troubleshooter.md
+- .cursor/rules/agent-os-structure.mdc
+- .cursor/rules/analyze-product.mdc
+- .cursor/rules/create-spec.mdc
+- .cursor/rules/execute-tasks.mdc
+- .cursor/rules/hygiene-check.mdc
+- .cursor/rules/markdown-instructions.mdc
+- .cursor/rules/plan-product.mdc
+- .cursor/rules/shell-scripts.mdc
+- .cursor/rules/verification-requirements.mdc
+- .cursor/rules/yaml-config.mdc
 - .cursorrules
+- .github/workflows/ci-shell-and-tests.yml
+- .github/workflows/validate-instructions.yml
 - .gitignore
 - .gitmodules
 - LICENSE
 - VERSION
+- migrate-hooks.sh
 - templates/gitignore-recommended
+- test-update-documentation-reality-check.sh
+- test-workflow-detection.sh
+- update-local-install.sh
 
 > Note: Import resolution and unreferenced detection are heuristic. Review before taking action.
