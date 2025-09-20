@@ -1,0 +1,238 @@
+# Agent OS Repository Audit Report
+
+- Root: `/Users/dalecarman/Groove Jones Dropbox/Dale Carman/Projects/dev/agent-os`
+- Files scanned: `378`
+- Python files scanned: `27`
+- Duplicate groups: `7`
+- Broken imports (best-effort): `175`
+- Potentially unreferenced files: `21`
+
+## Duplicate Files (by SHA-256)
+- Hash: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+  - .agent-os/specs/2025-09-07-address-repository-technical-debt-and-infrastructure-gaps-#93/sub-specs/.gitkeep
+  - .agent-os/specs/2025-09-07-claude-code-fabrication-prevention-system-#68/sub-specs/.gitkeep
+  - .agent-os/specs/2025-09-07-enforce-evidence-based-verification-in-execute-tasks-and-execute-task-commands-#69/sub-specs/.gitkeep
+  - .agent-os/specs/2025-09-07-harden-claude-code-enforcement-hooks-installer-pretooluse-gating-pr-guard-docs--#57/sub-specs/.gitkeep
+  - .agent-os/specs/2025-09-07-research-and-improve-claude-code-hooks-implementation-#61/sub-specs/.gitkeep
+  - .agent-os/specs/2025-09-07-subagents-not-being-called-regularly-only-file-creator-is-consistently-used-#60/sub-specs/.gitkeep
+  - .cursorrules
+- Hash: `0778a7fd6d469519910305401e58e2fd51160150337b9f00a47ac25fb102bd3a`
+  - LICENSE
+  - docs/BUILDER_METHODDS_agent-os/LICENSE
+- Hash: `18e3fe27c19e5175546cb40639820114feabd82ba04317297747def975249189`
+  - hooks/tests/test_workspace_hygiene.py
+  - hooks/tests/test_workspace_hygiene.py.bak
+- Hash: `244233be9b2b2b28fca34800a4563a9c1c81fd8a62fdd48d96c1401d1e6024b9`
+  - commands/analyze-product.md
+  - docs/BUILDER_METHODDS_agent-os/commands/analyze-product.md
+- Hash: `300dbdb4e4715eea5dd1ec5eee9607e809eae4a7d8091019d3287b8f01486b50`
+  - commands/create-spec.md
+  - docs/BUILDER_METHODDS_agent-os/commands/create-spec.md
+- Hash: `751199ef341bdf8b2d43d8cefc987ca0067c014b5deac017ce639196c7ba4968`
+  - commands/execute-tasks.md
+  - docs/BUILDER_METHODDS_agent-os/commands/execute-tasks.md
+- Hash: `7dad2ea7baca7763337b49d49cd92c246872ab97443d40e6a2d03a28756e28d0`
+  - commands/plan-product.md
+  - docs/BUILDER_METHODDS_agent-os/commands/plan-product.md
+
+## Broken Python Imports (best-effort)
+- validate_subagents.py:17 → `sys`
+- validate_subagents.py:18 → `os`
+- validate_subagents.py:19 → `pathlib`
+- validate_subagents.py:28 → `subagents`
+- validate_subagents.py:42 → `subagents`
+- validate_subagents.py:66 → `subagent_detector`
+- validate_subagents.py:84 → `task_tool_wrapper`
+- tools/repo-auditor.py:23 → `__future__`
+- tools/repo-auditor.py:25 → `argparse`
+- tools/repo-auditor.py:26 → `ast`
+- tools/repo-auditor.py:27 → `hashlib`
+- tools/repo-auditor.py:28 → `io`
+- tools/repo-auditor.py:29 → `json`
+- tools/repo-auditor.py:30 → `os`
+- tools/repo-auditor.py:31 → `re`
+- tools/repo-auditor.py:32 → `sys`
+- tools/repo-auditor.py:33 → `dataclasses`
+- tools/repo-auditor.py:34 → `pathlib`
+- tools/repo-auditor.py:35 → `typing`
+- tools/check-file-contexts.py:10 → `os`
+- tools/check-file-contexts.py:11 → `sys`
+- tools/check-file-contexts.py:12 → `json`
+- tools/check-file-contexts.py:13 → `re`
+- tools/check-file-contexts.py:14 → `pathlib`
+- tools/check-file-contexts.py:15 → `typing`
+- tools/check-file-contexts.py:16 → `dataclasses`
+- tools/check-file-contexts.py:17 → `enum`
+- tools/check-file-contexts.py:18 → `argparse`
+- tests/test_project_root_resolver.py:7 → `os`
+- tests/test_project_root_resolver.py:8 → `sys`
+- tests/test_project_root_resolver.py:9 → `tempfile`
+- tests/test_project_root_resolver.py:10 → `unittest`
+- tests/test_project_root_resolver.py:11 → `pathlib`
+- tests/test_project_root_resolver.py:12 → `unittest.mock`
+- tests/test_project_root_resolver.py:38 → `shutil`
+- tests/test_project_root_resolver.py:360 → `shutil`
+- tests/test_project_root_resolver.py:372 → `io`
+- tests/test_project_root_resolver.py:373 → `sys`
+- tests/test_project_root_resolver.py:388 → `sys`
+- tests/test_project_root_resolver.py:397 → `io`
+- tests/test_project_root_resolver.py:398 → `sys`
+- tests/test_project_root_resolver.py:413 → `sys`
+- tests/test_project_root_resolver.py:424 → `io`
+- tests/test_project_root_resolver.py:425 → `sys`
+- tests/test_project_root_resolver.py:443 → `io`
+- tests/test_project_root_resolver.py:444 → `sys`
+- hooks/test_intent_analyzer.py:9 → `os`
+- hooks/test_intent_analyzer.py:10 → `tempfile`
+- hooks/test_intent_analyzer.py:11 → `unittest`
+- hooks/test_intent_analyzer.py:12 → `unittest.mock`
+- hooks/test_intent_analyzer.py:14 → `yaml`
+- hooks/test_intent_analyzer.py:142 → `time`
+- hooks/intent_analyzer.py:22 → `os`
+- hooks/intent_analyzer.py:23 → `re`
+- hooks/intent_analyzer.py:24 → `time`
+- hooks/intent_analyzer.py:25 → `dataclasses`
+- hooks/intent_analyzer.py:26 → `enum`
+- hooks/intent_analyzer.py:27 → `typing`
+- hooks/intent_analyzer.py:31 → `yaml`
+- hooks/intent_analyzer.py:296 → `argparse`
+- hooks/intent_analyzer.py:59 → `datetime`
+- hooks/workflow-enforcement-hook.py:10 → `json`
+- hooks/workflow-enforcement-hook.py:11 → `os`
+- hooks/workflow-enforcement-hook.py:12 → `sys`
+- hooks/test_context_aware_system.py:14 → `argparse`
+- hooks/test_context_aware_system.py:15 → `os`
+- hooks/test_context_aware_system.py:16 → `sys`
+- hooks/test_context_aware_system.py:17 → `time`
+- hooks/test_context_aware_system.py:18 → `typing`
+- hooks/test_context_aware_system.py:22 → `manual_override_system`
+- hooks/test_context_aware_system.py:23 → `user_experience_system`
+- hooks/integration_test.py:9 → `json`
+- hooks/integration_test.py:10 → `os`
+- hooks/integration_test.py:11 → `subprocess`
+- hooks/integration_test.py:12 → `sys`
+- hooks/integration_test.py:13 → `tempfile`
+- hooks/integration_test.py:14 → `time`
+- hooks/integration_test.py:15 → `pathlib`
+- hooks/bash_command_validator_example.py:31 → `json`
+- hooks/bash_command_validator_example.py:32 → `re`
+- hooks/bash_command_validator_example.py:33 → `sys`
+- scripts/project_root_resolver.py:24 → `os`
+- scripts/project_root_resolver.py:25 → `sys`
+- scripts/project_root_resolver.py:26 → `json`
+- scripts/project_root_resolver.py:27 → `argparse`
+- scripts/project_root_resolver.py:28 → `subprocess`
+- scripts/project_root_resolver.py:29 → `pathlib`
+- scripts/project_root_resolver.py:30 → `typing`
+- scripts/config-resolver.py:15 → `json`
+- scripts/config-resolver.py:16 → `os`
+- scripts/config-resolver.py:17 → `re`
+- scripts/config-resolver.py:18 → `pathlib`
+- hooks/tests/test_workspace_hygiene.py:4 → `unittest`
+- hooks/tests/test_workspace_hygiene.py:5 → `json`
+- hooks/tests/test_workspace_hygiene.py:6 → `sys`
+- hooks/tests/test_workspace_hygiene.py:7 → `os`
+- hooks/tests/test_workspace_hygiene.py:10 → `pretool.workspace_hygiene`
+- hooks/modules/userprompt_handler_optimized.py:9 → `json`
+- hooks/modules/userprompt_handler_optimized.py:10 → `re`
+- hooks/modules/userprompt_handler_optimized.py:11 → `sys`
+- hooks/modules/pretool_handler_optimized.py:9 → `os`
+- hooks/modules/pretool_handler_optimized.py:10 → `re`
+- hooks/modules/pretool_handler_optimized.py:11 → `subprocess`
+- hooks/modules/pretool_handler_optimized.py:12 → `sys`
+- hooks/modules/pretool_handler_optimized.py:13 → `typing`
+- hooks/modules/hook_core_optimized.py:8 → `json`
+- hooks/modules/hook_core_optimized.py:9 → `os`
+- hooks/modules/hook_core_optimized.py:10 → `subprocess`
+- hooks/modules/hook_core_optimized.py:11 → `sys`
+- hooks/modules/hook_core_optimized.py:12 → `threading`
+- hooks/modules/hook_core_optimized.py:13 → `time`
+- hooks/modules/hook_core_optimized.py:14 → `datetime`
+- hooks/modules/hook_core_optimized.py:15 → `typing`
+- hooks/modules/hook_core_optimized.py:16 → `pathlib`
+- hooks/modules/hook_core_optimized.py:17 → `concurrent.futures`
+- hooks/modules/posttool_handler_optimized.py:8 → `os`
+- hooks/modules/posttool_handler_optimized.py:9 → `subprocess`
+- hooks/modules/posttool_handler_optimized.py:10 → `sys`
+- hooks/modules/task_handler_optimized.py:9 → `sys`
+- hooks/tests/experimental/test_context_aware_hook.py:9 → `unittest`
+- hooks/tests/experimental/test_context_aware_hook.py:10 → `unittest.mock`
+- hooks/tests/experimental/test_context_aware_hook.py:11 → `os`
+- hooks/tests/experimental/test_context_aware_hook.py:12 → `sys`
+- hooks/tests/experimental/test_context_aware_hook.py:13 → `json`
+- hooks/tests/experimental/test_context_aware_hook.py:14 → `pathlib`
+- hooks/tests/experimental/test_context_aware_hook.py:41 → `context_aware_hook`
+- hooks/tests/experimental/test_context_aware_hook.py:61 → `context_aware_hook`
+- hooks/tests/experimental/test_context_aware_hook.py:80 → `context_aware_hook`
+- hooks/tests/experimental/test_context_aware_hook.py:106 → `context_aware_hook`
+- hooks/tests/experimental/test_context_aware_hook.py:132 → `context_aware_hook`
+- hooks/tests/experimental/test_context_aware_hook.py:159 → `context_aware_hook`
+- hooks/tests/experimental/test_context_aware_hook.py:181 → `context_aware_hook`
+- hooks/tests/experimental/test_context_aware_hook.py:202 → `context_aware_hook`
+- hooks/tests/experimental/test_context_aware_hook.py:222 → `context_aware_hook`
+- hooks/tests/experimental/test_context_aware_hook.py:245 → `context_aware_hook`
+- hooks/tests/experimental/test_context_aware_hook.py:269 → `context_aware_hook`
+- hooks/tests/experimental/test_context_aware_hook.py:270 → `time`
+- hooks/tests/experimental/test_integration_context_aware.py:8 → `json`
+- hooks/tests/experimental/test_integration_context_aware.py:9 → `os`
+- hooks/tests/experimental/test_integration_context_aware.py:10 → `sys`
+- hooks/tests/experimental/test_integration_context_aware.py:11 → `subprocess`
+- hooks/tests/experimental/test_integration_context_aware.py:12 → `pathlib`
+- hooks/tests/experimental/test_integration_context_aware.py:132 → `time`
+- hooks/tests/modular/test_hook_core.py:7 → `os`
+- hooks/tests/modular/test_hook_core.py:8 → `sys`
+- hooks/tests/modular/test_hook_core.py:9 → `tempfile`
+- hooks/tests/modular/test_hook_core.py:10 → `unittest`
+- hooks/tests/modular/test_hook_core.py:11 → `unittest.mock`
+- hooks/tests/modular/test_hook_core.py:16 → `hook_core`
+- hooks/tests/modular/benchmark_final.py:6 → `json`
+- hooks/tests/modular/benchmark_final.py:7 → `subprocess`
+- hooks/tests/modular/benchmark_final.py:8 → `time`
+- hooks/tests/modular/benchmark_final.py:9 → `statistics`
+- hooks/tests/modular/benchmark_final.py:10 → `pathlib`
+- hooks/tests/modular/benchmark_performance.py:7 → `json`
+- hooks/tests/modular/benchmark_performance.py:8 → `os`
+- hooks/tests/modular/benchmark_performance.py:9 → `subprocess`
+- hooks/tests/modular/benchmark_performance.py:10 → `sys`
+- hooks/tests/modular/benchmark_performance.py:11 → `time`
+- hooks/tests/modular/benchmark_performance.py:12 → `statistics`
+- hooks/tests/modular/benchmark_performance.py:13 → `pathlib`
+- hooks/tests/modular/test_final_hook.py:7 → `json`
+- hooks/tests/modular/test_final_hook.py:8 → `os`
+- hooks/tests/modular/test_final_hook.py:9 → `subprocess`
+- hooks/tests/modular/test_final_hook.py:10 → `sys`
+- hooks/tests/modular/test_final_hook.py:11 → `tempfile`
+- hooks/tests/modular/test_final_hook.py:12 → `unittest`
+- hooks/tests/modular/test_final_hook.py:13 → `unittest.mock`
+- hooks/tests/modular/test_final_hook.py:14 → `pathlib`
+- hooks/tests/modular/test_final_hook.py:24 → `time`
+- hooks/tests/modular/test_pretool_handler.py:7 → `os`
+- hooks/tests/modular/test_pretool_handler.py:8 → `sys`
+- hooks/tests/modular/test_pretool_handler.py:9 → `unittest`
+- hooks/tests/modular/test_pretool_handler.py:10 → `unittest.mock`
+- hooks/tests/modular/test_pretool_handler.py:15 → `pretool_handler`
+
+## Potentially Unreferenced Files (heuristic)
+- docs/BUILDER_METHODDS_agent-os/LICENSE
+- docs/CLEANUP_PLAN.md
+- hooks/instructions/Subagents - Anthropic.md
+- hooks/tests/experimental/test_integration_context_aware.py
+- scripts/repo-cleanup-validate.sh
+- tools/aos
+- .agent-os/specs/2025-08-11-context-aware-workflow-enforcement-#22/tasks-revised.md
+- .agent-os/specs/2025-08-18-claude-code-hooks-improvement-#62/research-report.md
+- .agent-os/specs/2025-08-30-fix-aos-installer-hooks-#91/research-notes.md
+- .agent-os/specs/2025-09-07-address-repository-technical-debt-and-infrastructure-gaps-#93/sub-specs/.gitkeep
+- .agent-os/specs/2025-09-07-claude-code-fabrication-prevention-system-#68/sub-specs/.gitkeep
+- .agent-os/specs/2025-09-07-enforce-evidence-based-verification-in-execute-tasks-and-execute-task-commands-#69/sub-specs/.gitkeep
+- .agent-os/specs/2025-09-07-harden-claude-code-enforcement-hooks-installer-pretooluse-gating-pr-guard-docs--#57/sub-specs/.gitkeep
+- .agent-os/specs/2025-09-07-research-and-improve-claude-code-hooks-implementation-#61/sub-specs/.gitkeep
+- .agent-os/specs/2025-09-07-subagents-not-being-called-regularly-only-file-creator-is-consistently-used-#60/sub-specs/.gitkeep
+- .cursorrules
+- .gitignore
+- .gitmodules
+- LICENSE
+- VERSION
+- templates/gitignore-recommended
+
+> Note: Import resolution and unreferenced detection are heuristic. Review before taking action.

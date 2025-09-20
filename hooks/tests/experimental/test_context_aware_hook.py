@@ -122,7 +122,7 @@ class TestContextAwareWorkflowHook(unittest.TestCase):
         self.assertEqual(decision.work_type, 'maintenance')
         # Accept various forms of maintenance reasoning
         self.assertTrue(
-            'maintenance' in decision.reason.lower() or 
+            'maintenance' in decision.reason.lower() or
             'matched' in decision.reason.lower(),
             f"Expected maintenance-related reason, got: {decision.reason}"
         )
