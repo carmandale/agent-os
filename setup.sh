@@ -5,6 +5,11 @@
 
 set -e  # Exit on error
 
+# Base URL for raw GitHub content
+# Updated to use carmandale/agent-os fork with custom GitHub Issues workflow,
+# tabs indentation, and Python/React tech stack preferences
+BASE_URL="https://raw.githubusercontent.com/carmandale/agent-os/main"
+
 # Initialize flags - always update instructions to get latest versions
 OVERWRITE_INSTRUCTIONS=true
 OVERWRITE_STANDARDS=false
@@ -53,11 +58,6 @@ else
     fi
 fi
 
-# Base URL for raw GitHub content
-# Updated to use carmandale/agent-os fork with custom GitHub Issues workflow,
-# tabs indentation, and Python/React tech stack preferences
-BASE_URL="https://raw.githubusercontent.com/carmandale/agent-os/main"
-
 # Create directories
 echo "📁 Creating directories..."
 mkdir -p "$HOME/.agent-os/standards"
@@ -66,7 +66,6 @@ mkdir -p "$HOME/.agent-os/instructions/core"
 mkdir -p "$HOME/.agent-os/instructions/meta"
 mkdir -p "$HOME/.agent-os/scripts"
 mkdir -p "$HOME/.agent-os/workflow-modules"
-mkdir -p "$HOME/.agent-os/hooks"
 mkdir -p "$HOME/.agent-os/hooks"
 
 # Download standards files
@@ -339,7 +338,7 @@ fi
 if [ -d "$HOME/.claude/commands" ] && [ "$(ls -A $HOME/.claude/commands 2>/dev/null)" ]; then
 	echo ""
 	echo "🔄 Claude Code commands detected. Would you like to update them to match the latest Agent OS? (y/n)"
-	
+
 	# Skip prompt if running non-interactively (piped input)
 	if [ ! -t 0 ]; then
 		echo "Running in non-interactive mode - updating Claude Code commands automatically..."
@@ -347,7 +346,7 @@ if [ -d "$HOME/.claude/commands" ] && [ "$(ls -A $HOME/.claude/commands 2>/dev/n
 	else
 		read -r -p "Update Claude commands? " response
 	fi
-	
+
 	echo ""
 	if [[ $response =~ ^[Yy]$ ]]; then
 		echo "📦 Updating Claude Code commands..."
