@@ -177,6 +177,31 @@ fi
 
 ## Note: Top-level instruction files are deprecated. Only core/* is installed.
 
+# Install Factory CLI custom commands
+echo ""
+echo "📥 Installing Factory custom commands to ~/.factory/commands/"
+FACTORY_COMMANDS_DIR="$HOME/.factory/commands"
+mkdir -p "$FACTORY_COMMANDS_DIR"
+
+factory_command_files=(
+  "analyze-product.md"
+  "create-spec.md"
+  "execute-tasks.md"
+  "hygiene-check.md"
+  "plan-product.md"
+  "update-documentation.md"
+  "work-session.md"
+  "workflow-complete.md"
+  "workflow-status.md"
+)
+
+for command_file in "${factory_command_files[@]}"; do
+  dest_path="$FACTORY_COMMANDS_DIR/$command_file"
+  src_path="${BASE_URL}/commands/$command_file"
+  safe_curl "$dest_path" "$src_path"
+  echo "  ✓ $dest_path"
+done
+
 # Download script files
 echo ""
 echo "📥 Downloading script files to ~/.agent-os/scripts/"

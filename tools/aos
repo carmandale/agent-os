@@ -433,6 +433,11 @@ check_comprehensive_status() {
         [ -d "$HOME/.agent-os/standards" ] && print_status "success" "Standards installed" || print_status "error" "Standards missing"
         [ -d "$HOME/.agent-os/workflow-modules" ] && print_status "success" "Workflow modules installed" || print_status "error" "Workflow modules missing"
         [ -d "$HOME/.agent-os/hooks" ] && print_status "success" "Hooks installed" || print_status "error" "Hooks missing"
+        if [ -d "$HOME/.factory/commands" ] && [ -f "$HOME/.factory/commands/plan-product.md" ]; then
+            print_status "success" "Factory CLI commands installed"
+        else
+            print_status "warning" "Factory CLI commands missing (run ./setup.sh to install)"
+        fi
 
         # File integrity (compare to upstream main)
         echo ""
@@ -752,6 +757,9 @@ case "${1:-}" in
         echo "  aos status                  # Check installation status"
         echo "  aos dashboard               # View observed Bash commands"
         echo "  aos notify 'Build complete' # Send notification"
+        echo ""
+        echo "Factory Integration:"
+        echo "  • Setup installs Factory CLI slash commands to ~/.factory/commands"
         echo ""
         echo "No command runs interactive mode"
         ;;
