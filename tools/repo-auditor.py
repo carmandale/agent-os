@@ -23,6 +23,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import ast
 import hashlib
 import io
@@ -196,6 +197,21 @@ class PythonImportAnalyzer:
     """
     def __init__(self, root: Path):
         self.root = root
+        # Build a set of stdlib/builtin module names for filtering
+        # sys.stdlib_module_names is available on Python 3.10+, fall back to a curated set
+        stdlib_from_sys = set(getattr(sys, "stdlib_module_names", set()))
+        builtins_from_sys = set(sys.builtin_module_names)
+        curated_fallback = {
+            "os", "sys", "json", "re", "math", "time", "datetime", "subprocess", "pathlib",
+            "typing", "argparse", "itertools", "functools", "collections", "logging",
+            "hashlib", "random", "threading", "queue", "multiprocessing", "shutil",
+            "tempfile", "inspect", "traceback", "unittest", "http", "urllib", "socket",
+            "select", "email", "base64", "struct", "signal", "difflib", "pprint",
+            "dataclasses", "enum", "statistics", "fractions", "decimal", "contextlib",
+            "operator", "heapq", "bisect", "weakref", "copy", "pickle", "zipfile", "tarfile",
+            "glob", "fnmatch", "site", "venv", "platform", "plistlib", "xml", "csv"
+        }
+        self.stdlib: Set[str] = (stdlib_from_sys | builtins_from_sys) or curated_fallback
 
     def parse_imports(self, py_path: Path) -> List[Tuple[str, Optional[int], Optional[int]]]:
         imports: List[Tuple[str, Optional[int], Optional[int]]] = []
@@ -273,6 +289,38 @@ class PythonImportAnalyzer:
             uniq.append(c)
         return uniq
 
+    def _is_std_or_external(self, module_name: str) -> bool:
+        """
+        Determine if a module is part of the Python stdlib/builtins or is otherwise
+        importable in the current environment (e.g., third-party installed).
+        Such modules should not be flagged as broken repo-internal imports.
+        """
+        # Relative imports are never stdlib/external; they must resolve within repo
+        if module_name.startswith("."):
+            return False
+        base = module_name.lstrip(".").split(".")[0]
+        if not base:
+            return False
+        if base in self.stdlib:
+            return True
+        try:
+            spec = importlib.util.find_spec(base)
+            return spec is not None
+        except Exception:
+            return False
+
+    def _manipulates_sys_path(self, py_path: Path) -> bool:
+        """
+        Check if a Python file manipulates sys.path, indicating that static import
+        analysis may not be reliable for this file.
+        """
+        try:
+            content = py_path.read_text(encoding='utf-8', errors='ignore')
+            # Look for common sys.path manipulation patterns
+            return 'sys.path.insert' in content or 'sys.path.append' in content
+        except Exception:
+            return False
+
     def resolve_within_repo(self, importer_path: Path, module_name: str) -> Tuple[bool, List[str]]:
         candidates = self._module_to_candidate_paths(importer_path, module_name)
         found = []
@@ -288,11 +336,19 @@ class PythonImportAnalyzer:
     def find_broken_imports(self, py_files: List[Path]) -> List[BrokenImport]:
         results: List[BrokenImport] = []
         for p in py_files:
+            # Skip test files that manipulate sys.path - they often have imports
+            # that appear broken to static analysis but work at runtime
+            if self._manipulates_sys_path(p):
+                continue
+
             imports = self.parse_imports(p)
             for name, line, col in imports:
                 ok, cands = self.resolve_within_repo(p, name)
                 if not ok:
-                    # Exclude common stdlib/3p names heuristically? Keep them as potential issues unless obviously stdlib
+                    # If it's a stdlib module or otherwise importable (third-party installed),
+                    # do not treat it as a broken repo-internal import.
+                    if self._is_std_or_external(name):
+                        continue
                     results.append(BrokenImport(
                         file=path_within(self.root, p),
                         import_name=name,

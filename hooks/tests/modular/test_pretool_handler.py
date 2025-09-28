@@ -10,9 +10,9 @@ import unittest
 from unittest.mock import patch, MagicMock
 
 # Add modules to path
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), 'modules'))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'modules'))
 
-from pretool_handler import PreToolHandler, BashCommandAnalyzer, DocumentationChecker
+from pretool_handler_optimized import PreToolHandler, BashCommandAnalyzer, DocumentationChecker
 
 
 class TestBashCommandAnalyzer(unittest.TestCase):

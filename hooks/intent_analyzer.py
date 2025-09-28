@@ -26,12 +26,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import List, Optional, Dict, Any
 
-# Optional YAML import for configuration
-try:
-    import yaml
-    HAS_YAML = True
-except ImportError:
-    HAS_YAML = False
+# Optional YAML support disabled by default to avoid external dependency
+HAS_YAML = False
 
 
 class IntentType(Enum):

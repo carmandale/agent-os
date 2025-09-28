@@ -12,7 +12,12 @@ import subprocess
 import sys
 from typing import Dict, Any
 
-from .hook_core_optimized import BaseHookHandler, IntentAnalyzer, SpecChecker
+# Prefer absolute import when the modules directory is on sys.path
+try:
+    from hook_core_optimized import BaseHookHandler, IntentAnalyzer, SpecChecker
+except Exception:
+    # Fallback for package-relative import
+    from .hook_core_optimized import BaseHookHandler, IntentAnalyzer, SpecChecker
 
 
 class BashCommandAnalyzer:
