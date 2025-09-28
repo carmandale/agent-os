@@ -30,7 +30,7 @@ If you're an AI agent tasked with working on Agent OS, follow this sequence:
 Agent OS operates in three distinct contexts that can get out of sync:
 
 1. **REPO** (`~/Projects/agent-os/`) - **THIS REPOSITORY** - The source code we work on
-2. **SYSTEM** (`~/.agent-os/`) - Global framework installation on user machines  
+2. **SYSTEM** (`~/.agent-os/`) - Global framework installation on user machines
 3. **PROJECT** (`YourProject/.agent-os/`) - Project-specific configuration
 
 **⚠️ SYNC ISSUE:** Bugs have been fixed in installed versions but not source code, causing future installs to wipe out fixes.
@@ -44,7 +44,7 @@ Agent OS operates in three distinct contexts that can get out of sync:
 #### Standards (User Customizable)
 ```bash
 standards/tech-stack.md      → ~/.agent-os/standards/tech-stack.md      # Tech stack templates
-standards/code-style.md      → ~/.agent-os/standards/code-style.md      # Code style templates  
+standards/code-style.md      → ~/.agent-os/standards/code-style.md      # Code style templates
 standards/best-practices.md  → ~/.agent-os/standards/best-practices.md  # Best practices templates
 ```
 *Note: These preserve user customizations unless `--overwrite-standards` is used*
@@ -181,7 +181,7 @@ commands/work-session.md         # ❌ NOT INSTALLED BY ANY SCRIPT
 instructions/core/hygiene-check.md    # ❌ NOT INSTALLED BY setup.sh but should be!
 ```
 
-#### Scripts Not Installed  
+#### Scripts Not Installed
 ```bash
 scripts/pre-commit-docs-guard.sh    # ❌ NOT INSTALLED BY ANY SCRIPT
 scripts/verify-installation.sh      # ❌ NOT INSTALLED BY ANY SCRIPT
@@ -227,7 +227,7 @@ These files are downloaded but don't exist in source:
    ```bash
    # Work on files in:
    # - commands/
-   # - scripts/  
+   # - scripts/
    # - hooks/
    # - instructions/
    # - standards/
@@ -241,14 +241,14 @@ These files are downloaded but don't exist in source:
    git push
    ```
 
-3. **INSTALL FROM SOURCE** 
+3. **INSTALL FROM SOURCE**
    ```bash
    # Install base system from updated source
    ./setup.sh --overwrite-instructions --overwrite-standards
-   
-   # Install Claude Code components from updated source  
+
+   # Install Claude Code components from updated source
    ./setup-claude-code.sh --overwrite-commands
-   
+
    # Or install from remote repository
    curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup.sh | bash -s -- --overwrite-instructions
    ```
@@ -257,10 +257,10 @@ These files are downloaded but don't exist in source:
    ```bash
    # Test the aos CLI
    aos status
-   
+
    # Test Claude Code commands
    # Use /hygiene-check or /plan-product in Claude Code
-   
+
    # Test scripts directly
    ~/.agent-os/scripts/workspace-hygiene-check.sh
    ```
@@ -269,7 +269,7 @@ These files are downloaded but don't exist in source:
    ```bash
    # Compare source and installed files
    diff scripts/workspace-hygiene-check.sh ~/.agent-os/scripts/workspace-hygiene-check.sh
-   
+
    # Check installed file timestamps
    ls -la ~/.agent-os/scripts/workspace-hygiene-check.sh
    ```
@@ -294,7 +294,7 @@ Before claiming any fix is complete:
 - [ ] Source code committed and pushed to main branch
 - [ ] Version bumped if needed (in `VERSION` file)
 
-### 📋 Installation Verification  
+### 📋 Installation Verification
 - [ ] Ran installer script(s) with overwrite flags
 - [ ] Verified installed files match source files
 - [ ] Checked file timestamps to confirm update
@@ -322,8 +322,8 @@ When modifying the installers themselves:
    ```bash
    # Test base installer
    ./setup.sh --overwrite-instructions --overwrite-standards
-   
-   # Test Claude Code installer  
+
+   # Test Claude Code installer
    ./setup-claude-code.sh --overwrite-commands
    ```
 
@@ -339,7 +339,7 @@ When modifying the installers themselves:
 
 #### Issue: "File not found" during installation
 **Diagnosis:** Installer references file that doesn't exist in source
-**Solution:** 
+**Solution:**
 1. Check if file exists in source repository
 2. If missing, either create it or remove reference from installer
 3. Update this AGENTS.md document
@@ -368,10 +368,10 @@ When modifying the installers themselves:
 3. **Test installation** end-to-end
 4. **Document any new gaps** in the verification checklist
 
-### When Removing Files  
+### When Removing Files
 
 1. **Remove from installer scripts**
-2. **Update this AGENTS.md** mapping section  
+2. **Update this AGENTS.md** mapping section
 3. **Consider migration/cleanup** for existing installations
 4. **Test that removal doesn't break** dependent functionality
 
@@ -389,7 +389,7 @@ When modifying the installers themselves:
 
 1. **Read the entire AGENTS.md file** (this file) - don't skip sections
 2. **Check existing issues and PRs** to avoid duplicate work
-3. **Verify you understand the three-context problem** 
+3. **Verify you understand the three-context problem**
 4. **Always test your changes** before claiming completion
 
 ### Common Agent Mistakes to Avoid
@@ -466,7 +466,7 @@ bash -n setup-cursor.sh
 # Installation test
 ./check-agent-os.sh
 
-# Status verification  
+# Status verification
 ~/.agent-os/tools/aos status
 
 # File comparison (for changed files)
@@ -547,7 +547,7 @@ Track these to ensure quality:
 $ ./setup.sh --overwrite-instructions
 ✅ Script installed successfully
 
-$ ./setup-claude-code.sh --overwrite-commands  
+$ ./setup-claude-code.sh --overwrite-commands
 ✅ Commands installed successfully
 ```
 
@@ -575,8 +575,8 @@ $ ./check-agent-os.sh
 
 ---
 
-**Last Updated:** 2025-01-27  
-**Document Version:** 2.0.0 - Enhanced for AI Agents  
+**Last Updated:** 2025-01-27
+**Document Version:** 2.0.0 - Enhanced for AI Agents
 **Next Review:** When source-to-installation mappings change
 
 *🤖 This document is specifically designed for AI agents working on Agent OS. Follow it religiously to avoid sync issues.*

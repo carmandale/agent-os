@@ -1,11 +1,10 @@
 """
 Agent OS Hook Modules
-====================
 Modular hook architecture for Agent OS workflow enforcement.
 Each module handles a specific hook type with single responsibility.
 """
 
-from .hook_core import (
+from .hook_core_optimized import (
     BaseHookHandler,
     HookError,
     HookLogger,
@@ -15,10 +14,10 @@ from .hook_core import (
     SpecChecker
 )
 
-from .pretool_handler import PreToolHandler
-from .posttool_handler import PostToolHandler
-from .userprompt_handler import UserPromptHandler
-from .task_handler import TaskHandler
+from .pretool_handler_optimized import PreToolHandler
+from .posttool_handler_optimized import PostToolHandler
+from .userprompt_handler_optimized import UserPromptHandler
+from .task_handler_optimized import TaskHandler
 
 __all__ = [
     'BaseHookHandler',

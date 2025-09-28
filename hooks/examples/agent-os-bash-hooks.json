@@ -16,7 +16,7 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "Bash", 
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",

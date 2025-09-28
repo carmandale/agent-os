@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
 Agent OS PostTool Handler
-========================
 Handles PostToolUse hook - auto-commit Agent OS documentation changes.
 Focused on single responsibility: post-tool cleanup and documentation sync.
 """
@@ -40,11 +39,13 @@ class PostToolHandler(BaseHookHandler):
             # Exit code 2 means documentation updates are pending
             if result.returncode == 2:
                 message = (
-                    "⚠️ Documentation updates required.\n\n"
+                    "⚠️ Documentation updates may be required.\n\n"
                     "Please run `/update-documentation --dry-run` to review proposals.\n"
                     "Include updates in your PR under 'Documentation Updates'."
                 )
-                self.exit_block(message)
+                # Warn (non-blocking) for PostTool flow to match non-optimized behavior and dispatcher
+                self.log_debug("Documentation updates pending; emitting warning (non-blocking)")
+                print(message, file=sys.stderr)
                 
         except subprocess.TimeoutExpired:
             self.log_debug("Documentation check timed out")

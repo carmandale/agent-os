@@ -9,6 +9,7 @@
 #   --quick         Quick verification mode (< 5 seconds)
 #   --full          Full comprehensive verification (< 30 seconds) [default]
 #   --hooks-only    Validate only Claude Code hooks
+#   --alias-only    Validate only alias configuration (rc marker + CLI)
 #   --verbose       Show detailed output
 #   --help          Show this help message
 #
@@ -78,23 +79,58 @@ show_help() {
 		  ./scripts/verify-installation.sh [OPTIONS]
 		
 		${BOLD}Options:${NC}
-		  --quick         Quick verification mode (< 5 seconds)
-		  --full          Full comprehensive verification (< 30 seconds) [default]
-		  --hooks-only    Validate only Claude Code hooks
-		  --verbose       Show detailed output
-		  --help          Show this help message
+			--quick         Quick verification mode (< 5 seconds)
+			--full          Full comprehensive verification (< 30 seconds) [default]
+			--hooks-only    Validate only Claude Code hooks
+			--alias-only    Validate only alias configuration (rc marker + CLI)
+			--verbose       Show detailed output
+			--help          Show this help message
 		
 		${BOLD}Exit codes:${NC}
-		  0 - Success (all checks passed)
-		  1 - Critical failures (installation broken)
-		  2 - Warnings (installation works but has issues)
-		  3 - Script error (invalid arguments or internal error)
+			0 - Success (all checks passed)
+			1 - Critical failures (installation broken)
+			2 - Warnings (installation works but has issues)
+			3 - Script error (invalid arguments or internal error)
 		
 		${BOLD}Examples:${NC}
-		  ./scripts/verify-installation.sh --quick
-		  ./scripts/verify-installation.sh --full --verbose
-		  ./scripts/verify-installation.sh --hooks-only
+			./scripts/verify-installation.sh --quick
+			./scripts/verify-installation.sh --full --verbose
+			./scripts/verify-installation.sh --hooks-only
+			./scripts/verify-installation.sh --alias-only
 	EOF
+}
+
+find_alias_rc_candidates() {
+	# Returns a list of candidate rc files (one per line), preferring existing paths.
+	local candidates=()
+	# Prefer ZDOTDIR if set for zsh
+	if [[ -n "${ZDOTDIR:-}" ]]; then
+		candidates+=("$ZDOTDIR/.zshrc")
+	fi
+	# Common rc files
+	candidates+=("$HOME/.zshrc")
+	candidates+=("$HOME/.bashrc")
+	candidates+=("$HOME/.bash_profile")
+	candidates+=("$HOME/.profile")
+
+	local existing=()
+	for rc in "${candidates[@]}"; do
+		if [[ -f "$rc" ]]; then
+			existing+=("$rc")
+		fi
+	done
+
+	if [[ ${#existing[@]} -gt 0 ]]; then
+		printf '%s\n' "${existing[@]}"
+	else
+		# Fallbacks if none exist
+		if [[ -f "$HOME/.zshrc" ]]; then
+			printf '%s\n' "$HOME/.zshrc"
+		fi
+		if [[ -f "$HOME/.bashrc" ]]; then
+			printf '%s\n' "$HOME/.bashrc"
+		fi
+	fi
 }
 
 # Core verification functions
@@ -357,6 +393,66 @@ run_hooks_only_verification() {
 	return 0
 }
 
+run_alias_only_verification() {
+	log_info "Running alias-only verification..."
+
+	local marker_found=false
+	local rc_files
+	rc_files=$(find_alias_rc_candidates || true)
+
+	if [[ -n "$rc_files" ]]; then
+		while IFS= read -r rc; do
+			if [[ -f "$rc" ]] && grep -q "# BEGIN AGENT_OS_ALIAS" "$rc" 2>/dev/null; then
+				log_success "Alias marker found in: $rc"
+				marker_found=true
+				break
+			fi
+		done <<< "$rc_files"
+	fi
+
+	if [[ "$marker_found" = false ]]; then
+		log_warning "Alias marker '# BEGIN AGENT_OS_ALIAS' not found in any detected rc file"
+		log_info "Hint: Run: tools/install-aos-alias.sh --non-interactive"
+	fi
+
+	# Check alias helper script presence
+	local alias_helper="${AGENT_OS_DIR}/tools/agentos-alias.sh"
+	if [[ -f "$alias_helper" ]]; then
+		log_success "Alias helper present: $alias_helper"
+	else
+		log_error "Alias helper missing: $alias_helper"
+	fi
+
+	# Check aos binary executable
+	local aos_bin="${AGENT_OS_DIR}/tools/aos"
+	if [[ -x "$aos_bin" ]]; then
+		log_success "aos binary present and executable: $aos_bin"
+	else
+		if [[ -f "$aos_bin" ]]; then
+			log_warning "aos binary exists but is not executable: $aos_bin"
+		else
+			log_warning "aos binary not found at expected path: $aos_bin"
+		fi
+	fi
+
+	case $EXIT_CODE in
+		0)
+		log_success "Alias-only verification completed successfully"
+		;;
+		2)
+		log_warning "Alias-only verification completed with warnings"
+		;;
+		*)
+		log_error "Alias-only verification encountered errors"
+		;;
+	esac
+
+	if [[ $EXIT_CODE -eq 1 ]]; then
+		return 1
+	fi
+	return 0
+}
+
 # Argument parsing
 parse_arguments() {
 	while [[ $# -gt 0 ]]; do
@@ -371,6 +467,10 @@ parse_arguments() {
 				;;
 			--hooks-only)
 				MODE="hooks-only"
+				shift
+				;;
+			--alias-only)
+				MODE="alias-only"
 				shift
 				;;
 			--verbose)
@@ -407,6 +507,9 @@ main() {
 			;;
 		"hooks-only")
 			run_hooks_only_verification
+			;;
+		"alias-only")
+			run_alias_only_verification
 			;;
 		*)
 			log_error "Unknown mode: $MODE"
