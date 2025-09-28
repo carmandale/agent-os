@@ -1,6 +1,29 @@
-# Agent OS Development Workflow & Installation Mapping
+# AGENTS.md - Complete Guide for Code Agents Working on Agent OS
 
-> **CRITICAL:** This document maps the relationship between source code in this repository and installed Agent OS components. **Always work on source code first, then install, then test.**
+> **🤖 FOR FUTURE AGENTS:** This is your complete playbook for working on Agent OS. Read this FIRST before making any changes to avoid critical sync issues that have caused problems in the past.
+
+## 🚨 CRITICAL RULE: The Three-Context Problem
+
+**NEVER edit installed files directly!** Always work on source code first.
+
+## 📚 QUICK START FOR NEW AGENTS
+
+If you're an AI agent tasked with working on Agent OS, follow this sequence:
+
+1. **🔍 UNDERSTAND THE CONTEXT**: Read this entire file first
+2. **🧹 CHECK WORKSPACE**: Run `./check-agent-os.sh` to verify setup
+3. **🚀 START FRESH**: Always create a feature branch for changes
+4. **✅ FOLLOW THE WORKFLOW**: Source → Commit → Install → Test
+5. **📋 VERIFY EVERYTHING**: Use the checklists in this document
+
+### Common Agent Tasks & Quick Commands
+
+| Task | Commands to Run |
+|------|----------------|
+| **Fix a script bug** | 1. Edit `scripts/filename.sh`<br>2. `./setup.sh --overwrite-instructions`<br>3. Test: `~/.agent-os/scripts/filename.sh` |
+| **Add new Claude command** | 1. Create `commands/new-command.md`<br>2. Add to `setup-claude-code.sh`<br>3. `./setup-claude-code.sh --overwrite-commands` |
+| **Update instruction file** | 1. Edit `instructions/core/filename.md`<br>2. `./setup.sh --overwrite-instructions`<br>3. Test: Check `~/.agent-os/instructions/core/` |
+| **Modify installer** | 1. Edit `setup.sh` or `setup-claude-code.sh`<br>2. Test locally first<br>3. Verify end-to-end |
 
 ## The Three-Context Problem
 
@@ -358,9 +381,202 @@ When modifying the installers themselves:
 - **Installed version:** `~/.agent-os/VERSION` (copied from source)
 - **Update process:** Increment version in source, commit, then install
 
+## 🤖 AGENT-SPECIFIC GUIDANCE
+
+### AI Agent Safety Guards
+
+**🚨 BEFORE MAKING ANY CHANGES:**
+
+1. **Read the entire AGENTS.md file** (this file) - don't skip sections
+2. **Check existing issues and PRs** to avoid duplicate work
+3. **Verify you understand the three-context problem** 
+4. **Always test your changes** before claiming completion
+
+### Common Agent Mistakes to Avoid
+
+❌ **DON'T:** Edit files in `~/.agent-os/` or `~/.claude/` directly
+✅ **DO:** Edit source files in the repository, then install
+
+❌ **DON'T:** Assume installation worked without testing
+✅ **DO:** Run verification commands after installation
+
+❌ **DON'T:** Mix multiple unrelated changes in one commit
+✅ **DO:** Create focused commits for specific fixes
+
+❌ **DON'T:** Skip the feature branch workflow
+✅ **DO:** Always work on feature branches, never commit directly to main
+
+### Testing Patterns for Common Changes
+
+#### When Modifying Scripts
+```bash
+# 1. Edit source file
+nano scripts/workspace-hygiene-check.sh
+
+# 2. Install with overwrite
+./setup.sh --overwrite-instructions
+
+# 3. Test directly
+~/.agent-os/scripts/workspace-hygiene-check.sh
+
+# 4. Verify it matches source
+diff scripts/workspace-hygiene-check.sh ~/.agent-os/scripts/workspace-hygiene-check.sh
+```
+
+#### When Adding Claude Commands
+```bash
+# 1. Create source file
+nano commands/new-command.md
+
+# 2. Add to installer
+nano setup-claude-code.sh  # Add to the commands loop
+
+# 3. Install with overwrite
+./setup-claude-code.sh --overwrite-commands
+
+# 4. Verify installation
+ls -la ~/.claude/commands/new-command.md
+```
+
+#### When Fixing Installer Issues
+```bash
+# 1. Edit installer
+nano setup.sh
+
+# 2. Test locally
+./setup.sh --overwrite-instructions --overwrite-standards
+
+# 3. Check status
+aos status
+
+# 4. Test remote install (after pushing)
+curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup.sh | bash
+```
+
+### Quality Assurance Commands
+
+Always run these before claiming work is complete:
+
+```bash
+# Syntax validation
+bash -n setup.sh
+bash -n setup-claude-code.sh
+bash -n setup-cursor.sh
+
+# Installation test
+./check-agent-os.sh
+
+# Status verification  
+~/.agent-os/tools/aos status
+
+# File comparison (for changed files)
+diff scripts/filename.sh ~/.agent-os/scripts/filename.sh
+```
+
+### Emergency Recovery
+
+If you accidentally edit installed files instead of source:
+
+```bash
+# 1. STOP - don't commit anything yet
+# 2. Copy your changes to the source files manually
+# 3. Reinstall from source to verify
+./setup.sh --overwrite-instructions --overwrite-standards
+# 4. Test that your changes work
+# 5. Then commit the source changes
+```
+
+### Agent Success Checklist
+
+Before completing any task:
+
+- [ ] **Understanding**: I read this AGENTS.md file completely
+- [ ] **Source First**: I edited source files, not installed files
+- [ ] **Installation**: I ran the appropriate installer with overwrite flags
+- [ ] **Testing**: I verified the changes work as expected
+- [ ] **Verification**: I compared source and installed files to ensure sync
+- [ ] **Quality**: I ran syntax checks and status commands
+- [ ] **Documentation**: I updated relevant docs if needed
+- [ ] **Branch**: I worked on a feature branch, not main
+- [ ] **Commit**: I made focused commits with clear messages
+
+### Quick Reference Commands
+
+```bash
+# Check overall status
+./check-agent-os.sh
+~/.agent-os/tools/aos status
+
+# Reinstall everything
+./setup.sh --overwrite-instructions --overwrite-standards
+./setup-claude-code.sh --overwrite-commands
+
+# Verify file sync
+diff commands/plan-product.md ~/.claude/commands/plan-product.md
+diff scripts/workspace-hygiene-check.sh ~/.agent-os/scripts/workspace-hygiene-check.sh
+
+# Syntax checks
+bash -n setup.sh
+bash -n setup-claude-code.sh
+
+# Create feature branch
+git checkout -b feature/your-change-description
+```
+
+## 📊 METRICS FOR AGENTS
+
+Track these to ensure quality:
+
+- **Files Changed**: List all source files modified
+- **Installation Commands Run**: Document which installers were executed
+- **Tests Passed**: Show output of verification commands
+- **Sync Verified**: Prove source and installed files match
+- **Quality Checks**: Show syntax validation results
+
+### Evidence Template for Agent Work
+
+```markdown
+## Evidence/Test Results/Verification
+
+### Files Modified
+- scripts/workspace-hygiene-check.sh (fixed bug in line 42)
+- commands/new-feature.md (added new command)
+
+### Installation Process
+```bash
+$ ./setup.sh --overwrite-instructions
+✅ Script installed successfully
+
+$ ./setup-claude-code.sh --overwrite-commands  
+✅ Commands installed successfully
+```
+
+### Verification Results
+```bash
+$ diff scripts/workspace-hygiene-check.sh ~/.agent-os/scripts/workspace-hygiene-check.sh
+# No output = files match ✅
+
+$ ~/.agent-os/scripts/workspace-hygiene-check.sh
+✅ Script executes successfully
+
+$ aos status
+✅ All components current
+```
+
+### Quality Assurance
+```bash
+$ bash -n setup.sh
+✅ Syntax valid
+
+$ ./check-agent-os.sh
+🚀 Agent OS is ready to use!
+```
+```
+
 ---
 
-**Last Updated:** 2025-01-27
-**Document Version:** 1.0.0
+**Last Updated:** 2025-01-27  
+**Document Version:** 2.0.0 - Enhanced for AI Agents  
+**Next Review:** When source-to-installation mappings change
 
-*This document MUST be updated whenever source-to-installation mappings change.*
+*🤖 This document is specifically designed for AI agents working on Agent OS. Follow it religiously to avoid sync issues.*
