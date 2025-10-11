@@ -231,12 +231,19 @@ check_github_status() {
 # Check Agent OS status
 check_agent_os_status() {
 	print_section "Agent OS Status"
-	
-	# Check if aos command exists
+
+	# Check if aos command exists (try command in PATH first, then direct executable path)
+	local aos_cmd=""
 	if command -v aos >/dev/null 2>&1; then
+		aos_cmd="aos"
+	elif [ -x "$HOME/.agent-os/tools/aos" ]; then
+		aos_cmd="$HOME/.agent-os/tools/aos"
+	fi
+
+	if [ -n "$aos_cmd" ]; then
 		# Run aos status and parse output
 		local aos_output
-		if aos_output=$(aos status 2>/dev/null); then
+		if aos_output=$($aos_cmd status 2>/dev/null); then
 			if echo "$aos_output" | grep -q "All components current"; then
 				print_status "success" "Agent OS components current"
 			else
@@ -244,7 +251,7 @@ check_agent_os_status() {
 				((WARNINGS++))
 				add_fix "aos status"
 			fi
-			
+
 			if echo "$aos_output" | grep -q "Integrity OK"; then
 				print_status "success" "Agent OS integrity OK"
 			else

@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git branch:*), Bash(gh issue:*), Bash(gh pr:*), Bash(aos status:*), Bash(~/.agent-os/scripts/workflow-status.sh:*)
+allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git branch:*), Bash(gh issue:*), Bash(gh pr:*), Bash(aos status:*), Bash(~/.agent-os/scripts/workflow-status-wrapper.sh:*)
 description: Check Agent OS workflow health and identify what needs attention before continuing work
 argument-hint: [--verbose|--fix-suggestions]
 ---
@@ -16,7 +16,7 @@ Check the current Agent OS workflow health and identify any issues that need att
 
 ### Workflow Health Report
 
-!`~/.agent-os/scripts/workflow-status.sh $ARGUMENTS`
+!`~/.agent-os/scripts/workflow-status-wrapper.sh $ARGUMENTS`
 
 ## Available Modes
 

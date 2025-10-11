@@ -253,6 +253,10 @@ safe_curl "$HOME/.agent-os/scripts/workflow-status.sh" "${BASE_URL}/scripts/work
 chmod +x "$HOME/.agent-os/scripts/workflow-status.sh"
 echo "  ✓ ~/.agent-os/scripts/workflow-status.sh"
 
+safe_curl "$HOME/.agent-os/scripts/workflow-status-wrapper.sh" "${BASE_URL}/scripts/workflow-status-wrapper.sh"
+chmod +x "$HOME/.agent-os/scripts/workflow-status-wrapper.sh"
+echo "  ✓ ~/.agent-os/scripts/workflow-status-wrapper.sh"
+
 safe_curl "$HOME/.agent-os/scripts/workflow-complete.sh" "${BASE_URL}/scripts/workflow-complete.sh"
 chmod +x "$HOME/.agent-os/scripts/workflow-complete.sh"
 echo "  ✓ ~/.agent-os/scripts/workflow-complete.sh"
