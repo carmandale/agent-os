@@ -300,6 +300,7 @@ check_worktrees() {
 	local current_path=""
 	local current_branch=""
 	local is_main_worktree=true
+	local first_worktree=true
 
 	while IFS= read -r line; do
 		if [[ $line =~ ^worktree\ (.+)$ ]]; then
@@ -313,7 +314,12 @@ check_worktrees() {
 			fi
 			current_path="${BASH_REMATCH[1]}"
 			current_branch=""
-			is_main_worktree=false
+			if [ "$first_worktree" = true ]; then
+				is_main_worktree=true
+				first_worktree=false
+			else
+				is_main_worktree=false
+			fi
 		elif [[ $line =~ ^branch\ refs/heads/(.+)$ ]]; then
 			current_branch="${BASH_REMATCH[1]}"
 		elif [[ $line =~ ^branch\ refs/remotes/(.+)$ ]]; then
@@ -326,6 +332,7 @@ check_worktrees() {
 			((worktree_count++))
 			current_path=""
 			current_branch=""
+			is_main_worktree=false
 		fi
 	done <<< "$worktree_output"
 
@@ -577,5 +584,7 @@ main() {
 	fi
 }
 
-# Execute main function
-main "$@"
+# Execute main function (unless skipped for testing)
+if [[ -z "${AGENT_OS_SKIP_MAIN}" ]]; then
+	main "$@"
+fi

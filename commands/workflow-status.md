@@ -67,7 +67,7 @@ The workflow-status command now tracks all git worktrees and their connection to
 
 ### Example Output
 
-```
+```text
 Git Worktrees
 =============
 ✅ ../agent-os (main) - primary worktree

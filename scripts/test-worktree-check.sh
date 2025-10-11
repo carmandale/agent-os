@@ -100,8 +100,8 @@ fi
 # Test 4: Issue number detection patterns
 print_test_header "Issue Number Detection"
 
-# Source the script to test the function
-source "$WORKFLOW_STATUS" 2>/dev/null || true
+# Source the script to test the function (with AGENT_OS_SKIP_MAIN to prevent exit)
+AGENT_OS_SKIP_MAIN=1 source "$WORKFLOW_STATUS" 2>/dev/null || true
 
 # Test pattern 1: issue-123
 if command -v detect_issue_number >/dev/null 2>&1; then
