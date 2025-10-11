@@ -163,7 +163,28 @@ commands/create-spec.md      → .cursor/rules/create-spec.mdc      # with front
 commands/execute-tasks.md    → .cursor/rules/execute-tasks.mdc
 commands/analyze-product.md  → .cursor/rules/analyze-product.mdc
 commands/hygiene-check.md    → .cursor/rules/hygiene-check.mdc
+commands/update-documentation.md → .cursor/rules/update-documentation.mdc
+commands/workflow-status.md      → .cursor/rules/workflow-status.mdc
+commands/workflow-complete.md    → .cursor/rules/workflow-complete.mdc
 ```
+
+### 4. Codex Installation (via `setup.sh`)
+
+**Source Location** → **Installation Destination** → **Purpose**
+
+#### Slash Prompts (Codex CLI)
+```bash
+commands/analyze-product.md      → $CODEX_HOME/prompts/analyze-product.md      # Default: ~/.codex/prompts/
+commands/create-spec.md          → $CODEX_HOME/prompts/create-spec.md
+commands/execute-tasks.md        → $CODEX_HOME/prompts/execute-tasks.md
+commands/hygiene-check.md        → $CODEX_HOME/prompts/hygiene-check.md
+commands/plan-product.md         → $CODEX_HOME/prompts/plan-product.md
+commands/update-documentation.md → $CODEX_HOME/prompts/update-documentation.md
+commands/workflow-status.md      → $CODEX_HOME/prompts/workflow-status.md
+commands/workflow-complete.md    → $CODEX_HOME/prompts/workflow-complete.md
+```
+
+> ℹ️ Set `CODEX_HOME` before running `setup.sh` to install into a non-default Codex configuration directory. Use `--skip-codex-commands` if you need to bypass Codex prompt installation.
 
 ## ⚠️ CRITICAL GAPS IDENTIFIED
 
@@ -171,22 +192,10 @@ commands/hygiene-check.md    → .cursor/rules/hygiene-check.mdc
 
 These source files exist but are NOT installed anywhere:
 
-#### Commands Not Installed
-```bash
-commands/work-session.md         # ❌ NOT INSTALLED BY ANY SCRIPT
-```
-
-#### Instructions Not Installed
-```bash
-instructions/core/hygiene-check.md    # ❌ NOT INSTALLED BY setup.sh but should be!
-```
-
 #### Scripts Not Installed
 ```bash
 scripts/pre-commit-docs-guard.sh    # ❌ NOT INSTALLED BY ANY SCRIPT
 scripts/verify-installation.sh      # ❌ NOT INSTALLED BY ANY SCRIPT
-scripts/workflow-complete.sh        # ❌ NOT INSTALLED BY ANY SCRIPT
-scripts/workflow-status.sh          # ❌ NOT INSTALLED BY ANY SCRIPT
 ```
 
 #### Hook Files Not Installed
@@ -269,9 +278,11 @@ These files are downloaded but don't exist in source:
    ```bash
    # Compare source and installed files
    diff scripts/workspace-hygiene-check.sh ~/.agent-os/scripts/workspace-hygiene-check.sh
+   diff commands/plan-product.md ~/.codex/prompts/plan-product.md
 
    # Check installed file timestamps
    ls -la ~/.agent-os/scripts/workspace-hygiene-check.sh
+   ls -la ~/.codex/prompts/plan-product.md
    ```
 
 ### ❌ WRONG WORKFLOW (DO NOT DO THIS)

@@ -142,6 +142,12 @@ agent-os/                   # The framework source
 └── VERSION            # Installed version
 ```
 
+### Codex CLI Prompts
+- **Default Location:** `$CODEX_HOME/prompts/` (defaults to `~/.codex/prompts/`)
+- **Installed By:** `setup.sh` (can be skipped with `--skip-codex-commands`)
+- **Contents:** Mirrors `commands/*.md` so Codex CLI exposes the same slash prompts as Claude Code and Cursor
+- **Customization:** Set `CODEX_HOME` before running the installer to target a different Codex profile directory
+
 ### PROJECT Structure
 ```
 YourProject/

@@ -68,6 +68,8 @@ This creates `.agent-os/` in your project with product documentation structure.
 - `/analyze-product` - Start with existing code
 - `/create-spec` - Plan a new feature
 - `/execute-tasks` - Build and ship code
+- `/hygiene-check` - Validate workspace hygiene before executing
+- `/update-documentation` - Audit documentation drift
 - `/workflow-status` - Check workflow health before starting new work
 - `/workflow-complete` - Complete and integrate all workflow steps
 
@@ -76,8 +78,20 @@ This creates `.agent-os/` in your project with product documentation structure.
 - `@analyze-product` - Start with existing code  
 - `@create-spec` - Plan a new feature
 - `@execute-tasks` - Build and ship code
+- `@hygiene-check` - Validate workspace hygiene before executing
+- `@update-documentation` - Audit documentation drift
 - `@workflow-status` - Check workflow health before starting new work
 - `@workflow-complete` - Complete and integrate all workflow steps
+
+**In Codex CLI:**
+- `/plan-product` - Start with a new product session
+- `/analyze-product` - Start with existing code
+- `/create-spec` - Plan a new feature
+- `/execute-tasks` - Build and ship code
+- `/hygiene-check` - Validate workspace hygiene before executing
+- `/update-documentation` - Audit documentation drift
+- `/workflow-status` - Check workflow health before starting new work
+- `/workflow-complete` - Complete and integrate all workflow steps
 
 ### Understanding Agent OS Contexts
 
@@ -126,6 +140,10 @@ curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup-claud
 
 # For Cursor
 curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup-cursor.sh | bash
+
+# For Codex CLI prompts (installed via setup.sh)
+CODEX_HOME=${CODEX_HOME:-~/.codex} ./setup.sh --overwrite-instructions --overwrite-standards
+# Use --skip-codex-commands if Codex isn't required on this machine.
 ```
 
 ---

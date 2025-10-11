@@ -97,6 +97,8 @@ aos logs <task-id>                  # View task logs
 /update-documentation --create-missing  # Create missing docs (use with caution)
 ```
 
+> Codex CLI shares the same Agent OS command set. `setup.sh` now installs the markdown prompts into `$CODEX_HOME/prompts` (default `~/.codex/prompts`). Set `CODEX_HOME` before running if you use a custom location, or pass `--skip-codex-commands` to omit Codex support on machines that don't run it.
+
 ## Architecture Overview
 
 ### Core Directory Structure
