@@ -3,7 +3,8 @@
 # workflow-status.sh
 # Check Agent OS workflow health and identify issues that need attention
 
-set -e
+# Note: We don't use 'set -e' because we want to collect all workflow issues
+# and return a meaningful exit code at the end, rather than exiting early
 
 # Colors for output
 RED='\033[0;31m'
