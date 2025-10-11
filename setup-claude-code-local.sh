@@ -52,8 +52,17 @@ echo "📁 Creating directories..."
 mkdir -p "$HOME/.claude/commands"
 echo -e "${GREEN}✅ Created ~/.claude/commands/${NC}"
 
-# Define expected commands
-COMMANDS=(plan-product create-spec execute-tasks analyze-product hygiene-check enhance)
+# Define expected commands (keep in sync with setup-claude-code.sh and commands/)
+COMMANDS=(
+    plan-product
+    create-spec
+    execute-tasks
+    analyze-product
+    hygiene-check
+    update-documentation
+    workflow-status
+    workflow-complete
+)
 INSTALLED_COMMANDS=()
 MISSING_COMMANDS=()
 FAILED_COMMANDS=()
@@ -189,11 +198,17 @@ if [ "$INSTALL_STATUS" = "perfect" ]; then
     echo "Build and ship code with:"
     echo "  /execute-tasks"
     echo ""
-    echo "Add professional enhancements when ready:"
-    echo "  /enhance --security --architecture"
-    echo ""
     echo "Check workspace cleanliness with:"
     echo "  /hygiene-check"
+    echo ""
+    echo "Keep documentation in sync with:"
+    echo "  /update-documentation --dry-run"
+    echo ""
+    echo "Check workflow health with:"
+    echo "  /workflow-status"
+    echo ""
+    echo "Complete the workflow with:"
+    echo "  /workflow-complete"
     echo ""
 elif [ "$INSTALL_STATUS" = "partial" ]; then
     echo -e "${YELLOW}⚠️  Partial installation completed.${NC}"

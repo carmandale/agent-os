@@ -32,6 +32,7 @@ safe_curl() {
 # Initialize flags - always update instructions to get latest versions
 OVERWRITE_INSTRUCTIONS=true
 OVERWRITE_STANDARDS=false
+INSTALL_CODEX_COMMANDS=true
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -44,12 +45,17 @@ while [[ $# -gt 0 ]]; do
             OVERWRITE_STANDARDS=true
             shift
             ;;
+        --skip-codex-commands)
+            INSTALL_CODEX_COMMANDS=false
+            shift
+            ;;
         -h|--help)
             echo "Usage: $0 [OPTIONS]"
             echo ""
             echo "Options:"
             echo "  --overwrite-instructions    Overwrite existing instruction files"
             echo "  --overwrite-standards       Overwrite existing standards files"
+            echo "  --skip-codex-commands       Skip installing Codex slash prompts"
             echo "  -h, --help                  Show this help message"
             echo ""
             exit 0
@@ -136,7 +142,7 @@ echo ""
 echo "📥 Downloading instruction files to ~/.agent-os/instructions/"
 
 # core mirrors
-for core_file in analyze-product.md create-spec.md execute-tasks.md plan-product.md; do
+for core_file in analyze-product.md create-spec.md execute-tasks.md plan-product.md hygiene-check.md; do
   src_path="${BASE_URL}/instructions/core/${core_file}"
   dest_path="$HOME/.agent-os/instructions/core/${core_file}"
   if [ -f "$dest_path" ] && [ "$OVERWRITE_INSTRUCTIONS" = false ]; then
@@ -177,30 +183,47 @@ fi
 
 ## Note: Top-level instruction files are deprecated. Only core/* is installed.
 
-# Install Factory CLI custom commands
-echo ""
-echo "📥 Installing Factory custom commands to ~/.factory/commands/"
-FACTORY_COMMANDS_DIR="$HOME/.factory/commands"
-mkdir -p "$FACTORY_COMMANDS_DIR"
-
-factory_command_files=(
+AGENT_OS_COMMAND_FILES=(
   "analyze-product.md"
   "create-spec.md"
   "execute-tasks.md"
   "hygiene-check.md"
   "plan-product.md"
   "update-documentation.md"
-  "work-session.md"
   "workflow-complete.md"
   "workflow-status.md"
 )
 
-for command_file in "${factory_command_files[@]}"; do
+# Install Factory CLI custom commands
+echo ""
+echo "📥 Installing Factory custom commands to ~/.factory/commands/"
+FACTORY_COMMANDS_DIR="$HOME/.factory/commands"
+mkdir -p "$FACTORY_COMMANDS_DIR"
+
+for command_file in "${AGENT_OS_COMMAND_FILES[@]}"; do
   dest_path="$FACTORY_COMMANDS_DIR/$command_file"
   src_path="${BASE_URL}/commands/$command_file"
   safe_curl "$dest_path" "$src_path"
   echo "  ✓ $dest_path"
 done
+
+# Install Codex CLI prompts (slash commands)
+echo ""
+if [ "$INSTALL_CODEX_COMMANDS" = true ]; then
+  CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
+  CODEX_PROMPTS_DIR="$CODEX_HOME/prompts"
+  echo "📥 Installing Codex prompts to ${CODEX_PROMPTS_DIR}/"
+  mkdir -p "$CODEX_PROMPTS_DIR"
+
+  for command_file in "${AGENT_OS_COMMAND_FILES[@]}"; do
+    dest_path="$CODEX_PROMPTS_DIR/$command_file"
+    src_path="${BASE_URL}/commands/$command_file"
+    safe_curl "$dest_path" "$src_path"
+    echo "  ✓ $dest_path"
+  done
+else
+  echo "⏭️  Skipping Codex prompt installation (--skip-codex-commands)"
+fi
 
 # Download script files
 echo ""
@@ -225,6 +248,14 @@ echo "  ✓ ~/.agent-os/scripts/update-documentation.sh"
 safe_curl "$HOME/.agent-os/scripts/update-documentation-wrapper.sh" "${BASE_URL}/scripts/update-documentation-wrapper.sh"
 chmod +x "$HOME/.agent-os/scripts/update-documentation-wrapper.sh"
 echo "  ✓ ~/.agent-os/scripts/update-documentation-wrapper.sh"
+
+safe_curl "$HOME/.agent-os/scripts/workflow-status.sh" "${BASE_URL}/scripts/workflow-status.sh"
+chmod +x "$HOME/.agent-os/scripts/workflow-status.sh"
+echo "  ✓ ~/.agent-os/scripts/workflow-status.sh"
+
+safe_curl "$HOME/.agent-os/scripts/workflow-complete.sh" "${BASE_URL}/scripts/workflow-complete.sh"
+chmod +x "$HOME/.agent-os/scripts/workflow-complete.sh"
+echo "  ✓ ~/.agent-os/scripts/workflow-complete.sh"
 
 # Create lib directory and download library files
 mkdir -p "$HOME/.agent-os/scripts/lib"
