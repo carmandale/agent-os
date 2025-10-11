@@ -1,4 +1,6 @@
 {
+  "_comment": "IMPORTANT: Replace /Users/USERNAME with your actual home directory path (e.g., /Users/johndoe or /home/johndoe)",
+  "_note": "Claude Code requires absolute paths for hooks. Do not use ~ or $HOME in the command paths.",
   "name": "Agent OS Bash Integration Hooks",
   "version": "2.1.0",
   "description": "First-class Claude Code background Bash integration via observation hooks",
@@ -9,7 +11,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.agent-os/hooks/pre-bash-hook.sh"
+            "command": "/Users/USERNAME/.agent-os/hooks/pre-bash-hook.sh"
           }
         ]
       }
@@ -20,7 +22,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.agent-os/hooks/post-bash-hook.sh"
+            "command": "/Users/USERNAME/.agent-os/hooks/post-bash-hook.sh"
           }
         ]
       }
@@ -30,7 +32,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.agent-os/hooks/user-prompt-submit-hook.sh"
+            "command": "/Users/USERNAME/.agent-os/hooks/user-prompt-submit-hook.sh"
           }
         ]
       }
@@ -40,7 +42,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.agent-os/hooks/stop-hook.sh"
+            "command": "/Users/USERNAME/.agent-os/hooks/stop-hook.sh"
           }
         ]
       }
@@ -50,7 +52,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.agent-os/hooks/notify-hook.sh"
+            "command": "/Users/USERNAME/.agent-os/hooks/notify-hook.sh"
           }
         ]
       }
@@ -58,7 +60,7 @@
   },
   "settings": {
     "logLevel": "info",
-    "logDirectory": "~/.agent-os/logs",
+    "logDirectory": "/Users/USERNAME/.agent-os/logs",
     "bashObservation": true,
     "contextInjection": true
   },
@@ -67,9 +69,10 @@
     "agentOsVersion": ">=1.0.0"
   },
   "documentation": {
-    "installation": "Run ~/.agent-os/hooks/install-hooks.sh to install these hooks",
-    "uninstallation": "Run ~/.agent-os/hooks/uninstall-hooks.sh to remove these hooks",
-    "troubleshooting": "Check ~/.agent-os/logs/ for hook execution logs",
+    "installation": "Run the setup script which automatically installs hooks with correct absolute paths",
+    "manual_installation": "Copy this file to ~/.claude/settings.json and replace USERNAME with your actual username",
+    "uninstallation": "Remove the hooks section from ~/.claude/settings.json",
+    "troubleshooting": "Check /Users/USERNAME/.agent-os/logs/ for hook execution logs (replace USERNAME with your actual username)",
     "repository": "https://github.com/carmandale/agent-os"
   }
 }

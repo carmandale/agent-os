@@ -1,5 +1,10 @@
+---
+allowed-tools: Bash(git status:*), Bash(git branch:*), Bash(git log:*), Bash(git diff:*), Bash(gh pr:*), Bash(gh issue:*), Bash(find:*), Bash(grep:*), Bash(ls:*)
+description: Perform a comprehensive workspace hygiene check to verify the environment is clean and ready for work
+---
+
 # Hygiene Check
 
 Perform a comprehensive workspace hygiene check to verify the environment is clean and ready for work.
 
-Refer to the instructions located in @~/.agent-os/instructions/core/hygiene-check.md 
+Refer to the instructions located in @~/.agent-os/instructions/core/hygiene-check.md
