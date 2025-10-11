@@ -269,6 +269,280 @@ check_agent_os_status() {
 	fi
 }
 
+# Check git worktrees
+check_worktrees() {
+	print_section "Git Worktrees"
+
+	# Check if git worktree is available
+	if ! git worktree list >/dev/null 2>&1; then
+		print_status "info" "Git worktrees not available (requires Git 2.5+)"
+		return
+	fi
+
+	# Setup cache file (5-minute TTL)
+	local cache_file="/tmp/agent-os-worktree-cache-$$.json"
+	local cache_ttl=300  # 5 minutes
+
+	# Cleanup cache on exit
+	trap "rm -f \"$cache_file\"" EXIT
+
+	# Get worktree list in porcelain format
+	local worktree_output
+	if ! worktree_output=$(git worktree list --porcelain 2>/dev/null); then
+		print_status "warning" "Could not retrieve worktree list"
+		((WARNINGS++))
+		return
+	fi
+
+	# Parse worktree list
+	local worktree_count=0
+	local stale_count=0
+	local current_path=""
+	local current_branch=""
+	local is_main_worktree=true
+	local first_worktree=true
+
+	while IFS= read -r line; do
+		if [[ $line =~ ^worktree\ (.+)$ ]]; then
+			# New worktree entry
+			if [ -n "$current_path" ]; then
+				# Display previous worktree
+				if display_worktree "$current_path" "$current_branch" "$is_main_worktree" "$cache_file"; then
+					((stale_count++))
+				fi
+				((worktree_count++))
+			fi
+			current_path="${BASH_REMATCH[1]}"
+			current_branch=""
+			if [ "$first_worktree" = true ]; then
+				is_main_worktree=true
+				first_worktree=false
+			else
+				is_main_worktree=false
+			fi
+		elif [[ $line =~ ^branch\ refs/heads/(.+)$ ]]; then
+			current_branch="${BASH_REMATCH[1]}"
+		elif [[ $line =~ ^branch\ refs/remotes/(.+)$ ]]; then
+			current_branch="${BASH_REMATCH[1]}"
+		elif [ -z "$line" ] && [ -n "$current_path" ]; then
+			# Empty line marks end of worktree entry
+			if display_worktree "$current_path" "$current_branch" "$is_main_worktree" "$cache_file"; then
+				((stale_count++))
+			fi
+			((worktree_count++))
+			current_path=""
+			current_branch=""
+			is_main_worktree=false
+		fi
+	done <<< "$worktree_output"
+
+	# Handle last worktree if no trailing empty line
+	if [ -n "$current_path" ]; then
+		if display_worktree "$current_path" "$current_branch" "$is_main_worktree" "$cache_file"; then
+			((stale_count++))
+		fi
+		((worktree_count++))
+	fi
+
+	# Summary
+	if [ $worktree_count -eq 1 ]; then
+		print_status "info" "No additional worktrees found (main worktree only)"
+	elif [ $stale_count -gt 0 ]; then
+		print_status "info" "Found $worktree_count worktrees ($stale_count need attention)"
+		((WARNINGS++))
+	else
+		print_status "info" "Found $worktree_count worktrees"
+	fi
+}
+
+# Detect issue number from branch name
+detect_issue_number() {
+	local branch="$1"
+
+	# Pattern 1: issue-123
+	if [[ $branch =~ issue-([0-9]+) ]]; then
+		echo "${BASH_REMATCH[1]}"
+		return
+	fi
+
+	# Pattern 2: 123-feature-name
+	if [[ $branch =~ ^([0-9]+)- ]]; then
+		echo "${BASH_REMATCH[1]}"
+		return
+	fi
+
+	# Pattern 3: bugfix-456-description or feature-456-description
+	if [[ $branch =~ (bugfix|feature|hotfix)-([0-9]+)- ]]; then
+		echo "${BASH_REMATCH[2]}"
+		return
+	fi
+
+	# Pattern 4: feature/issue-789
+	if [[ $branch =~ /issue-([0-9]+) ]]; then
+		echo "${BASH_REMATCH[1]}"
+		return
+	fi
+}
+
+# Get GitHub information for a worktree (with caching)
+get_github_info() {
+	local branch="$1"
+	local cache_file="$2"
+
+	# Check if GitHub CLI is available
+	if ! command -v gh >/dev/null 2>&1; then
+		return
+	fi
+
+	# Check cache if it exists and is fresh (< 5 minutes old)
+	if [ -f "$cache_file" ]; then
+		local cache_age=$(($(date +%s) - $(stat -f %m "$cache_file" 2>/dev/null || stat -c %Y "$cache_file" 2>/dev/null || echo 0)))
+		if [ $cache_age -lt 300 ]; then
+			# Try to get from cache
+			local cached_result=$(jq -r --arg branch "$branch" '.[$branch] // ""' "$cache_file" 2>/dev/null)
+			if [ -n "$cached_result" ] && [ "$cached_result" != "null" ]; then
+				echo "$cached_result"
+				return
+			fi
+		fi
+	fi
+
+	# Try to find PR by branch name
+	local pr_info
+	if pr_info=$(gh pr list --head "$branch" --json number,state,title --limit 1 2>/dev/null); then
+		local pr_count=$(echo "$pr_info" | jq 'length' 2>/dev/null || echo "0")
+		if [ "$pr_count" -gt 0 ]; then
+			local pr_number=$(echo "$pr_info" | jq -r '.[0].number' 2>/dev/null)
+			local pr_state=$(echo "$pr_info" | jq -r '.[0].state' 2>/dev/null)
+			local pr_title=$(echo "$pr_info" | jq -r '.[0].title' 2>/dev/null)
+			local result="pr|$pr_number|$pr_state|$pr_title"
+
+			# Cache the result
+			if command -v jq >/dev/null 2>&1; then
+				local existing_cache="{}"
+				if [ -f "$cache_file" ]; then
+					existing_cache=$(cat "$cache_file" 2>/dev/null || echo "{}")
+				fi
+				echo "$existing_cache" | jq --arg branch "$branch" --arg result "$result" '. + {($branch): $result}' > "$cache_file" 2>/dev/null
+			fi
+
+			echo "$result"
+			return
+		fi
+	fi
+
+	# Try to detect issue number from branch name
+	local issue_num=$(detect_issue_number "$branch")
+	if [ -n "$issue_num" ]; then
+		local issue_info
+		if issue_info=$(gh issue view "$issue_num" --json state,title 2>/dev/null); then
+			local issue_state=$(echo "$issue_info" | jq -r '.state' 2>/dev/null)
+			local issue_title=$(echo "$issue_info" | jq -r '.title' 2>/dev/null)
+			local result="issue|$issue_num|$issue_state|$issue_title"
+
+			# Cache the result
+			if command -v jq >/dev/null 2>&1; then
+				local existing_cache="{}"
+				if [ -f "$cache_file" ]; then
+					existing_cache=$(cat "$cache_file" 2>/dev/null || echo "{}")
+				fi
+				echo "$existing_cache" | jq --arg branch "$branch" --arg result "$result" '. + {($branch): $result}' > "$cache_file" 2>/dev/null
+			fi
+
+			echo "$result"
+			return
+		fi
+	fi
+}
+
+# Display a single worktree
+# Returns 0 if worktree is stale, 1 if active
+display_worktree() {
+	local path="$1"
+	local branch="$2"
+	local is_main="$3"
+	local cache_file="$4"
+
+	# Make path relative to current directory if possible
+	local display_path="$path"
+	local current_dir=$(pwd)
+	if [[ "$path" == "$current_dir"* ]]; then
+		display_path=".${path#$current_dir}"
+	elif [[ "$path" =~ ^(.+)/[^/]+$ ]]; then
+		local parent_dir="${BASH_REMATCH[1]}"
+		if [[ "$current_dir" =~ ^"$parent_dir"/[^/]+$ ]]; then
+			display_path="../${path##*/}"
+		fi
+	fi
+
+	# Determine branch display
+	local branch_display="${branch:-"(detached HEAD)"}"
+
+	# Main worktree indicator
+	if [ "$is_main" = true ]; then
+		print_status "success" "$display_path ($branch_display) - primary worktree"
+		return 1
+	fi
+
+	# Check if branch is merged to main
+	local is_merged=false
+	if [ -n "$branch" ] && [ "$branch" != "main" ]; then
+		if git branch --merged main 2>/dev/null | grep -q "^\s*${branch}$" 2>/dev/null; then
+			is_merged=true
+		fi
+	fi
+
+	# Get GitHub information
+	local github_info=$(get_github_info "$branch" "$cache_file")
+
+	local is_stale=false
+	if [ -n "$github_info" ]; then
+		IFS='|' read -r type number state title <<< "$github_info"
+
+		# Determine status icon based on state
+		local status_icon="info"
+		local status_text=""
+
+		if [ "$type" = "pr" ]; then
+			if [ "$state" = "OPEN" ]; then
+				status_icon="success"
+				status_text="PR #$number: $title (open)"
+			else
+				status_icon="warning"
+				status_text="PR #$number: $title (closed) - consider cleanup"
+				add_fix "git worktree remove \"$path\" (PR #$number closed)"
+				is_stale=true
+			fi
+		elif [ "$type" = "issue" ]; then
+			if [ "$state" = "OPEN" ]; then
+				status_icon="success"
+				status_text="Issue #$number: $title (open)"
+			else
+				status_icon="warning"
+				status_text="Issue #$number: $title (closed) - consider cleanup"
+				add_fix "git worktree remove \"$path\" (Issue #$number closed)"
+				is_stale=true
+			fi
+		fi
+
+		print_status "$status_icon" "$display_path ($branch_display) - $status_text"
+	elif [ "$is_merged" = true ]; then
+		# Branch is merged but no GitHub info
+		print_status "warning" "$display_path ($branch_display) - branch merged to main, consider cleanup"
+		add_fix "git worktree remove \"$path\" (branch merged)"
+		is_stale=true
+	else
+		print_status "info" "$display_path ($branch_display)"
+	fi
+
+	# Return 0 if stale (for counting), 1 if active
+	if [ "$is_stale" = true ]; then
+		return 0
+	else
+		return 1
+	fi
+}
+
 # Main execution
 main() {
 	echo -e "${CYAN}🔍 Agent OS Workflow Status Check${NC}"
@@ -278,7 +552,8 @@ main() {
 	check_documentation
 	check_github_status
 	check_agent_os_status
-	
+	check_worktrees
+
 	# Summary
 	print_section "Summary"
 	
@@ -309,5 +584,7 @@ main() {
 	fi
 }
 
-# Execute main function
-main "$@"
+# Execute main function (unless skipped for testing)
+if [[ -z "${AGENT_OS_SKIP_MAIN}" ]]; then
+	main "$@"
+fi
