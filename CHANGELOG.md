@@ -20,6 +20,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - GitHub CLI integration with graceful error handling
   - Comprehensive integration test suite (8/8 tests passing)
   - Documentation drift detection integrated with spec creation
+- **Git Worktree Listing in workflow-status** (#96, PR #97)
+  - New worktree tracking with GitHub integration showing all active worktrees
+  - Automatic issue/PR detection from branch names (4 naming patterns supported)
+  - Stale worktree detection for merged branches and closed issues/PRs
+  - Performance caching (5-minute TTL) for GitHub API responses
+  - Cleanup suggestions for worktrees needing attention
+  - Graceful degradation when GitHub CLI unavailable
 
 ### Fixed
 - **aos installer hooks configuration location** (#91)
