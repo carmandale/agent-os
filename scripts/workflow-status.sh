@@ -129,24 +129,27 @@ check_git_status() {
 # Check documentation status
 check_documentation() {
 	print_section "Documentation Status"
-	
+
 	# Check if update-documentation script exists
 	if [ ! -f "$HOME/.agent-os/scripts/update-documentation.sh" ]; then
 		print_status "error" "update-documentation script not found"
 		((CRITICAL_ISSUES++))
 		return
 	fi
-	
+
+	# Track overall documentation health
+	local doc_healthy=true
+	local changelog_healthy=true
+
 	# Run documentation check
 	local doc_result
 	if doc_result=$("$HOME/.agent-os/scripts/update-documentation.sh" --dry-run 2>&1); then
-		if echo "$doc_result" | grep -q "No changes detected"; then
-			print_status "success" "Documentation up to date"
-		else
+		if ! echo "$doc_result" | grep -q "No changes detected"; then
 			print_status "warning" "Documentation drift detected"
 			((WARNINGS++))
 			add_fix "/update-documentation"
-			
+			doc_healthy=false
+
 			if [ "$VERBOSE" = true ]; then
 				echo "   Issues found:"
 				echo "$doc_result" | grep -E "^-|^#" | sed 's/^/   /'
@@ -155,23 +158,29 @@ check_documentation() {
 	else
 		print_status "warning" "Documentation check had issues"
 		((WARNINGS++))
+		doc_healthy=false
 	fi
-	
+
 	# Check CHANGELOG.md specifically
 	if [ -f "CHANGELOG.md" ]; then
 		local recent_commits=$(git log --oneline --since="7 days ago" | wc -l | tr -d ' ')
 		local changelog_updates=$(git log --oneline --since="7 days ago" -- CHANGELOG.md | wc -l | tr -d ' ')
-		
+
 		if [ "$recent_commits" -gt 0 ] && [ "$changelog_updates" -eq 0 ]; then
 			print_status "warning" "CHANGELOG.md not updated recently ($recent_commits recent commits)"
 			((WARNINGS++))
 			add_fix "Update CHANGELOG.md with recent work"
-		else
-			print_status "success" "CHANGELOG.md current"
+			changelog_healthy=false
 		fi
 	else
 		print_status "warning" "CHANGELOG.md not found"
 		((WARNINGS++))
+		changelog_healthy=false
+	fi
+
+	# Only show success if BOTH checks passed
+	if [ "$doc_healthy" = true ] && [ "$changelog_healthy" = true ]; then
+		print_status "success" "Documentation up to date"
 	fi
 }
 
