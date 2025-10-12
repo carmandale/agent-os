@@ -1,0 +1,30 @@
+# Test Branch Names for Stop-Hook Context Tests
+# Each line is a branch name pattern to test
+
+# Standard patterns with issue numbers
+feature-#123-authentication
+feature-#456-add-user-profile
+feature-#789-implement-api
+
+# Issue at start
+#100-create-dashboard
+#200-fix-bug
+
+# Issue at end
+refactor-code-#300
+update-deps-#400
+
+# Multiple issues (should extract first)
+feature-#500-and-#600-combined
+
+# No issue patterns
+feature-no-issue
+refactor-hooks
+update-documentation
+main
+master
+
+# Edge cases
+feature-#0-zero-issue
+feature-#999999-large-number
+#1-minimal

@@ -1,0 +1,23 @@
+# Test Spec Folder Names for Stop-Hook Context Tests
+# Each line is a spec folder name pattern to test
+
+# Standard date-prefixed spec folders
+2025-10-12-stop-hook-context-#98
+2025-09-15-authentication-system-#75
+2025-08-20-user-dashboard-#50
+2025-07-01-api-integration-#25
+
+# Different date formats (should all work with find)
+2025-11-30-future-feature-#200
+2025-01-01-first-of-year-#10
+
+# Edge cases
+2024-12-31-last-year-#5
+2025-10-12-no-issue-number
+2025-invalid-no-number
+
+# Non-standard (should be ignored by find pattern)
+feature-without-date
+spec-folder
+README.md
+.hidden-folder

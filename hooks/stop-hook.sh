@@ -192,15 +192,59 @@ generate_stop_message() {
   local num_changed="$2"
   local sample_list="$3"
 
+  # Extract context using sourced helper functions
+  # These functions are available from lib/git-utils.sh and lib/workflow-detector.sh
+  local current_branch=""
+  local issue_num=""
+  local spec_folder=""
+
+  # Extract current branch (supports feature branches, main, detached HEAD)
+  if command -v get_current_branch >/dev/null 2>&1; then
+    current_branch=$(cd "$project_root" && get_current_branch 2>/dev/null || echo "")
+  fi
+
+  # Extract issue number from branch name (supports patterns: #123, feature-#123-desc)
+  if [ -n "$current_branch" ] && command -v extract_github_issue >/dev/null 2>&1; then
+    issue_num=$(cd "$project_root" && extract_github_issue "branch" 2>/dev/null || echo "")
+  fi
+
+  # Detect active spec folder (most recent date-prefixed folder in .agent-os/specs/)
+  if [ -d "$project_root/.agent-os/specs" ] && command -v detect_current_spec >/dev/null 2>&1; then
+    spec_folder=$(cd "$project_root" && detect_current_spec 2>/dev/null || echo "")
+  fi
+
+  # Build context lines conditionally (only show what's available)
+  local context_lines=""
+  if [ -n "$current_branch" ]; then
+    context_lines="${context_lines}Branch: $current_branch\n"
+  fi
+  if [ -n "$issue_num" ]; then
+    context_lines="${context_lines}GitHub Issue: #$issue_num\n"
+  fi
+  if [ -n "$spec_folder" ]; then
+    context_lines="${context_lines}Active Spec: $spec_folder\n"
+  fi
+
+  # Generate smart commit suggestion with issue number if available
+  local commit_suggestion=""
+  if [ -n "$issue_num" ]; then
+    commit_suggestion="  git commit -m \"feat: describe changes #${issue_num}\""
+  else
+    commit_suggestion="  git commit -m \"describe your work\""
+  fi
+
   cat <<EOF
 Agent OS: Uncommitted source code detected
 
 Project: $(basename "$project_root")
-Detected $num_changed modified source file(s) with no recent commits (within ${RECENT_WINDOW}).
+${context_lines}Detected $num_changed modified source file(s) with no recent commits (within ${RECENT_WINDOW}).
+
+Suggested commit:
+$commit_suggestion
 
 Next steps:
   1. Review changes: git -C "$project_root" status
-  2. Commit work:   git -C "$project_root" commit -m "describe your work"
+  2. Commit work with suggested format above
   3. Or stash:      git -C "$project_root" stash
   4. Suppress temporarily: export AGENT_OS_HOOKS_QUIET=true
 
