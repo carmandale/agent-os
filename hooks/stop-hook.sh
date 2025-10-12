@@ -2,6 +2,19 @@
 # stop-hook.sh
 # Agent OS - Claude Code Stop Hook
 # Purpose: Prevent workflow abandonment when uncommitted source changes exist with no recent commits.
+#
+# Features:
+# - Detects uncommitted source code files (filters out noise/config files)
+# - Enforces commits within RECENT_WINDOW (default: 2 hours)
+# - Context-aware commit reminders with branch, issue #, and active spec
+# - Smart commit message suggestions with GitHub issue references
+# - Rate limiting (5-minute TTL) to avoid notification fatigue
+# - Graceful fallback when context unavailable
+#
+# Supported branch naming patterns for issue extraction:
+#   feature-#123-description  → extracts #123
+#   #456-feature-name         → extracts #456
+#   feature-name              → no issue (generic suggestion)
 
 # Strict mode and safe IFS
 set -Eeuo pipefail
@@ -214,6 +227,11 @@ generate_stop_message() {
   fi
 
   # Build context lines conditionally (only show what's available)
+  # This provides developers with actionable context for their commit message:
+  # - Current branch: helps identify what feature/fix they're working on
+  # - GitHub issue: provides traceability and enables smart suggestions
+  # - Active spec: shows which specification is being implemented
+  # Context lines are built incrementally and only included if data is available
   local context_lines=""
   if [ -n "$current_branch" ]; then
     context_lines="${context_lines}Branch: $current_branch\n"
