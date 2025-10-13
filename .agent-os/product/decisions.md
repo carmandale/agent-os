@@ -1,6 +1,6 @@
 # Product Decisions Log
 
-> Last Updated: 2025-01-27
+> Last Updated: 2025-10-13
 > Version: 1.0.0
 > Override Priority: Highest
 
@@ -400,3 +400,82 @@ The subagents system directly addresses Agent OS's core mission by providing spe
 - Introduces new dependencies and potential failure points
 - May impact performance if not properly optimized
 - Creates expectations for continued AI enhancement evolution
+
+## 2025-10-13: Worktree Directory Organization Strategy
+
+**ID:** DEC-009
+**Status:** Accepted
+**Category:** Technical
+**Stakeholders:** Agent OS Users, Development Team
+**Related:** Issue #100 (workflow-merge command implementation)
+
+### Decision
+
+Use `.worktrees/` subdirectory pattern for organizing git worktrees in Agent OS workflows, with proper `.gitignore` management to prevent accidental commits. This approach centralizes feature work within the main repository structure while maintaining clear separation.
+
+### Context
+
+Git worktrees enable parallel feature development without branch switching, but there's no universal "best practice" for where to locate worktree directories. Three main approaches exist in the community:
+
+1. **Sibling directories** (`/dev/repo/`, `/dev/repo-feature/`)
+2. **Subdirectories with .gitignore** (`/dev/repo/.worktrees/feature/`)
+3. **Bare repo pattern** (`/dev/repo/.git/`, `/dev/repo/main/`, `/dev/repo/feature/`)
+
+Research from Stack Overflow, GitHub community best practices, and comparison with other workflows (e.g., Orchestrator project) shows all three approaches are valid, with trade-offs based on workflow needs.
+
+### Alternatives Considered
+
+1. **Sibling Directories Pattern**
+   - Pros: Complete separation, no gitignore needed, zero risk of accidental commits
+   - Cons: Scattered across filesystem, harder to visualize all feature work, cleanup requires tracking multiple locations
+   - Example: `/dev/agent-os/`, `/dev/agent-os-merge-command-#100/`
+
+2. **Subdirectory with .gitignore (Selected)**
+   - Pros: Centralized organization, easy cleanup (`rm -rf .worktrees/`), clear visual grouping, natural for scripts
+   - Cons: Requires `.gitignore` discipline, potential for accidental commit if misconfigured
+   - Example: `/dev/agent-os/.worktrees/merge-command-#100/`
+
+3. **Bare Repository Pattern**
+   - Pros: All branches equal (no "primary" working directory), clean conceptual model
+   - Cons: Major workflow disruption, requires repository migration, unfamiliar to most developers
+   - Example: `/dev/agent-os/.git/`, `/dev/agent-os/main/`, `/dev/agent-os/feature/`
+
+### Rationale
+
+The subdirectory approach aligns best with Agent OS's design principles:
+
+**Centralized Organization:** All feature work lives in one predictable location (`.worktrees/`), making it easy to see active features and manage cleanup through scripts like `workflow-merge.sh` and `workflow-complete.sh`.
+
+**Developer Experience:** Most developers understand `.gitignore` patterns and find nested directories intuitive. The pattern matches other common project structures (`.git/`, `node_modules/`, etc.).
+
+**Script-Friendly:** Automated worktree detection and cleanup logic becomes straightforward when worktrees follow a consistent subdirectory pattern.
+
+**Risk Management:** While `.gitignore` discipline is required, Agent OS setup scripts already manage this automatically, and the risk is mitigated through:
+- Setup scripts that create/update `.gitignore` entries
+- Workflow enforcement hooks that detect dirty state
+- Documentation emphasizing the pattern
+
+**Flexibility:** Projects with specific needs (e.g., Xcode projects sensitive to nested directories) can still use sibling patterns—Agent OS commands work with both approaches.
+
+### Consequences
+
+**Positive:**
+- Clear, predictable organization for all feature work
+- Simple cleanup: `rm -rf .worktrees/feature-name/`
+- Natural integration with workflow scripts
+- Easy to see all active feature branches at a glance
+- Reduced cognitive overhead (everything in one place)
+- Setup scripts handle `.gitignore` configuration automatically
+
+**Negative:**
+- Requires proper `.gitignore` management (mitigated by setup scripts)
+- Risk of accidental commit if user manually removes `.gitignore` entry
+- Some IDEs may show worktrees in project tree (can be configured out)
+- Not optimal for projects with tool-specific directory sensitivities (e.g., some Xcode configurations)
+
+### Implementation Notes
+
+- Setup scripts automatically add `.worktrees/` to `.gitignore`
+- `workflow-merge.sh` includes automatic worktree cleanup
+- Documentation should note sibling pattern as alternative for edge cases
+- Future consideration: Make pattern configurable via `.agent-os/config.yaml`
