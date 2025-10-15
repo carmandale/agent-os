@@ -5,11 +5,20 @@
 #
 # Features:
 # - Detects uncommitted source code files (filters out noise/config files)
-# - Enforces commits within RECENT_WINDOW (default: 2 hours)
+# - Context-aware active work session detection (Issue #102)
+# - Allows uncommitted code on feature branches with active issues/specs
+# - Blocks uncommitted code on main branch or abandoned feature branches
+# - Enforces commits within RECENT_WINDOW (default: 2 hours) as fallback
 # - Context-aware commit reminders with branch, issue #, and active spec
 # - Smart commit message suggestions with GitHub issue references
 # - Rate limiting (5-minute TTL) to avoid notification fatigue
 # - Graceful fallback when context unavailable
+#
+# Active Work Detection:
+#   - Feature branch (not main/master/develop)
+#   - Active spec folder exists in .agent-os/specs/
+#   - Issue number in branch name (#123)
+#   - Composite is_work_in_progress() check
 #
 # Supported branch naming patterns for issue extraction:
 #   feature-#123-description  → extracts #123
@@ -287,6 +296,78 @@ output_json_block() {
 EOF
 }
 
+is_active_work_session() {
+  # Detect if this is an active work session (vs abandoned work).
+  # Returns 0 (true) if active work detected, 1 (false) otherwise.
+  # Active work indicators:
+  #   - Feature branch (not main/master/develop)
+  #   - Active spec folder exists in .agent-os/specs/
+  #   - Issue number in branch name (#123)
+  #   - is_work_in_progress() composite check
+  local project_root="$1"
+
+  # Check 1: Feature branch detection
+  # Use get_current_branch() from lib/git-utils.sh
+  local current_branch=""
+  if command -v get_current_branch >/dev/null 2>&1; then
+    current_branch="$(cd "$project_root" && get_current_branch 2>/dev/null || echo "")"
+    if [ -n "$current_branch" ]; then
+      # Check if this is a feature branch using is_feature_branch()
+      if command -v is_feature_branch >/dev/null 2>&1; then
+        if (cd "$project_root" && is_feature_branch "$current_branch" 2>/dev/null); then
+          log_debug "Active work detected: on feature branch '$current_branch'"
+          return 0
+        fi
+      else
+        # Fallback: simple main/master/develop check if is_feature_branch not available
+        case "$current_branch" in
+          main|master|develop)
+            log_debug "On main branch '$current_branch' - not active feature work"
+            ;;
+          *)
+            log_debug "Active work detected: on non-main branch '$current_branch'"
+            return 0
+            ;;
+        esac
+      fi
+    fi
+  fi
+
+  # Check 2: Active spec folder detection
+  # Use detect_current_spec() from lib/workflow-detector.sh
+  if [ -d "$project_root/.agent-os/specs" ] && command -v detect_current_spec >/dev/null 2>&1; then
+    local spec_folder
+    spec_folder="$(cd "$project_root" && detect_current_spec 2>/dev/null || echo "")"
+    if [ -n "$spec_folder" ]; then
+      log_debug "Active work detected: spec folder '$spec_folder' exists"
+      return 0
+    fi
+  fi
+
+  # Check 3: Issue number in branch name
+  # Use extract_github_issue() from lib/git-utils.sh
+  if [ -n "$current_branch" ] && command -v extract_github_issue >/dev/null 2>&1; then
+    local issue_num
+    issue_num="$(cd "$project_root" && extract_github_issue "branch" 2>/dev/null || echo "")"
+    if [ -n "$issue_num" ]; then
+      log_debug "Active work detected: branch references issue #$issue_num"
+      return 0
+    fi
+  fi
+
+  # Check 4: Composite work-in-progress check
+  # Use is_work_in_progress() from lib/git-utils.sh if available
+  if command -v is_work_in_progress >/dev/null 2>&1; then
+    if (cd "$project_root" && is_work_in_progress 2>/dev/null); then
+      log_debug "Active work detected: is_work_in_progress() returned true"
+      return 0
+    fi
+  fi
+
+  log_debug "No active work indicators found - treating as potentially abandoned work"
+  return 1
+}
+
 should_block_interaction() {
   # Decide if we should block. Returns 0 to block, 1 to allow.
   # Sets global variables: BLOCK_REASON, BLOCK_FILES_SAMPLE, BLOCK_FILE_COUNT
@@ -317,7 +398,15 @@ should_block_interaction() {
     return 1
   fi
 
-  # Recent commits heuristic
+  # Context-aware active work detection (Issue #102)
+  # Check if this is an active work session BEFORE applying time-based heuristic
+  # This prevents false positives when working on feature branches with active issues/specs
+  if is_active_work_session "$project_root"; then
+    log_debug "Active work session detected - allowing despite uncommitted changes"
+    return 1
+  fi
+
+  # Recent commits heuristic (fallback for abandoned work detection)
   local recent_count
   recent_count="$(recent_commit_count "$project_root")"
   if [ "${recent_count:-0}" -gt 0 ]; then
