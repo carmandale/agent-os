@@ -373,8 +373,9 @@ check_workspace_cleanliness() {
 		echo "    Rerun: /workflow-merge --auto $PR_NUMBER"
 		echo ""
 		print_warning "Pausing merge until workspace is ready"
-		((ERRORS++))
-		return 1
+		echo ""
+		# Exit 0 since this is a pause for user action, not an error
+		exit 0
 	fi
 
 	print_success "Workspace is clean - ready to merge safely"
@@ -821,8 +822,6 @@ main() {
 
 	# Exit with appropriate code
 	if [[ $ERRORS -gt 0 ]]; then
-		echo ""
-		print_info "Merge workflow paused - please address the issues above"
 		exit 1
 	elif [[ $WARNINGS -gt 0 ]]; then
 		exit 2
