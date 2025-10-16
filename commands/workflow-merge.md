@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git branch:*), Bash(git worktree:*), Bash(git fetch:*), Bash(git pull:*), Bash(git checkout:*), Bash(gh pr:*), Bash(gh api:*), Bash(gh repo:*), Bash(~/.agent-os/scripts/workflow-merge.sh:*)
+allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git branch:*), Bash(git worktree:*), Bash(git fetch:*), Bash(git pull:*), Bash(git checkout:*), Bash(gh pr:*), Bash(gh api:*), Bash(gh repo:*), Bash(grep:*), Bash(sed:*), Bash(~/.agent-os/scripts/workflow-merge.sh:*)
 description: Intelligently merge pull requests with safety checks, review feedback integration, and worktree cleanup
 argument-hint: [--dry-run|--force|--auto|--strategy merge|squash|rebase] [pr_number]
 ---

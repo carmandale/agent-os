@@ -154,7 +154,8 @@ print_step() {
 print_section() {
 	echo ""
 	echo -e "${CYAN}$1${NC}"
-	echo "$(printf '=%.0s' $(seq 1 ${#1}))"
+	# Portable alternative to seq (works on macOS and Linux)
+	printf '%*s\n' "${#1}" '' | tr ' ' '='
 }
 
 # Dry run execution wrapper
@@ -583,16 +584,24 @@ cleanup_worktree() {
 		print_success "Switched to main repository"
 	fi
 
-	# Checkout main branch
-	print_step "Switching to main branch..."
-	execute_command git checkout main
+	# Detect default branch (don't assume 'main')
+	local default_branch
+	default_branch=$(gh repo view --json defaultBranchRef --jq '.defaultBranchRef.name' 2>/dev/null || echo "")
+	if [[ -z "$default_branch" ]]; then
+		# Fallback: check git's symbolic ref
+		default_branch=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's|^origin/||' || echo "main")
+	fi
 
-	# Update main branch
+	# Checkout default branch
+	print_step "Switching to $default_branch branch..."
+	execute_command git checkout "$default_branch"
+
+	# Update default branch
 	print_step "Fetching latest changes..."
 	execute_command git fetch origin
 
-	print_step "Pulling main branch..."
-	execute_command git pull origin main
+	print_step "Pulling $default_branch branch..."
+	execute_command git pull origin "$default_branch"
 
 	# Verify merge is present
 	if [[ "$DRY_RUN" != "true" ]]; then
