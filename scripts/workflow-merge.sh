@@ -74,6 +74,10 @@ parse_arguments() {
 				show_help
 				exit 1
 				;;
+			# Ignore common prefixes like "pr", "PR", "issue", "#"
+			pr|PR|issue|Issue)
+				shift
+				;;
 			*)
 				# SECURITY: Validate PR number is numeric only
 				if [[ "$1" =~ ^[0-9]+$ ]]; then
@@ -82,9 +86,12 @@ parse_arguments() {
 						exit 1
 					fi
 					PR_NUMBER="$1"
+				elif [[ "$1" =~ ^#([0-9]+)$ ]]; then
+					# Handle #123 format
+					PR_NUMBER="${BASH_REMATCH[1]}"
 				else
 					print_error "Invalid PR number: $1 (must contain only digits)"
-					print_info "Example: /merge 123"
+					print_info "Example: /workflow-merge 123"
 					exit 1
 				fi
 				shift
