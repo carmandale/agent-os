@@ -180,12 +180,17 @@ execute_command() {
 check_prerequisites() {
 	print_section "Prerequisites Check"
 
+	local checks_passed=0
+	local checks_total=4
+
 	# Check if in git repo
 	if ! git rev-parse --git-dir >/dev/null 2>&1; then
 		print_error "Not in a git repository"
 		((ERRORS++))
 		return 1
 	fi
+	((checks_passed++))
+	print_success "Git repository detected"
 
 	# Check for required tools
 	local required_tools=("gh" "git" "jq")
@@ -193,6 +198,8 @@ check_prerequisites() {
 		if ! command -v "$tool" >/dev/null 2>&1; then
 			print_error "$tool command not found (install with: brew install $tool)"
 			((ERRORS++))
+		else
+			((checks_passed++))
 		fi
 	done
 
@@ -202,12 +209,14 @@ check_prerequisites() {
 		((ERRORS++))
 		return 1
 	fi
+	print_success "GitHub authentication verified"
 
 	if [[ $ERRORS -gt 0 ]]; then
 		return 1
 	fi
 
-	print_success "All prerequisites satisfied"
+	echo ""
+	print_success "Ready to proceed - all systems configured correctly"
 	return 0
 }
 
@@ -340,33 +349,35 @@ check_workspace_cleanliness() {
 		return 0
 	fi
 
-	print_section "Pre-Merge Workspace Check"
+	print_section "Workspace Check"
 
 	# Check for uncommitted changes
 	if [[ -n "$(git status --porcelain)" ]]; then
-		print_error "Worktree has uncommitted changes"
-		print_info "Your workspace must be clean before merging"
 		echo ""
-		echo "Uncommitted changes:"
+		print_info "I noticed you have uncommitted changes in your workspace:"
+		echo ""
 		git status --short | sed 's/^/  /'
 		echo ""
-		print_info "📋 Recovery Options:"
-		print_info ""
-		print_info "  Option 1: Commit your changes"
-		print_info "    git add ."
-		print_info "    git commit -m 'Final changes before merge'"
-		print_info ""
-		print_info "  Option 2: Stash for later"
-		print_info "    git stash push -u -m 'Pre-merge WIP'"
-		print_info ""
-		print_info "  Option 3: Use auto-merge (cleanup later)"
-		print_info "    /merge --auto $PR_NUMBER"
-		print_info ""
+		print_info "Before we merge, we need a clean workspace. This prevents your changes from getting"
+		print_info "trapped in the worktree after we delete the remote branch."
+		echo ""
+		print_success "Here's how I can help:"
+		echo ""
+		echo "  → Commit these changes? (if they belong in this PR)"
+		echo "    Just ask: 'commit these changes'"
+		echo ""
+		echo "  → Stash for later? (if they're experimental work)"
+		echo "    Just ask: 'stash these changes'"
+		echo ""
+		echo "  → Use auto-merge instead? (I'll merge when workspace is clean later)"
+		echo "    Rerun: /workflow-merge --auto $PR_NUMBER"
+		echo ""
+		print_warning "Pausing merge until workspace is ready"
 		((ERRORS++))
 		return 1
 	fi
 
-	print_success "Workspace is clean - safe to proceed"
+	print_success "Workspace is clean - ready to merge safely"
 	return 0
 }
 
@@ -810,6 +821,8 @@ main() {
 
 	# Exit with appropriate code
 	if [[ $ERRORS -gt 0 ]]; then
+		echo ""
+		print_info "Merge workflow paused - please address the issues above"
 		exit 1
 	elif [[ $WARNINGS -gt 0 ]]; then
 		exit 2
