@@ -414,17 +414,17 @@ validate_merge_readiness() {
 	# Check 1: Review Status
 	print_step "Checking review status..."
 	if [[ "$review_decision" == "APPROVED" ]]; then
-		print_success "Reviews: Approved"
-	elif [[ "$review_decision" == "NONE" ]] || [[ "$review_decision" == "REVIEW_REQUIRED" ]]; then
+		print_success "✓ PR has been reviewed and approved"
+	elif [[ "$review_decision" == "NONE" ]] || [[ "$review_decision" == "" ]] || [[ "$review_decision" == "REVIEW_REQUIRED" ]]; then
 		if [[ "$FORCE" != "true" ]]; then
-			validation_errors+=("Reviews required but not received")
-			print_warning "Reviews: None received"
+			validation_errors+=("No review approval yet")
+			print_warning "✗ No review approval (typical for owner self-merge)"
 		else
-			print_warning "Reviews: None (bypassed with --force)"
+			print_warning "✗ No reviews (bypassed with --force)"
 		fi
 	else
-		validation_errors+=("Review status: $review_decision")
-		print_warning "Reviews: $review_decision"
+		validation_errors+=("Review decision: $review_decision")
+		print_warning "Review status: $review_decision"
 	fi
 
 	# Check 2: Merge Conflicts
@@ -476,22 +476,25 @@ validate_merge_readiness() {
 	# Report validation results
 	echo ""
 	if [[ ${#validation_errors[@]} -gt 0 ]]; then
-		print_info "Merge readiness status - ${#validation_errors[@]} items need attention:"
-		printf '  • %s\n' "${validation_errors[@]}"
+		print_info "PR #$PR_NUMBER Status Report:"
+		echo ""
+		printf '  %s\n' "${validation_errors[@]}"
 		echo ""
 
 		if [[ "$FORCE" == "true" ]]; then
-			print_info "Continuing with --force flag (validation bypassed)"
+			print_info "Using --force to bypass checks - proceeding with merge"
 			((WARNINGS++))
 			return 0
 		else
-			print_info "Ready to proceed once these are addressed, or use --force to continue anyway"
+			print_info "To merge with these issues, rerun with: /workflow-merge --force $PR_NUMBER"
 			echo ""
 			# Exit 0 - successfully reported status
 			exit 0
 		fi
 	else
-		print_success "All validation checks passed - ready to merge"
+		echo ""
+		print_success "PR #$PR_NUMBER is ready - all validation checks passed"
+		echo ""
 	fi
 
 	return 0

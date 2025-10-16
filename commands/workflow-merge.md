@@ -12,20 +12,11 @@ argument-hint: [--dry-run|--force|--auto|--strategy merge|squash|rebase] [pr_num
 
 ## Task
 
-Merge a pull request with comprehensive safety checks, optional review feedback resolution, and automatic worktree cleanup.
-
-### Execute Merge
-
-Run the merge script - it will report its findings:
+Merge pull request with safety checks and worktree cleanup.
 
 !`~/.agent-os/scripts/workflow-merge.sh $ARGUMENTS`
 
-**Important:** The script provides information and may pause if it finds issues. This is not an error - analyze what it reports and help the user:
-
-- If workspace has uncommitted changes: Offer to commit or stash them
-- If validation issues found (reviews, CI): Present the status and discuss options
-- If merge succeeds: Report success
-- Script exit 0 = information provided successfully (NOT a failure)
+After running the script, if it reports issues (missing reviews, uncommitted changes, etc), help the user address them. The script exit 0 means it successfully provided information, not that the merge completed.
 
 ## What This Command Does
 
