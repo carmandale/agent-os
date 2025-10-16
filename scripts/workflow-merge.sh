@@ -476,24 +476,25 @@ validate_merge_readiness() {
 	# Report validation results
 	echo ""
 	if [[ ${#validation_errors[@]} -gt 0 ]]; then
-		print_info "PR #$PR_NUMBER Status Report:"
+		print_warning "Cannot merge yet - found ${#validation_errors[@]} issue(s):"
 		echo ""
-		printf '  %s\n' "${validation_errors[@]}"
+		printf '  ✗ %s\n' "${validation_errors[@]}"
 		echo ""
 
 		if [[ "$FORCE" == "true" ]]; then
-			print_info "Using --force to bypass checks - proceeding with merge"
+			print_info "Proceeding anyway with --force flag"
 			((WARNINGS++))
 			return 0
 		else
-			print_info "To merge with these issues, rerun with: /workflow-merge --force $PR_NUMBER"
+			print_info "Options:"
+			echo "  • Address the issues above and try again"
+			echo "  • Use --force to merge anyway: /workflow-merge --force $PR_NUMBER"
 			echo ""
 			# Exit 0 - successfully reported status
 			exit 0
 		fi
 	else
-		echo ""
-		print_success "PR #$PR_NUMBER is ready - all validation checks passed"
+		print_success "PR #$PR_NUMBER is ready to merge!"
 		echo ""
 	fi
 
