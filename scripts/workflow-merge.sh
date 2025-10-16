@@ -28,6 +28,8 @@ WARNINGS=0
 IN_WORKTREE=false
 WORKTREE_PATH=""
 MAIN_REPO_PATH=""
+MERGE_SUCCEEDED=false
+BRANCH_NAME=""
 
 # Parse command-line arguments
 parse_arguments() {
@@ -476,6 +478,9 @@ validate_merge_readiness() {
 execute_merge() {
 	print_section "Merge Execution"
 
+	# Get branch name for later deletion
+	BRANCH_NAME=$(gh pr view "$PR_NUMBER" --json headRefName --jq '.headRefName' 2>/dev/null || echo "")
+
 	if [[ "$AUTO_MERGE" == "true" ]]; then
 		print_step "Enabling GitHub auto-merge..."
 		execute_command gh pr merge "$PR_NUMBER" --auto "--$MERGE_STRATEGY"
@@ -486,9 +491,11 @@ execute_merge() {
 
 	print_step "Merging PR #$PR_NUMBER with strategy: $MERGE_STRATEGY"
 
-	# Execute merge
-	if execute_command gh pr merge "$PR_NUMBER" "--$MERGE_STRATEGY" --delete-branch; then
+	# Execute merge WITHOUT automatic branch deletion
+	# Branch will be deleted after successful cleanup
+	if execute_command gh pr merge "$PR_NUMBER" "--$MERGE_STRATEGY"; then
 		print_success "PR #$PR_NUMBER merged successfully"
+		MERGE_SUCCEEDED=true
 
 		# Verify merge commit
 		if [[ "$DRY_RUN" != "true" ]]; then
@@ -619,6 +626,63 @@ cleanup_worktree() {
 	return 0
 }
 
+# Delete remote branch after successful merge
+delete_remote_branch() {
+	if [[ -z "$BRANCH_NAME" ]]; then
+		print_warning "Branch name unknown, cannot delete"
+		return 1
+	fi
+
+	print_step "Deleting remote branch: $BRANCH_NAME"
+
+	if execute_command gh api -X DELETE "repos/:owner/:repo/git/refs/heads/$BRANCH_NAME"; then
+		print_success "Remote branch deleted"
+		return 0
+	else
+		print_warning "Could not delete remote branch"
+		print_info "Manual deletion: gh api -X DELETE \"repos/:owner/:repo/git/refs/heads/$BRANCH_NAME\""
+		return 1
+	fi
+}
+
+# Orchestrate cleanup and branch deletion after successful merge
+cleanup_after_merge() {
+	if [[ "$MERGE_SUCCEEDED" != "true" ]]; then
+		return 0  # Nothing to clean up
+	fi
+
+	# If not in worktree, safe to delete branch immediately
+	if [[ "$IN_WORKTREE" != "true" ]]; then
+		delete_remote_branch
+		return 0
+	fi
+
+	# In worktree - cleanup first, THEN delete branch
+	print_section "Post-Merge Cleanup"
+
+	if cleanup_worktree; then
+		print_success "Worktree cleaned up successfully"
+		delete_remote_branch
+		return 0
+	else
+		print_warning "Worktree cleanup failed"
+		print_info ""
+		print_info "Your PR is merged, but local cleanup incomplete"
+		print_info ""
+		print_info "📋 Remote branch preserved for recovery:"
+		print_info "   Branch: $BRANCH_NAME"
+		print_info ""
+		print_info "📋 Manual cleanup steps:"
+		print_info "   1. Fix the issue preventing cleanup"
+		print_info "   2. cd \"$MAIN_REPO_PATH\""
+		print_info "   3. git worktree remove \"$WORKTREE_PATH\""
+		print_info "   4. gh api -X DELETE \"repos/:owner/:repo/git/refs/heads/$BRANCH_NAME\""
+		print_info ""
+		((WARNINGS++))
+		return 1
+	fi
+}
+
 # Generate summary report
 generate_summary() {
 	print_section "Merge Summary"
@@ -716,9 +780,18 @@ main() {
 		exit 1
 	fi
 
-	# Cleanup worktree if applicable (already detected earlier)
+	# Cleanup worktree and delete branch (already detected earlier)
 	if [[ "$AUTO_MERGE" != "true" ]]; then
-		cleanup_worktree
+		cleanup_after_merge || {
+			# Non-fatal: PR merged, cleanup partial
+			print_section "Merge Completed with Warnings"
+			print_warning "PR merged successfully but cleanup incomplete"
+			print_info "See recovery instructions above"
+
+			# Generate summary even with warnings
+			generate_summary
+			exit 2  # Warning exit code
+		}
 	fi
 
 	# Generate summary
