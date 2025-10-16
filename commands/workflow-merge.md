@@ -14,7 +14,21 @@ argument-hint: [--dry-run|--force|--auto|--strategy merge|squash|rebase] [pr_num
 
 Merge a pull request with comprehensive safety checks, optional review feedback resolution, and automatic worktree cleanup.
 
-### Merge Pull Request
+### Pre-Merge Workspace Check
+
+Before running the merge, check if workspace is clean:
+
+!`git status --porcelain`
+
+If there are uncommitted changes:
+1. Ask user if they want to commit them (if part of this PR)
+2. Offer to stash them (if experimental work)
+3. Suggest using --auto flag instead
+4. Only proceed with merge after workspace is clean
+
+### Execute Merge
+
+Once workspace is ready, execute the merge:
 
 !`~/.agent-os/scripts/workflow-merge.sh $ARGUMENTS`
 

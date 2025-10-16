@@ -785,13 +785,11 @@ main() {
 		exit 1
 	fi
 
-	# Detect worktree context early (needed for workspace check)
+	# Detect worktree context early
 	detect_worktree
 
-	# Check workspace is clean BEFORE merge (prevents data loss)
-	if ! check_workspace_cleanliness; then
-		exit 1
-	fi
+	# Note: Workspace cleanliness should be checked by Claude before calling this script
+	# The command definition handles uncommitted changes interaction
 
 	if ! confirm_merge; then
 		exit 1
