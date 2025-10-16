@@ -46,7 +46,17 @@ parse_arguments() {
 				shift
 				;;
 			--strategy)
-				MERGE_STRATEGY="$2"
+				# SECURITY: Validate merge strategy parameter
+				case "$2" in
+					merge|squash|rebase)
+						MERGE_STRATEGY="$2"
+						;;
+					*)
+						print_error "Invalid merge strategy: $2"
+						print_info "Valid options: merge, squash, rebase"
+						exit 1
+						;;
+				esac
 				shift 2
 				;;
 			--verbose)
@@ -63,7 +73,18 @@ parse_arguments() {
 				exit 1
 				;;
 			*)
-				PR_NUMBER="$1"
+				# SECURITY: Validate PR number is numeric only
+				if [[ "$1" =~ ^[0-9]+$ ]]; then
+					if [[ ${#1} -gt 10 ]]; then
+						print_error "PR number too long: $1 (max 10 digits)"
+						exit 1
+					fi
+					PR_NUMBER="$1"
+				else
+					print_error "Invalid PR number: $1 (must contain only digits)"
+					print_info "Example: /merge 123"
+					exit 1
+				fi
 				shift
 				;;
 		esac
@@ -135,15 +156,20 @@ print_section() {
 }
 
 # Dry run execution wrapper
+# SECURITY: Uses direct execution to prevent command injection
 execute_command() {
 	if [[ "$DRY_RUN" == "true" ]]; then
-		echo "  [DRY RUN] Would execute: $1"
+		printf '  [DRY RUN] Would execute:'
+		printf ' %q' "$@"
+		echo
 		return 0
 	else
 		if [[ "$VERBOSE" == "true" ]]; then
-			echo "  Executing: $1"
+			printf '  Executing:'
+			printf ' %q' "$@"
+			echo
 		fi
-		eval "$1"
+		"$@"
 	fi
 }
 
@@ -304,6 +330,43 @@ confirm_merge() {
 	return 0
 }
 
+# Check workspace is clean before merge (prevents data loss)
+check_workspace_cleanliness() {
+	# Only check if we're in a worktree and not using auto-merge
+	if [[ "$IN_WORKTREE" != "true" ]] || [[ "$AUTO_MERGE" == "true" ]]; then
+		return 0
+	fi
+
+	print_section "Pre-Merge Workspace Check"
+
+	# Check for uncommitted changes
+	if [[ -n "$(git status --porcelain)" ]]; then
+		print_error "Worktree has uncommitted changes"
+		print_info "Your workspace must be clean before merging"
+		echo ""
+		echo "Uncommitted changes:"
+		git status --short | sed 's/^/  /'
+		echo ""
+		print_info "📋 Recovery Options:"
+		print_info ""
+		print_info "  Option 1: Commit your changes"
+		print_info "    git add ."
+		print_info "    git commit -m 'Final changes before merge'"
+		print_info ""
+		print_info "  Option 2: Stash for later"
+		print_info "    git stash push -u -m 'Pre-merge WIP'"
+		print_info ""
+		print_info "  Option 3: Use auto-merge (cleanup later)"
+		print_info "    /merge --auto $PR_NUMBER"
+		print_info ""
+		((ERRORS++))
+		return 1
+	fi
+
+	print_success "Workspace is clean - safe to proceed"
+	return 0
+}
+
 # Validate PR is ready to merge
 validate_merge_readiness() {
 	print_section "Pre-Merge Validation"
@@ -415,7 +478,7 @@ execute_merge() {
 
 	if [[ "$AUTO_MERGE" == "true" ]]; then
 		print_step "Enabling GitHub auto-merge..."
-		execute_command "gh pr merge \"$PR_NUMBER\" --auto --$MERGE_STRATEGY"
+		execute_command gh pr merge "$PR_NUMBER" --auto "--$MERGE_STRATEGY"
 		print_success "Auto-merge enabled - will merge when all checks pass"
 		print_info "Skipping worktree cleanup (PR not merged yet)"
 		return 0
@@ -424,7 +487,7 @@ execute_merge() {
 	print_step "Merging PR #$PR_NUMBER with strategy: $MERGE_STRATEGY"
 
 	# Execute merge
-	if execute_command "gh pr merge \"$PR_NUMBER\" --$MERGE_STRATEGY --delete-branch"; then
+	if execute_command gh pr merge "$PR_NUMBER" "--$MERGE_STRATEGY" --delete-branch; then
 		print_success "PR #$PR_NUMBER merged successfully"
 
 		# Verify merge commit
@@ -509,20 +572,20 @@ cleanup_worktree() {
 
 	# Return to main repository
 	print_step "Returning to main repository..."
-	if execute_command "cd \"$MAIN_REPO_PATH\""; then
+	if execute_command cd "$MAIN_REPO_PATH"; then
 		print_success "Switched to main repository"
 	fi
 
 	# Checkout main branch
 	print_step "Switching to main branch..."
-	execute_command "git checkout main"
+	execute_command git checkout main
 
 	# Update main branch
 	print_step "Fetching latest changes..."
-	execute_command "git fetch origin"
+	execute_command git fetch origin
 
 	print_step "Pulling main branch..."
-	execute_command "git pull origin main"
+	execute_command git pull origin main
 
 	# Verify merge is present
 	if [[ "$DRY_RUN" != "true" ]]; then
@@ -539,7 +602,7 @@ cleanup_worktree() {
 
 	# Remove worktree
 	print_step "Removing worktree: $WORKTREE_PATH"
-	if execute_command "git worktree remove \"$WORKTREE_PATH\""; then
+	if execute_command git worktree remove "$WORKTREE_PATH"; then
 		print_success "Worktree removed"
 	else
 		print_error "Failed to remove worktree"
@@ -550,7 +613,7 @@ cleanup_worktree() {
 
 	# Prune metadata
 	print_step "Pruning worktree metadata..."
-	execute_command "git worktree prune"
+	execute_command git worktree prune
 	print_success "Worktree metadata pruned"
 
 	return 0
@@ -630,6 +693,14 @@ main() {
 		exit 1
 	fi
 
+	# Detect worktree context early (needed for workspace check)
+	detect_worktree
+
+	# Check workspace is clean BEFORE merge (prevents data loss)
+	if ! check_workspace_cleanliness; then
+		exit 1
+	fi
+
 	if ! confirm_merge; then
 		exit 1
 	fi
@@ -645,8 +716,7 @@ main() {
 		exit 1
 	fi
 
-	# Detect and cleanup worktree if applicable
-	detect_worktree
+	# Cleanup worktree if applicable (already detected earlier)
 	if [[ "$AUTO_MERGE" != "true" ]]; then
 		cleanup_worktree
 	fi
